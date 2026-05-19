@@ -124,17 +124,20 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Re-generazione Asset Cyberpunk**: Generata una nuova icona a tema neon cyberpunk a contrasto ultra nitido su sfondo nero OLED.
   - **Script di Elaborazione Pixel Nativi (`fix_corners.py`)**: Scritto ed eseguito uno script Python che sfrutta l'algoritmo di flood-fill della libreria `Pillow`. Lo script parte dai quattro vertici della tela (0,0), (1023,0), (0,1023), (1023,1023) per rilevare ed eliminare i pixel bianchi/trasparenti residui dell'involucro squircle generato dal modello di IA, convertendoli in nero assoluto e garantendo che il file `AppIcon_1024.png` sia un quadrato perfetto a pieno schermo.
 
+### [2026-05-19 12:05]: Creazione Guida di Pubblicazione & Conformità Apple App Store Connect
+* **Dettagli**: Definita la procedura passo-passo completa e dettagliata per la pubblicazione dell'app sull'App Store, volta a prevenire il rifiuto (rejection) dell'applicazione da parte dei revisori di Apple per funzionalità avanzate (Background Audio, Live Activities, companion Apple Watch).
+* **Tech Notes**:
+  - **Guida Integrata nel Workspace**: Creato il file `GUIDA_PUBBLICAZIONE_APP_STORE.md` per l'accesso immediato e offline dell'utente.
+  - **Checklist Operativa**: Aggiornato il file `TO_SIMO_DO.md` introducendo una checklist interattiva dei passaggi manuali.
+  - **Contromisure di Revisione**: Redatto il testo di giustificazione formale per l'entitlement `UIBackgroundModes = audio` (AVSpeechSynthesizer in background) e definite le linee guida per la creazione del video demo per superare l'esame della Guideline 2.1 (Performance - App Completeness) per watchOS/ActivityKit.
 
-
-
-
-
-
-
-
-
-
-
+### [2026-05-19 12:10]: Integrazione Nativa e Compilazione Target watchOS Companion App
+* **Dettagli**: Completata l'integrazione e la configurazione automatica dei file sorgente all'interno del target Apple Watch companion (`PingPongWatch Watch App`) generato dall'utente in Xcode.
+* **Tech Notes**:
+  - **Ripristino View**: Recuperato `WatchContentView.swift` da Git e aggiornato `PingPongWatchApp.swift` come entrypoint principale.
+  - **Sincronizzazione Automatica**: Sfruttata la funzionalità `PBXFileSystemSynchronizedRootGroup` introdotta in Xcode 16 per includere dinamicamente le classi Swift nel compilato senza alterare manualmente il plist.
+  - **Rimozione File Obsoleti**: Eliminato `ContentView.swift` generato dal template di Xcode per evitare conflitti di duplicazione delle classi.
+  - **Verifica della Build**: Eseguito un test di compilazione nativa asincrona con `xcodebuild`, conclusosi con esito positivo (`BUILD SUCCEEDED`, codice di uscita `0`), che convalida l'integrità del bundle iOS e della companion app per Apple Watch.
 
 
 

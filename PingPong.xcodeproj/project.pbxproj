@@ -3,10 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2437AADC2FBC6DBC0067E1F9 /* PingPongWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 2437AAD22FBC6DBA0067E1F9 /* PingPongWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2437AAEE2FBC6F9D0067E1F9 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2437AAED2FBC6F9D0067E1F9 /* WidgetKit.framework */; };
+		2437AAF02FBC6F9D0067E1F9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2437AAEF2FBC6F9D0067E1F9 /* SwiftUI.framework */; };
+		2437AAFD2FBC6F9F0067E1F9 /* PingPongWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2437AAEB2FBC6F9D0067E1F9 /* PingPongWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D60000012C1E000100000001 /* PingPongApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000022C1E000100000001 /* PingPongApp.swift */; };
 		D60000032C1E000100000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000042C1E000100000001 /* ContentView.swift */; };
 		D60000052C1E000100000001 /* ScoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000062C1E000100000001 /* ScoreViewModel.swift */; };
@@ -17,9 +21,56 @@
 		D60000FB2C1E000100000001 /* Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FA2C1E000100000001 /* Localized.swift */; };
 		D60000FD2C1E000100000001 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FC2C1E000100000001 /* LiveActivityManager.swift */; };
 		D60000FF2C1E000100000001 /* PingPongAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FE2C1E000100000001 /* PingPongAttributes.swift */; };
+		2437AAFF2FBC6F9D0067E999 /* PingPongAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FE2C1E000100000001 /* PingPongAttributes.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2437AADA2FBC6DBC0067E1F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D60000182C1E000200000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2437AAD12FBC6DBA0067E1F9;
+			remoteInfo = "PingPongWatch Watch App";
+		};
+		2437AAFB2FBC6F9F0067E1F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D60000182C1E000200000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2437AAEA2FBC6F9D0067E1F9;
+			remoteInfo = PingPongWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2437AADD2FBC6DBC0067E1F9 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				2437AADC2FBC6DBC0067E1F9 /* PingPongWatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2437AB022FBC6F9F0067E1F9 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2437AAFD2FBC6F9F0067E1F9 /* PingPongWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		2437AAD22FBC6DBA0067E1F9 /* PingPongWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PingPongWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2437AAEB2FBC6F9D0067E1F9 /* PingPongWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PingPongWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		2437AAED2FBC6F9D0067E1F9 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		2437AAEF2FBC6F9D0067E1F9 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		D60000022C1E000100000001 /* PingPongApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingPongApp.swift; sourceTree = "<group>"; };
 		D60000042C1E000100000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D60000062C1E000100000001 /* ScoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreViewModel.swift; sourceTree = "<group>"; };
@@ -33,7 +84,38 @@
 		D60000FE2C1E000100000001 /* PingPongAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingPongAttributes.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2437AAFE2FBC6F9F0067E1F9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2437AAEA2FBC6F9D0067E1F9 /* PingPongWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		2437AAD32FBC6DBA0067E1F9 /* PingPongWatch Watch App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "PingPongWatch Watch App"; sourceTree = "<group>"; };
+		2437AAF12FBC6F9D0067E1F9 /* PingPongWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2437AAFE2FBC6F9F0067E1F9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = PingPongWidget; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		2437AACF2FBC6DBA0067E1F9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2437AAE82FBC6F9D0067E1F9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2437AAF02FBC6F9D0067E1F9 /* SwiftUI.framework in Frameworks */,
+				2437AAEE2FBC6F9D0067E1F9 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D60000102C1E000200000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -44,10 +126,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2437AAEC2FBC6F9D0067E1F9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2437AAED2FBC6F9D0067E1F9 /* WidgetKit.framework */,
+				2437AAEF2FBC6F9D0067E1F9 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		D60000112C1E000200000001 = {
 			isa = PBXGroup;
 			children = (
 				D60000132C1E000200000001 /* PingPong */,
+				2437AAD32FBC6DBA0067E1F9 /* PingPongWatch Watch App */,
+				2437AAF12FBC6F9D0067E1F9 /* PingPongWidget */,
+				2437AAEC2FBC6F9D0067E1F9 /* Frameworks */,
 				D60000122C1E000200000001 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,6 +150,8 @@
 			isa = PBXGroup;
 			children = (
 				D600000F2C1E000200000001 /* PingPong.app */,
+				2437AAD22FBC6DBA0067E1F9 /* PingPongWatch Watch App.app */,
+				2437AAEB2FBC6F9D0067E1F9 /* PingPongWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -80,6 +176,50 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2437AAD12FBC6DBA0067E1F9 /* PingPongWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2437AAE02FBC6DBC0067E1F9 /* Build configuration list for PBXNativeTarget "PingPongWatch Watch App" */;
+			buildPhases = (
+				2437AACE2FBC6DBA0067E1F9 /* Sources */,
+				2437AACF2FBC6DBA0067E1F9 /* Frameworks */,
+				2437AAD02FBC6DBA0067E1F9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				2437AAD32FBC6DBA0067E1F9 /* PingPongWatch Watch App */,
+			);
+			name = "PingPongWatch Watch App";
+			packageProductDependencies = (
+			);
+			productName = "PingPongWatch Watch App";
+			productReference = 2437AAD22FBC6DBA0067E1F9 /* PingPongWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		2437AAEA2FBC6F9D0067E1F9 /* PingPongWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2437AAFF2FBC6F9F0067E1F9 /* Build configuration list for PBXNativeTarget "PingPongWidgetExtension" */;
+			buildPhases = (
+				2437AAE72FBC6F9D0067E1F9 /* Sources */,
+				2437AAE82FBC6F9D0067E1F9 /* Frameworks */,
+				2437AAE92FBC6F9D0067E1F9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				2437AAF12FBC6F9D0067E1F9 /* PingPongWidget */,
+			);
+			name = PingPongWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = PingPongWidgetExtension;
+			productReference = 2437AAEB2FBC6F9D0067E1F9 /* PingPongWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		D60000142C1E000200000001 /* PingPong */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D60000152C1E000200000001 /* Build configuration list for PBXNativeTarget "PingPong" */;
@@ -87,10 +227,14 @@
 				D60000162C1E000200000001 /* Sources */,
 				D60000102C1E000200000001 /* Frameworks */,
 				D60000172C1E000200000001 /* Resources */,
+				2437AADD2FBC6DBC0067E1F9 /* Embed Watch Content */,
+				2437AB022FBC6F9F0067E1F9 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				2437AADB2FBC6DBC0067E1F9 /* PBXTargetDependency */,
+				2437AAFC2FBC6F9F0067E1F9 /* PBXTargetDependency */,
 			);
 			name = PingPong;
 			productName = PingPong;
@@ -104,9 +248,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
+				LastSwiftUpdateCheck = 2650;
 				LastUpgradeCheck = 2650;
 				TargetAttributes = {
+					2437AAD12FBC6DBA0067E1F9 = {
+						CreatedOnToolsVersion = 26.5;
+					};
+					2437AAEA2FBC6F9D0067E1F9 = {
+						CreatedOnToolsVersion = 26.5;
+					};
 					D60000142C1E000200000001 = {
 						CreatedOnToolsVersion = 15.0;
 						LastSwiftMigration = 1500;
@@ -127,11 +277,27 @@
 			projectRoot = "";
 			targets = (
 				D60000142C1E000200000001 /* PingPong */,
+				2437AAD12FBC6DBA0067E1F9 /* PingPongWatch Watch App */,
+				2437AAEA2FBC6F9D0067E1F9 /* PingPongWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2437AAD02FBC6DBA0067E1F9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2437AAE92FBC6F9D0067E1F9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D60000172C1E000200000001 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -143,6 +309,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2437AACE2FBC6DBA0067E1F9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2437AAE72FBC6F9D0067E1F9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2437AAFF2FBC6F9D0067E999 /* PingPongAttributes.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D60000162C1E000200000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -161,7 +342,164 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		2437AADB2FBC6DBC0067E1F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2437AAD12FBC6DBA0067E1F9 /* PingPongWatch Watch App */;
+			targetProxy = 2437AADA2FBC6DBC0067E1F9 /* PBXContainerItemProxy */;
+		};
+		2437AAFC2FBC6F9F0067E1F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2437AAEA2FBC6F9D0067E1F9 /* PingPongWidgetExtension */;
+			targetProxy = 2437AAFB2FBC6F9F0067E1F9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		2437AADE2FBC6DBC0067E1F9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = PingPongWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.simo.pingpong;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.simo.pingpong.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+			};
+			name = Debug;
+		};
+		2437AADF2FBC6DBC0067E1F9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = PingPongWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.simo.pingpong;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.simo.pingpong.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+			};
+			name = Release;
+		};
+		2437AB002FBC6F9F0067E1F9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PingPongWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PingPongWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.simo.pingpong.PingPongWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2437AB012FBC6F9F0067E1F9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PingPongWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PingPongWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.simo.pingpong.PingPongWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		D600001A2C1E000200000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -344,6 +682,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2437AAE02FBC6DBC0067E1F9 /* Build configuration list for PBXNativeTarget "PingPongWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2437AADE2FBC6DBC0067E1F9 /* Debug */,
+				2437AADF2FBC6DBC0067E1F9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2437AAFF2FBC6F9F0067E1F9 /* Build configuration list for PBXNativeTarget "PingPongWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2437AB002FBC6F9F0067E1F9 /* Debug */,
+				2437AB012FBC6F9F0067E1F9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		D60000152C1E000200000001 /* Build configuration list for PBXNativeTarget "PingPong" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

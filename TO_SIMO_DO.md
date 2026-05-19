@@ -1,12 +1,5 @@
 # Azioni Manuali per Simo 🏓
 
-Ecco i passi da seguire per compilare, testare e pubblicare l'applicazione di Ping Pong sul tuo iPhone o sull'App Store:
-
-## 1. Avviare l'App nel Simulatore o su Dispositivo Fisico
-1. **Apri il progetto in Xcode**: Fai doppio clic sul file `PingPong.xcodeproj` generato all'interno della cartella di lavoro per aprirlo nell'ambiente nativo Apple Xcode.
-2. **Seleziona la destinazione**: Nella barra degli strumenti superiore di Xcode, fai clic sulla destinazione attiva (vicino al pulsante "Play") e seleziona un simulatore (es. *iPhone 16 Pro*) o il tuo iPhone fisico se è collegato al Mac.
-3. **Avvia l'app**: Clicca sul pulsante **Play** (oppure premi sulla tastiera `Cmd + R`). L'applicazione verrà compilata ed eseguita immediatamente.
-
 ## 2. Preparazione per l'App Store Connect (Pubblicazione)
 Per pubblicare l'app, Apple richiede alcune impostazioni personali di firma digitale:
 1. **Configura il Team di Sviluppo**:
@@ -20,33 +13,15 @@ Per pubblicare l'app, Apple richiede alcune impostazioni personali di firma digi
    - Vai sul menu superiore **Product** -> **Archive**.
    - Al termine dell'archiviazione, si aprirà l'Organizer di Xcode da cui potrai cliccare su **Distribute App** per caricarla su App Store Connect.
 
-## 3. Collegare la Companion App per Apple Watch in Xcode ⌚
-Ho già creato tutti i file pronti per watchOS all'interno della cartella `PingPongWatch Watch App` nel tuo workspace. Per collegarli in Xcode e attivarli, segui questi 3 rapidi passi:
+## 3. Companion App per Apple Watch ⌚ [CONFIGURATA & INTEGRATA]
 
-1. **Aggiungi il Target Apple Watch in Xcode**:
-   - Con il progetto aperto in Xcode, vai nel menu superiore su **File** -> **New** -> **Target...**
-   - Nella scheda superiore del popup seleziona **watchOS**, scegli il template **Watch App** e fai clic su **Next**.
-   - Configura le seguenti informazioni:
-     - *Product Name*: **`PingPongWatch`**
-     - *Organization Identifier*: `com.simo`
-     - *Bundle Identifier*: diventerà automaticamente `com.simo.pingpong.watchkitapp` (va benissimo!).
-   - Fai clic su **Finish**. Se Xcode ti chiede di attivare il nuovo schema di compilazione (Activate Scheme), fai clic su **Activate**.
+Ho configurato ed integrato completamente i sorgenti nativi watchOS companion direttamente all'interno del target Xcode che hai creato! Ho verificato la build ed è perfettamente funzionante con codice di uscita `0`.
 
-2. **Aggiungi i File pre-generati al nuovo Target**:
-   - Xcode creerà una cartella chiamata `PingPongWatch Watch App` nella barra laterale sinistra del navigatore di progetto.
-   - Espandila, seleziona il file di default `ContentView.swift` creato da Xcode e **eliminalo** (clicca *Move to Trash*).
-   - Fai clic destro sulla cartella `PingPongWatch Watch App` in Xcode, seleziona **Add Files to "PingPongWatch"...**
-   - Seleziona i 3 file che ho già preparato per te nel workspace all'interno della cartella `PingPongWatch Watch App`:
-     - `PingPongWatchApp.swift`
-     - `WatchConnector.swift`
-     - `WatchContentView.swift`
-   - Prima di cliccare su *Add*, assicurati che sotto la sezione **Targets** a fondo pagina ci sia la spunta unicamente su **`PingPongWatch Watch App`**.
-   - Clicca su **Add**.
+Per testarla subito sul tuo simulatore o dispositivo fisico:
+1. **Seleziona la Destinazione in Xcode**: Nella barra superiore delle destinazioni di Xcode, seleziona il simulatore **`PingPongWatch Watch App`** accoppiato al tuo iPhone (o il tuo orologio fisico).
+2. **Avvia il Match**: Premi **Play** (oppure `Cmd + R`) per compilare ed eseguire l'app.
+3. **Gioca!**: Qualsiasi punto o azione registrati sull'Apple Watch aggiornerà l'iPhone in tempo reale e viceversa tramite la connessione bidirezionale ultra-rapida con feedback aptico integrato!
 
-3. **Pronti per Giocare!**:
-   - Ora, nella barra superiore delle destinazioni di Xcode, seleziona il simulatore **`PingPongWatch Watch App`** accoppiato al tuo iPhone.
-   - Premi **Play** (`Cmd + R`) per avviare contemporaneamente l'app sul simulatore dell'iPhone e dell'Apple Watch. 
-   - Qualsiasi tocco sull'Apple Watch aggiornerà l'iPhone in tempo reale e viceversa, con un'esperienza di sincronizzazione a mani libere superlativa!
 
 ## 4. Attivare Live Activities & Dynamic Island in Xcode (1 Minuto) 🚀
 Ho pre-generato l'intera struttura del Widget e configurato i permessi di sicurezza in modo che compilino all'istante. Per attivare la visualizzazione su Lock Screen e Dynamic Island, segui questi semplici passaggi in Xcode:
@@ -79,4 +54,33 @@ Ho pre-generato l'intera struttura del Widget e configurato i permessi di sicure
    - Avvia l'applicazione sul tuo simulatore iPhone premendo **Play** (`Cmd + R`).
    - Quando fai il primo punto nel match, **blocca lo schermo del simulatore** (`Cmd + L`) o torna alla schermata Home: vedrai lo spettacolare tabellone neon interattivo brillare in tempo reale direttamente sulla Lock Screen e nella Dynamic Island!
 
+## 5. Checklist di Pubblicazione su App Store Connect 🚀
 
+Ho creato una guida dettagliata completa nel tuo workspace chiamata **`GUIDA_PUBBLICAZIONE_APP_STORE.md`** per darti tutte le informazioni necessarie ad evitare rifiuti (rejection) da Apple. Qui trovi la lista di controllo rapida delle attività manuali da completare:
+
+- [ ] **1. Account Apple Developer**: Verifica che la tua iscrizione annuale da $99/anno sia attiva.
+- [ ] **2. Registra gli Identifiers (developer.apple.com)**:
+  - [ ] App ID Principale: `com.simo.pingpong` (Abilita **App Groups** e **Live Activities**).
+  - [ ] App ID Widget: `com.simo.pingpong.PingPongWidget` (Abilita **App Groups**).
+  - [ ] App ID Watch App: `com.simo.pingpong.watchkitapp`.
+  - [ ] Crea l'App Group `group.com.simo.pingpong` e associalo sia all'app principale che alla Widget Extension.
+- [ ] **3. Crea la scheda App Store Connect**:
+  - [ ] Piattaforma: iOS.
+  - [ ] Nome: `Ping Pong Scoreboard - Neon` (o simile).
+  - [ ] Seleziona il Bundle ID principale.
+  - [ ] Dichiarazione Privacy: dichiara "Dati non raccolti" per velocizzare la revisione.
+- [ ] **4. Prepara gli Asset**:
+  - [ ] Screenshot iPhone 6.7" (iPhone 15/16 Pro Max) - min. 3 immagini.
+  - [ ] Screenshot iPhone 5.5" (iPhone 8 Plus) - min. 3 immagini.
+  - [ ] Screenshot Apple Watch (Series 7/8/9/Ultra) - min. 2 immagini.
+  - [ ] Icona quadrata a 1024x1024 (già inclusa nel progetto come `AppIcon_1024.png`).
+- [ ] **5. Archivia e Carica da Xcode**:
+  - [ ] Configura il tuo **Team** di sviluppo in *Signing & Capabilities* per tutti e tre i target in Xcode.
+  - [ ] Imposta Version: `1.0.0` e Build: `1` per tutti e tre i target.
+  - [ ] Seleziona **Any iOS Device (arm64)** come destinazione di build.
+  - [ ] Menu `Product` -> `Archive`.
+  - [ ] Clicca su `Distribute App` e seleziona `Upload` su App Store Connect.
+- [ ] **6. Invia per la Revisione**:
+  - [ ] Associa la build caricata alla versione 1.0.0 su App Store Connect.
+  - [ ] **FONDAMENTALE**: Copia e incolla la spiegazione del *Background Audio* (disponibile nella Sezione 7 della guida completa `GUIDA_PUBBLICAZIONE_APP_STORE.md`) nelle note di revisione.
+  - [ ] **FONDAMENTALE**: Registra e allega un video demo di 1 minuto che mostra l'app in azione su iPhone, con la Live Activity funzionante sulla Lock Screen, per aiutare i revisori a testarla rapidamente senza intoppi.
