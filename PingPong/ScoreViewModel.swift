@@ -20,19 +20,42 @@ struct GameSnapshot: Equatable {
 final class ScoreViewModel: ObservableObject {
     // Game Rules Settings
     @Published var targetScore: Int = 11 { // 11 or 21 standard
-        didSet { resetMatch() }
+        didSet {
+            UserDefaults.standard.set(targetScore, forKey: "targetScore")
+            resetMatch()
+        }
     }
-    @Published var winByTwo: Bool = true
+    @Published var winByTwo: Bool = true {
+        didSet {
+            UserDefaults.standard.set(winByTwo, forKey: "winByTwo")
+        }
+    }
     @Published var bestOfSets: Int = 3 { // 1, 3, or 5 sets
-        didSet { resetMatch() }
+        didSet {
+            UserDefaults.standard.set(bestOfSets, forKey: "bestOfSets")
+            resetMatch()
+        }
     }
     @Published var serveRotationInterval: Int = 2 { // changes to 1 in deuce or 5 for 21-point game
-        didSet { updateServer() }
+        didSet {
+            UserDefaults.standard.set(serveRotationInterval, forKey: "serveRotationInterval")
+            updateServer()
+        }
     }
     
     // Player Details
-    @Published var p1Name: String = "Giocatore 1" { didSet { syncWithWatch() } }
-    @Published var p2Name: String = "Giocatore 2" { didSet { syncWithWatch() } }
+    @Published var p1Name: String = "Giocatore 1" {
+        didSet {
+            UserDefaults.standard.set(p1Name, forKey: "p1Name")
+            syncWithWatch()
+        }
+    }
+    @Published var p2Name: String = "Giocatore 2" {
+        didSet {
+            UserDefaults.standard.set(p2Name, forKey: "p2Name")
+            syncWithWatch()
+        }
+    }
     
     // Current Match Scores
     @Published var p1Score: Int = 0 { didSet { syncWithWatch() } }
@@ -43,6 +66,7 @@ final class ScoreViewModel: ObservableObject {
     // Server state
     @Published var startingServerOfMatch: Player = .player1 {
         didSet {
+            UserDefaults.standard.set(startingServerOfMatch.rawValue, forKey: "startingServerOfMatch")
             if p1Score == 0 && p2Score == 0 && p1Sets == 0 && p2Sets == 0 {
                 startingServerOfSet = startingServerOfMatch
                 currentServer = startingServerOfMatch
@@ -54,7 +78,11 @@ final class ScoreViewModel: ObservableObject {
     @Published var currentServer: Player = .player1 { didSet { syncWithWatch() } }
     
     // Visual theme selection
-    @Published var themeIndex: Int = 0
+    @Published var themeIndex: Int = 0 {
+        didSet {
+            UserDefaults.standard.set(themeIndex, forKey: "themeIndex")
+        }
+    }
     
     // Match Winner
     @Published var winner: Player? = nil { didSet { syncWithWatch() } }
@@ -65,11 +93,32 @@ final class ScoreViewModel: ObservableObject {
     // Voice announcements
     @Published var isVoiceEnabled: Bool = false {
         didSet {
+            UserDefaults.standard.set(isVoiceEnabled, forKey: "isVoiceEnabled")
             SpeechManager.shared.isVoiceEnabled = isVoiceEnabled
         }
     }
     
     init() {
+        // Load persisted settings from UserDefaults or use native defaults
+        self.targetScore = UserDefaults.standard.object(forKey: "targetScore") as? Int ?? 11
+        self.winByTwo = UserDefaults.standard.object(forKey: "winByTwo") as? Bool ?? true
+        self.bestOfSets = UserDefaults.standard.object(forKey: "bestOfSets") as? Int ?? 3
+        self.serveRotationInterval = UserDefaults.standard.object(forKey: "serveRotationInterval") as? Int ?? 2
+        self.p1Name = UserDefaults.standard.string(forKey: "p1Name") ?? "Giocatore 1"
+        self.p2Name = UserDefaults.standard.string(forKey: "p2Name") ?? "Giocatore 2"
+        self.themeIndex = UserDefaults.standard.object(forKey: "themeIndex") as? Int ?? 0
+        self.isVoiceEnabled = UserDefaults.standard.object(forKey: "isVoiceEnabled") as? Bool ?? false
+        
+        if let rawServer = UserDefaults.standard.string(forKey: "startingServerOfMatch"),
+           let savedServer = Player(rawValue: rawServer) {
+            self.startingServerOfMatch = savedServer
+        } else {
+            self.startingServerOfMatch = .player1
+        }
+        
+        // Push initial speech commentary status
+        SpeechManager.shared.isVoiceEnabled = self.isVoiceEnabled
+        
         WatchConnector.shared.configure(with: self)
         resetMatch()
     }

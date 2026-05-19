@@ -1,10 +1,10 @@
-# Documentazione Tecnica - Ping Pong Scorekeeper 🏓
+# Documentazione Tecnica - Ping Pong Counter 🏓
 
 Questo documento tiene traccia dello stato dell'applicazione, delle scelte architetturali e dei dettagli tecnologici del progetto in conformità con i protocolli di sviluppo senior.
 
 ## Registro delle Modifiche
 
-### [2026-05-19 11:10]: Creazione Progetto Nativo SwiftUI iOS (Ping Pong Score)
+### [2026-05-19 11:10]: Creazione Progetto Nativo SwiftUI iOS (Ping Pong Counter)
 * **Dettagli**: Inizializzazione da zero di un'applicazione iOS nativa scritta interamente in **SwiftUI** per tenere il punteggio in una partita reale di Ping Pong. L'applicazione rispetta le Apple Human Interface Guidelines (HIG) e supporta sia l'orientamento orizzontale (split screen sinistra/destra, ideale a bordo tavolo) sia verticale (split screen alto/basso, ideale per l'uso a una mano).
 * **Tech Notes**:
   - **Architettura**: MVVM pulito con gestione centralizzata dello stato in `@MainActor` tramite `ScoreViewModel`.
@@ -70,6 +70,13 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Integrazione ViewModel**: Agganciato `LiveActivityManager.shared.updateOrCreateActivity(...)` all'interno del metodo centralizzato `syncWithWatch()` in `ScoreViewModel.swift`, in modo che qualsiasi punto registrato da iPhone o da Apple Watch aggiorni in automatico lo stato in tempo reale sia sulla Lock Screen che sulla Dynamic Island.
   - **Info.plist Entitlements**: Abilitata la chiave target `INFOPLIST_KEY_NSSupportsLiveActivities = YES;` nelle impostazioni di compilazione Debug e Release di `project.pbxproj`.
   - **Widget UI Pre-generata (PingPongWidget/)**: Progettato il layout per Lock Screen e Dynamic Island con supporto a tutti gli stati visuali (Expanded, Compact Leading/Trailing, Minimal) implementando colori HSL coerenti coi temi neon dell'app, sfondi glassmorphic oscurati e indicatori grafici di vittoria (Coppa dorata).
+
+### [2026-05-19 11:34]: Persistenza Locale Nativa delle Impostazioni (UserDefaults)
+* **Dettagli**: Implementato il salvataggio persistente in locale di tutte le impostazioni e regole del match (punti target, set totali, intervallo di battuta, nomi dei giocatori, tema visivo e opzioni audio), consentendo all'app di ricordare perfettamente lo stato preferito dell'utente ad ogni riavvio.
+* **Tech Notes**:
+  - **Integrazione Property Wrappers (didSet)**: Agganciato il salvataggio istantaneo su `UserDefaults.standard` all'interno dei didSet blocks di tutti i parametri di impostazione in `ScoreViewModel.swift` (`targetScore`, `winByTwo`, `bestOfSets`, `serveRotationInterval`, `p1Name`, `p2Name`, `themeIndex`, `isVoiceEnabled`, `startingServerOfMatch`).
+  - **Ripristino all'Avvio (init)**: Configurato il costruttore principale `init()` di `ScoreViewModel` per caricare in modo sicuro e silenzioso tutti i valori salvati precedentemente su disco, applicando eleganti fallback predefiniti nel caso di primo avvio dell'app.
+
 
 
 
