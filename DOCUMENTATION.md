@@ -77,6 +77,14 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Integrazione Property Wrappers (didSet)**: Agganciato il salvataggio istantaneo su `UserDefaults.standard` all'interno dei didSet blocks di tutti i parametri di impostazione in `ScoreViewModel.swift` (`targetScore`, `winByTwo`, `bestOfSets`, `serveRotationInterval`, `p1Name`, `p2Name`, `themeIndex`, `isVoiceEnabled`, `startingServerOfMatch`).
   - **Ripristino all'Avvio (init)**: Configurato il costruttore principale `init()` di `ScoreViewModel` per caricare in modo sicuro e silenzioso tutti i valori salvati precedentemente su disco, applicando eleganti fallback predefiniti nel caso di primo avvio dell'app.
 
+### [2026-05-19 11:38]: Creazione README.md per GitHub (Rebranding & Storytelling)
+* **Dettagli**: Creato il file di presentazione del progetto `README.md` scritto interamente in lingua inglese, ottimizzato con badge professionali e formattazione d'impatto per la pubblicazione su GitHub e canali di marketing.
+* **Tech Notes**:
+  - **Storytelling d'Impatto**: Strutturato con un gancio basato sul problema reale di dimenticare il punteggio a metà partita di tennis da tavolo.
+  - **Highlight Companion & Widget**: Spiega in dettaglio l'integrazione accoppiata tra iPhone, Apple Watch e i widget Live Activities / Dynamic Island.
+  - **Asset & Marketing Link**: Predisposto con badge d'impatto per il download da App Store, collegamento al sito web e demo interattiva.
+
+
 
 
 
