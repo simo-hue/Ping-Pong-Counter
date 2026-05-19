@@ -20,13 +20,18 @@ Ho creato una guida dettagliata completa nel tuo workspace chiamata **`GUIDA_PUB
   - [ ] Screenshot iPhone 5.5" (iPhone 8 Plus) - min. 3 immagini.
   - [ ] Screenshot Apple Watch (Series 7/8/9/Ultra) - min. 2 immagini.
   - [ ] Icona quadrata a 1024x1024 (già inclusa nel progetto come `AppIcon_1024.png`).
-- [ ] **5. Archivia e Carica da Xcode**:
+- [ ] **5. Archivia e Carica la Build (Xcode o Transporter)**:
   - [ ] Configura il tuo **Team** di sviluppo in *Signing & Capabilities* per tutti e tre i target in Xcode.
   - [ ] Imposta Version: `1.0.0` e Build: `1` per tutti e tre i target.
   - [ ] Seleziona **Any iOS Device (arm64)** come destinazione di build.
   - [ ] Menu `Product` -> `Archive`.
-  - [ ] Clicca su `Distribute App` e seleziona `Upload` su App Store Connect.
+  - [ ] **Metodo A (Xcode)**: Clicca su `Distribute App` -> `App Store Connect` -> `Upload` per inviare direttamente.
+  - [ ] **Metodo B (Transporter)**:
+    - [ ] Clicca su `Distribute App` -> `App Store Connect` -> `Export` ed esporta la build localmente.
+    - [ ] Apri l'app **Transporter** sul Mac ed effettua l'accesso col tuo Apple ID di sviluppo.
+    - [ ] Trascina il file `PingPong.ipa` generato su Transporter e clicca su **Consegna**.
 - [ ] **6. Invia per la Revisione**:
   - [ ] Associa la build caricata alla versione 1.0.0 su App Store Connect.
   - [ ] **FONDAMENTALE**: Copia e incolla la spiegazione del *Background Audio* (disponibile nella Sezione 7 della guida completa `GUIDA_PUBBLICAZIONE_APP_STORE.md`) nelle note di revisione.
   - [ ] **FONDAMENTALE**: Registra e allega un video demo di 1 minuto che mostra l'app in azione su iPhone, con la Live Activity funzionante sulla Lock Screen, per aiutare i revisori a testarla rapidamente senza intoppi.
+

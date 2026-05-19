@@ -246,6 +246,14 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **URL Privacy Policy**: Scheda integrata contenente la Privacy Policy ufficiale conforme al livello "Data Not Collected" di Apple (offline-first, zero analytics SDK, zero tracking).
   - **Branding**: Copiata programmaticamente l'icona dell'applicazione `AppIcon_1024.png` nella cartella `docs/assets/app-icon.png` per utilizzarla sia come favicon che come logo brandizzato nell'header.
 
+### [2026-05-19 18:05]: Integrazione Istruzioni per l'App Apple Transporter (Caricamento Alternativo)
+* **Dettagli**: Integrata una guida dettagliata e passo-passo per l'utilizzo dell'applicazione macOS ufficiale di Apple **Transporter** all'interno del processo di caricamento delle build ad App Store Connect.
+* **Tech Notes**:
+  - **Aggiornamento Guida Principale**: Estesa la *Sezione 6* in `GUIDA_PUBBLICAZIONE_APP_STORE.md` separando il flusso di lavoro in *Preparazione e Archiviazione (Step 1)*, *Caricamento Diretto da Xcode (Metodo A)* e *Caricamento tramite Transporter (Metodo B)*.
+  - **Esportazione IPA**: Dettagliate le istruzioni per l'Organizer di Xcode necessarie a generare l'esportazione del pacchetto firmato (`PingPong.ipa`) per la distribuzione locale.
+  - **Transporter Drag-and-Drop Workflow**: Spiegato come effettuare l'accesso, trascinare il file IPA, convalidare i metadati di build ed eseguire la consegna (delivery) sicura ad App Store Connect bypassando i timeout di Xcode.
+  - **Checklist Aggiornata**: Aggiornato il file `TO_SIMO_DO.md` per includere i checkbox operativi dedicati ad entrambi i metodi di caricamento (Xcode e Transporter).
+
 
 
 

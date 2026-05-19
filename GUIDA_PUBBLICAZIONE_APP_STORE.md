@@ -11,7 +11,7 @@ Questa guida è stata redatta in conformità con le linee guida ufficiali **Appl
 3. [Creazione della Scheda App su App Store Connect](#3-creazione-della-scheda-app-su-app-store-connect)
 4. [Preparazione degli Asset Grafici (Il primo motivo di blocco)](#4-preparazione-degli-asset-grafici)
 5. [Configurazione dei Metadati e del "Nutrition Label" sulla Privacy](#5-configurazione-dei-metadati-e-della-privacy)
-6. [Compilazione, Archiviazione e Caricamento da Xcode](#6-compilazione-archiviazione-e-caricamento-da-xcode)
+6. [Compilazione, Archiviazione e Caricamento della Build (Xcode & Transporter)](#6-compilazione-archiviazione-e-caricamento-della-build)
 7. [Strategia Blindata Anti-Rejection (Live Activities, Audio & Watch)](#7-strategia-blindata-anti-rejection)
 8. [Invio in Revisione e Ciclo di Approvazione](#8-invio-in-revisione)
 
@@ -114,9 +114,11 @@ Questo è un punto cruciale che velocizzerà l'approvazione al 100%. La nostra a
 
 ---
 
-## 6. Compilazione, Archiviazione e Caricamento da Xcode
+## 6. Compilazione, Archiviazione e Caricamento della Build
 
-Segui questo protocollo tecnico per caricare il pacchetto binario senza errori di compilazione o firme:
+Segui questo protocollo tecnico per compilare, firmare e caricare il pacchetto binario senza errori di compilazione o firme. Puoi scegliere due percorsi differenti per il caricamento: il caricamento diretto tramite Xcode (Metodo A) o il caricamento tramite l'app ufficiale **Apple Transporter** (Metodo B, consigliato per connessioni lente o in caso di bug di rete con Xcode).
+
+### 🛠️ Step 1: Preparazione e Archiviazione (Comune a entrambi i metodi)
 
 1.  **Configura la firma (Signing)** in Xcode per tutti e 3 i target:
     *   Seleziona la radice del progetto `PingPong` nella barra sinistra di Xcode.
@@ -131,13 +133,53 @@ Segui questo protocollo tecnico per caricare il pacchetto binario senza errori d
 4.  **Esegui l'Archiviazione**:
     *   Vai su **Product** -> **Clean Build Folder** (Cmd + Shift + K) per ripulire file obsoleti.
     *   Vai su **Product** -> **Archive**.
-    *   Attendi il completamento della compilazione. Al termine si aprirà la finestra dell'**Organizer** di Xcode.
-5.  **Invia a App Store Connect**:
-    *   Seleziona l'archivio appena generato e fai clic su **Distribute App** sulla destra.
-    *   Scegli la destinazione **App Store Connect** -> **Upload**.
-    *   Mantieni spuntate le opzioni di default (inclusa la ricompilazione bitcode e i simboli di debug).
-    *   Xcode effettuerà l'autenticazione, convaliderà il pacchetto con i server Apple e caricherà il binario.
-    *   *Nota*: Una volta completato il caricamento, riceverai una mail da Apple. Il binario richiederà da 5 a 20 minuti per completare l'elaborazione ("Processing") interna prima di essere visibile su App Store Connect.
+    *   Attendi il completamento della compilazione. Al termine si aprirà automaticamente la finestra dell'**Organizer** di Xcode.
+
+---
+
+### 🚀 Metodo A: Caricamento Diretto da Xcode (Metodo Standard)
+
+1.  Nell'**Organizer** di Xcode, seleziona l'archivio appena generato sotto la voce *iOS Apps*.
+2.  Fai clic sul pulsante **Distribute App** posizionato sulla destra.
+3.  Seleziona **App Store Connect** e clicca su **Upload** (Invia).
+4.  Mantieni spuntate le opzioni di default (inclusa la ricompilazione bitcode e l'invio dei simboli di debug).
+5.  Xcode effettuerà l'autenticazione con il tuo Developer Account, convaliderà la firma e i bundle ID con i server Apple, e infine caricherà il binario.
+6.  *Attesa*: Una volta completato il caricamento, riceverai una mail di conferma da Apple. Il binario richiederà circa 5-20 minuti di elaborazione interna ("Processing") prima di comparire su App Store Connect.
+
+---
+
+### 📦 Metodo B: Caricamento tramite l'App "Transporter" (Consigliato per Connessioni Instabili o Errori di Xcode)
+
+L'applicazione ufficiale **Transporter** di Apple (scaricabile gratuitamente dal Mac App Store) è lo strumento autonomo professionale per caricare pacchetti pre-compilati. È straordinariamente robusto: gestisce la ripresa del caricamento in caso di disconnessioni di rete, è più veloce di Xcode e previene i frequenti timeout di caricamento che affliggono Xcode.
+
+#### 1. Esporta la Build in Formato `.ipa` da Xcode
+Invece di caricare direttamente l'app sui server Apple, la compileremo ed esporteremo localmente sul Mac:
+1.  Nell'**Organizer** di Xcode, seleziona la tua build e fai clic su **Distribute App** sulla destra.
+2.  Seleziona **App Store Connect** e fai clic su **Export** (Esporta) anziché *Upload*.
+3.  Clicca su **Next**. Mantieni attive le selezioni predefinite per la conformità di distribuzione e procedi.
+4.  Seleziona il tipo di distribuzione **App Store Connect** per la firma finale automatica.
+5.  Scegli una cartella sul tuo Mac (es. il Desktop) in cui salvare l'esportazione e fai clic su **Export**.
+6.  Xcode creerà una nuova cartella contenente diversi file. Il file che ci interessa si chiama **`PingPong.ipa`** (l'iOS App Store Package pronto per la pubblicazione).
+
+#### 2. Esegui il Caricamento con l'App Transporter
+1.  **Avvia Transporter** sul tuo Mac.
+2.  **Effettua l'accesso**: Inserisci il tuo **Apple ID** associato al programma Apple Developer.
+    *   *Nota*: Se usi l'autenticazione a due fattori (2FA), Transporter si collegherà perfettamente e in totale sicurezza usando le credenziali di sistema o richiedendoti l'approvazione sul tuo iPhone.
+3.  **Aggiungi la Build**:
+    *   Trascina e rilascia (Drag & Drop) il file **`PingPong.ipa`** esportato direttamente all'interno della finestra principale di Transporter.
+    *   In alternativa, clicca sul pulsante **+** (Aggiungi app) al centro della finestra e seleziona il file `PingPong.ipa`.
+4.  **Verifica le Informazioni**:
+    *   Transporter analizzerà il file e mostrerà l'icona cyberpunk neon dell'app, il nome (`Ping Pong Scoreboard - Neon`), la piattaforma (iOS) e il numero preciso di versione e build (es. `1.0.0 (1)`).
+5.  **Avvia la Consegna**:
+    *   Clicca sul pulsante azzurro **Consegna** (Deliver) per avviare il caricamento.
+    *   Transporter effettuerà una prima verifica di conformità locale e poi caricherà il binario sui server Apple, mostrando l'avanzamento esatto in percentuale e la velocità di upload.
+6.  **Conferma di Successo**:
+    *   Al termine, l'interfaccia si aggiornerà mostrando una **spunta verde** e il messaggio *"Consegnata"* (Delivered). Il file è stato inviato con successo ad Apple!
+
+#### 3. Elaborazione e Sottoscrizione
+*   Accedi ad [App Store Connect](https://appstoreconnect.apple.com).
+*   La tua build comparirà sotto la sezione **TestFlight** o nella scheda **Build** della versione di rilascio in stato *"Elaborazione in corso"* (Processing).
+*   Attendi 10-15 minuti. Non appena l'elaborazione è completata, riceverai una mail da Apple e potrai procedere all'invio per la revisione.
 
 ---
 
