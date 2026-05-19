@@ -110,6 +110,22 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Svincolo visuale**: Sostituita la formula `ceil(bestOfSets / 2.0)` (che calcolava solo i set minimi necessari per vincere, es. 2 per un best of 3) con il valore intero `bestOfSets` all'interno del loop `ForEach` in `ContentView.swift`.
   - **Coerenza logica**: Le regole interne di gioco e i trigger di traguardo in `ScoreViewModel.swift` rimangono intatti e protetti matematicamente, garantendo che un match "Best of 3" si concluda correttamente al raggiungimento dei 2 set vinti.
 
+### [2026-05-19 11:59]: Audit Completo della Privacy e Conformità Dati (Zero Tracking)
+* **Dettagli**: Eseguito un controllo approfondito su tutti i file del progetto per garantire la totale assenza di tracciamento utenti, cookie, profilazione, telemetria o SDK pubblicitari.
+* **Tech Notes**:
+  - **Zero SDK di Terze Parti**: L'intero codice sorgente utilizza esclusivamente framework nativi forniti da Apple (`AVFoundation`, `Combine`, `ActivityKit`, `WatchConnectivity`, `UIKit`, `SwiftUI`). Nessuna libreria esterna (come Firebase, Mixpanel, Amplitude, Crashlytics o Google Analytics) è importata.
+  - **Funzionamento 100% Offline**: L'applicazione non esegue alcuna chiamata di rete (mancanza totale di endpoint HTTP/REST, `URLSession` o database remoti).
+  - **Storage Locale Esclusivo**: Le preferenze di configurazione e i nomi dei giocatori sono salvati esclusivamente all'interno della sandbox protetta del dispositivo tramite `UserDefaults.standard` locale. I dati non lasciano mai l'hardware dell'utente.
+  - **Nessuna Richiesta di Consenso Pubblicitario (ATT)**: L'app non raccoglie né legge l'IDFA (Identifier for Advertisers) né l'IDFV, eliminando la necessità di popup di consenso e riducendo a zero le possibilità di contestazioni sulla privacy da parte di Apple.
+
+### [2026-05-19 12:01]: Risoluzione Problema Icona "Double-Squircle" (Full-Bleed Square Canvas)
+* **Dettagli**: Eliminato l'effetto sgradevole del "doppio bordo squircle" annidato sull'icona dell'app. L'icona è stata convertita in un'immagine quadrata a pieno campo (Full-bleed) a sfondo nero assoluto, delegando interamente al sistema operativo iOS il compito di ritagliarla in base alla superellisse corretta.
+* **Tech Notes**:
+  - **Re-generazione Asset Cyberpunk**: Generata una nuova icona a tema neon cyberpunk a contrasto ultra nitido su sfondo nero OLED.
+  - **Script di Elaborazione Pixel Nativi (`fix_corners.py`)**: Scritto ed eseguito uno script Python che sfrutta l'algoritmo di flood-fill della libreria `Pillow`. Lo script parte dai quattro vertici della tela (0,0), (1023,0), (0,1023), (1023,1023) per rilevare ed eliminare i pixel bianchi/trasparenti residui dell'involucro squircle generato dal modello di IA, convertendoli in nero assoluto e garantendo che il file `AppIcon_1024.png` sia un quadrato perfetto a pieno schermo.
+
+
+
 
 
 
