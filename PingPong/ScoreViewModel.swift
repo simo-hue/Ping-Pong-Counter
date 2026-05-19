@@ -384,7 +384,10 @@ final class ScoreViewModel: ObservableObject {
             winner: winner
         )
         
-        // Push real-time updates to Lock Screen & Dynamic Island (Live Activities)
+        syncLiveActivity()
+    }
+    
+    public func syncLiveActivity() {
         LiveActivityManager.shared.updateOrCreateActivity(
             p1Name: p1Name,
             p2Name: p2Name,

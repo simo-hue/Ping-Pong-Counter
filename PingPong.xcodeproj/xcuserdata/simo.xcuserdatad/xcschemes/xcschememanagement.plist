@@ -7,7 +7,7 @@
 		<key>PingPong.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>2</integer>
 		</dict>
 		<key>PingPongWatch Watch App.xcscheme_^#shared#^_</key>
 		<dict>
@@ -17,7 +17,25 @@
 		<key>PingPongWidgetExtension.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>2</integer>
+			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>2437AAD12FBC6DBA0067E1F9</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2437AAEA2FBC6F9D0067E1F9</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D60000142C1E000200000001</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

@@ -106,6 +106,7 @@ public struct PingPongWidgetLiveActivity: Widget {
             .padding(.vertical, 14)
             .activityBackgroundTint(Color(red: 0.05, green: 0.02, blue: 0.07).opacity(0.95))
             .activitySystemActionForegroundColor(.white)
+            .containerBackground(Color(red: 0.05, green: 0.02, blue: 0.07).opacity(0.95), for: .widget)
             
         } dynamicIsland: { context in
             DynamicIsland {
@@ -204,5 +205,6 @@ public struct PingPongWidgetLiveActivity: Widget {
                     .foregroundColor(isP1Server ? Color(red: 1.0, green: 0.25, blue: 0.35) : Color(red: 0.0, green: 0.7, blue: 1.0))
             }
         }
+        .contentMarginsDisabled()
     }
 }

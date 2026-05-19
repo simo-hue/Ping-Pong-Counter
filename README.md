@@ -75,24 +75,6 @@ Choose between three professionally curated high-contrast glowing neon schemes i
 
 ---
 
-## 🚀 Getting Started (Developers)
-
-### Prerequisites
-* Mac running macOS Sonoma or later.
-* **Xcode 15.0+** with iOS 17.0+ and watchOS 10.0+ SDKs.
-
-### Steps to Run
-1. Clone this repository to your local Mac:
-   ```bash
-   git clone https://github.com/simo/ping-pong-counter.git
-   cd ping-pong-counter
-   ```
-2. Open `PingPong.xcodeproj` in Xcode.
-3. Select your active target and choose a paired simulator (e.g., **`PingPongWatch Watch App`** on an *iPhone 16 Pro + Apple Watch Series 10*).
-4. Press **Play** (`Cmd + R`) to compile and launch both targets synchronously!
-
----
-
 ## 📄 License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 

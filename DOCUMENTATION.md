@@ -145,3 +145,49 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Sostituzione Boilerplate**: Rimosso il widget di timeline generico generato da Xcode (`PingPongWidget.swift`) ed attivati i file nativi `PingPongWidgetLiveActivity.swift` e `PingPongWidgetBundle.swift`.
   - **Risoluzione Scope delle Classi**: Corretto il problema di compilazione `"cannot find 'PingPongAttributes' in scope"` iniettando programmaticamente `PingPongAttributes.swift` nella build-phase `Sources` del target `PingPongWidgetExtension` in `project.pbxproj` (Target Membership automatico).
   - **Verifica di Compilazione**: Eseguito il comando di build specifico per `PingPongWidgetExtension` ottenendo esito positivo assoluto (`BUILD SUCCEEDED` con exit code `0`), garantendo la corretta inclusione del codice di estensione.
+
+### [2026-05-19 12:28]: Allineamento Versioni Bundle iOS, watchOS e Widget Extension
+* **Dettagli**: Allineata la versione commerciale (`MARKETING_VERSION`) a `1.0.0` su tutti i target secondari per eliminare i warning di conformità e prevenire rifiuti automatici (hard rejection) in fase di invio ad App Store Connect.
+* **Tech Notes**:
+  - **Aggiornamento pbxproj**: Modificate le chiavi `MARKETING_VERSION` impostate sul vecchio valore `1.0` portandole a `1.0.0` all'interno dei build settings sia per il target `PingPongWatch Watch App` (Debug/Release) sia per `PingPongWidgetExtension` (Debug/Release), allineandoli al target principale `PingPong`.
+  - **Test di Validazione**: Compilato con successo l'intero bundle accoppiato e verificate le firme digitali e i certificati tramite `xcodebuild` (`BUILD SUCCEEDED`, codice `0`).
+
+### [2026-05-19 12:29]: Risoluzione Avvio ed Ottimizzazione Professionale Live Activities
+* **Dettagli**: Risolto il problema del mancato avvio e ottimizzata l'architettura del ciclo di vita delle Live Activities per garantire l'avvio immediato a `0-0` e la resilienza ai riavvii dell'app.
+* **Tech Notes**:
+  - **Avvio Immediato a 0-0**: Rimossa la logica che escludeva i punteggi azzerati, permettendo alla Live Activity di apparire sulla Lock Screen e Dynamic Island fin dal boot iniziale del match.
+  - **Riconnessione Automatica**: Aggiunto un algoritmo di recupero sessioni statiche in `LiveActivityManager` che scansiona `Activity.activities` all'avvio del processo e vi si ricollega, evitando duplicazioni.
+  - **Bypass dei Bug del Simulatore**: Isolato il controllo sandbox `areActivitiesEnabled` sul simulatore (`#if !targetEnvironment(simulator)`), eliminando falsi negativi causati dalla cache di Xcode.
+  - **Ciclo di Vita View**: Legato `syncLiveActivity()` all'evento `.onAppear` di `ContentView`, garantendo il bootstrap istantaneo.
+
+### [2026-05-19 12:40]: Ottimizzazione Premium Grafica & UX Apple Watch (watchOS)
+* **Dettagli**: Riprogettata completamente la visualizzazione su Apple Watch per elevare la resa grafica a livelli premium cyberpunk/neon coerenti con l'app iOS principale. Risolto il problema del testo troncato ("GIOCA / GIOCA") sui nomi di default e implementati controlli gestuali avanzati a bassissima latenza.
+* **Tech Notes**:
+  - **OLED Neon Glow Score**: Integrata la visualizzazione del punteggio con font rounded heavy a grandezza maggiorata (size 48/52) dotato di shadow ad alto contrasto con blur dinamico e pulsante in base allo stato di servizio.
+  - **Active Serve Breathing Pulse**: Aggiunto un indicatore di servizio che simula una pallina da ping pong 3D (RadialGradient sferico giallo-oro) animato in loop continuo (scala 0.95 - 1.25, ombra 2px - 6px) per indicare visivamente il server in tempo reale.
+  - **Gestures Interactive Scoreboard**: Sostituiti i vecchi pulsanti watchOS nativi con un sistema a gesti a schermo intero: tocco semplice per incrementare (+1) e swipe down verticale (DragGesture con soglia di 15pt) per decrementare (-1). Questo rimuove l'interazione clunky del LongPress a 0.6s e previene i tocchi accidentali doppi.
+  - **Divider Centrale Adattivo**: Aggiunta una linea di mezzeria traslucida con sfumatura verticale per separare i due lati del campo in modo elegante e coerente con la rete del tavolo da gioco.
+  - **Smart Name Formatting**: Sviluppato un algoritmo intelligente in grado di rilevare i nomi standard "Giocatore 1 / 2" o "Player 1 / 2" formattandoli automaticamente in "G1" / "G2" o "P1" / "P2" racchiusi in capsule badges glassmorphic atletiche, risolvendo l'errore visivo di troncamento "GIOCA".
+  - **Glassmorphic Undo**: Sostituito l'icona circolare bianca con un pulsante floating scuro semi-trasparente con finitura metallica circolare e ombra per integrarsi armoniosamente nel tabellone.
+  - **Premium Winner Screen**: Riprogettato lo schermo celebrativo con un gradiente radiale giallo-nero dorato, un trofeo dorato tridimensionale pulsante e scritte ad alta definizione.
+
+### [2026-05-19 12:42]: Risoluzione Conflitto Gesti watchOS (Ripristino Punteggio)
+* **Dettagli**: Risolto un bug di conflitto di interazione in watchOS per cui l'evento `.onTapGesture` veniva intercettato ed eliminato dal `DragGesture` (swipe down), impedendo l'incremento del punteggio tramite tocco.
+* **Tech Notes**:
+  - **Unified Gesture Controller**: Unificata l'intera gestione degli input fisici all'interno di un singolo `DragGesture` a tolleranza zero (`minimumDistance: 0`).
+  - **Calcolo Dinamico dei Vettori**: Nel blocco `.onEnded`, calcolati i vettori di traslazione: se il movimento verticale `translation.height` supera i 15 pixel e lo scostamento orizzontale è inferiore a 25 pixel, viene interpretato come swipe down (decremento punteggio). In tutti gli altri casi (tocco semplice o movimenti micrometrici del dito del giocatore), viene immediatamente inviato l'incremento (+1).
+  - **Nessuna latenza**: Questo approccio rimuove totalmente la latenza del rilevamento del tap di SwiftUI ed evita il blocco del touch delivery nativo di watchOS.
+
+### [2026-05-19 16:56]: Integrazione Asset Icona su Apple Watch (AppIcon watchOS)
+* **Dettagli**: Risolto il problema per cui l'icona dell'applicazione non era visibile sull'Apple Watch (schermata home di watchOS ed elenchi di sistema).
+* **Tech Notes**:
+  - **Asset Replication**: Copiato programmaticamente il file dell'icona premium cyberpunk ad alta definizione `AppIcon_1024.png` (1024x1024 pixel) dal target iOS principale all'interno del catalogo degli asset `Assets.xcassets/AppIcon.appiconset` del target `PingPongWatch Watch App`.
+  - **Contents.json Mapping**: Modificato il file di configurazione dell'icona sul target orologio associando correttamente la chiave `"filename": "AppIcon_1024.png"` per l'idioma `"universal"` e la piattaforma `"watchos"`. Questo permette ad Xcode di compilare e impacchettare correttamente l'icona ad alta risoluzione in conformità con i requisiti Single-Size di watchOS 10+.
+  - **Build Verification**: Compilato con successo il bundle watchOS con codice di uscita `0` (`BUILD SUCCEEDED`).
+
+### [2026-05-19 17:00]: Risoluzione Visualizzazione Live Activity su Lock Screen (iOS 17+ API Adoption)
+* **Dettagli**: Risolto il problema per cui la Live Activity appariva completamente vuota (schermata nera/invisibile) sulla Lock Screen del dispositivo quando eseguita con SDK iOS 17+.
+* **Tech Notes**:
+  - **Adozione containerBackground**: Integrata la chiamata nativa `.containerBackground(..., for: .widget)` sul container `VStack` principale all'interno dell'inizializzatore `ActivityConfiguration` in `PingPongWidgetLiveActivity.swift`. Questo assicura che il sistema operativo iOS 17/18+ possa correttamente agganciare, colorare e renderizzare lo sfondo e la struttura della scheda neon glassmorphic.
+  - **Adozione contentMarginsDisabled**: Applicato il modificatore `.contentMarginsDisabled()` all'intera configurazione del widget per eliminare i margini predefiniti di iOS 17+, lasciando il controllo del padding alle spaziature premium manuali già perfettamente calibrate per la visualizzazione neon ad alta fedeltà.
+  - **Verifica e Compilazione**: Eseguito un test di build incrementale completo per tutte le piattaforme target (iOS app, Apple Watch companion, WidgetKit extension) con Xcode completato con esito positivo assoluto (`BUILD SUCCEEDED`, codice d'uscita `0`).

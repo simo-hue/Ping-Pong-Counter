@@ -111,6 +111,7 @@ struct ContentView: View {
                 withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
                     serverPulseScale = 1.3
                 }
+                viewModel.syncLiveActivity()
             }
             .sheet(isPresented: $isShowingSettings) {
                 SettingsView(viewModel: viewModel)

@@ -6,6 +6,16 @@
     "pch" : "/Users/simo/Downloads/DEV/ping pong/build/PingPong.build/Debug-iphoneos/PingPongWidgetExtension.build/Objects-normal/arm64/PingPongWidgetExtension-primary-Bridging-header.pch",
     "swift-dependencies" : "/Users/simo/Downloads/DEV/ping pong/build/PingPong.build/Debug-iphoneos/PingPongWidgetExtension.build/Objects-normal/arm64/PingPongWidgetExtension-primary.swiftdeps"
   },
+  "/Users/simo/Downloads/DEV/ping pong/PingPong/PingPongAttributes.swift" : {
+    "const-values" : "/Users/simo/Downloads/DEV/ping pong/build/PingPong.build/Debug-iphoneos/PingPongWidgetExtension.build/Objects-normal/arm64/PingPongAttributes.swiftconstvalues",
+    "dependencies" : "/Users/simo/Downloads/DEV/ping pong/build/PingPong.build/Debug-iphoneos/PingPongWidgetExtension.build/Objects-normal/arm64/PingPongAttributes.d",
+    "diagnostics" : "/Users/simo/Downloads/DEV/ping pong/build/PingPong.build/Debug-iphoneos/PingPongWidgetExtension.build/Objects-normal/arm64/PingPongAttributes.dia",
+    "index-unit-output-path" : "/PingPong.build/Debug-iphoneos/PingPongWidgetExtension.build/Objects-normal/arm64/PingPongAttributes.o",
+    "llvm-bc" : "/Users/simo/Downloads/DEV/ping pong/build/PingPong.build/Debug-iphoneos/PingPongWidgetExtension.build/Objects-normal/arm64/PingPongAttributes.bc",
+    "object" : "/Users/simo/Downloads/DEV/ping pong/build/PingPong.build/Debug-iphoneos/PingPongWidgetExtension.build/Objects-normal/arm64/PingPongAttributes.o",
+    "swift-dependencies" : "/Users/simo/Downloads/DEV/ping pong/build/PingPong.build/Debug-iphoneos/PingPongWidgetExtension.build/Objects-normal/arm64/PingPongAttributes.swiftdeps",
+    "swiftmodule" : "/Users/simo/Downloads/DEV/ping pong/build/PingPong.build/Debug-iphoneos/PingPongWidgetExtension.build/Objects-normal/arm64/PingPongAttributes~partial.swiftmodule"
+  },
   "/Users/simo/Downloads/DEV/ping pong/PingPongWidget/PingPongWidgetBundle.swift" : {
     "const-values" : "/Users/simo/Downloads/DEV/ping pong/build/PingPong.build/Debug-iphoneos/PingPongWidgetExtension.build/Objects-normal/arm64/PingPongWidgetBundle.swiftconstvalues",
     "dependencies" : "/Users/simo/Downloads/DEV/ping pong/build/PingPong.build/Debug-iphoneos/PingPongWidgetExtension.build/Objects-normal/arm64/PingPongWidgetBundle.d",

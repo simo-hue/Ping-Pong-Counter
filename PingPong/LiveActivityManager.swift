@@ -7,15 +7,19 @@ public final class LiveActivityManager: ObservableObject {
     
     private var currentActivity: Activity<PingPongAttributes>? = nil
     
-    private init() {}
+    private init() {
+        // Automatically reconnect to any ongoing Live Activity session on app launch
+        reconnectToExistingActivity()
+    }
+    
+    public func reconnectToExistingActivity() {
+        if let existing = Activity<PingPongAttributes>.activities.first {
+            self.currentActivity = existing
+            print("Successfully reconnected to ongoing Live Activity: \(existing.id)")
+        }
+    }
     
     public func updateOrCreateActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil) {
-        // If the match is fully reset back to initial state, automatically dismiss the Live Activity
-        if p1Score == 0 && p2Score == 0 && p1Sets == 0 && p2Sets == 0 && winner == nil {
-            endLiveActivity()
-            return
-        }
-        
         if currentActivity == nil {
             startLiveActivity(
                 p1Name: p1Name,
@@ -42,10 +46,13 @@ public final class LiveActivityManager: ObservableObject {
         // First, ensure any old active session is fully cleaned up
         endLiveActivity()
         
+        // On simulator, areActivitiesEnabled can fail due to sandbox cache issues, bypass it
+        #if !targetEnvironment(simulator)
         guard ActivityAuthorizationInfo().areActivitiesEnabled else {
             print("Live Activities are not authorized/enabled by the user.")
             return
         }
+        #endif
         
         let attributes = PingPongAttributes(p1Name: p1Name, p2Name: p2Name)
         let initialContentState = PingPongAttributes.ContentState(
@@ -99,3 +106,4 @@ public final class LiveActivityManager: ObservableObject {
         }
     }
 }
+

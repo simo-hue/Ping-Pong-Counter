@@ -1,0 +1,15 @@
+Never lose track of your table tennis score or service again! 
+
+Ping Pong Counter is the premium scorekeeper for iPhone and Apple Watch, designed to turn scorekeeping into a fluid, responsive, and stunning part of your match. Designed with high-end, glowing neon aesthetics, it features an interactive interface and official rules compliance to let you focus 100% on the game.
+
+Key Features:
+• iPhone Full-Screen Scoreboard: Optimized neon layouts for both horizontal (tabletop) and vertical (one-handed) play.
+• Simple Gesti-Controls: Tap either side to add a point (+1) with beautiful floating animations, or swipe down to undo (-1).
+• Native Apple Watch Companion: Score directly from your wrist with instant bidirectional sync and customized haptic vibrations.
+• Live Activities & Dynamic Island: Keep track of live scores, set count, and active server directly from your Lock Screen or status bar.
+• Vocal Referee: High-quality umpire voice announces scores, deuces, and match points, automatically ducking background music.
+• Official ITTF Rules: Fully complies with standard 11 or 21-point rules, automatic 2 or 5-serve rotations, and smart deuce (1-serve rotation) handling.
+• Custom Themes: Choose between gorgeous high-contrast neon palettes (Classic Neon, Mint & Royal, Solar Flare).
+• Zero Tracking & Offline-First: 100% offline, zero ads, and zero user tracking for absolute privacy.
+
+Elevate your table tennis matches. Download Ping Pong Counter today!
