@@ -216,4 +216,37 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Dark Color Scheme Integration**: Applicato il modificatore `.preferredColorScheme(.dark)` al `NavigationStack` della `SettingsView`. Questo forza l'intero foglio modale, inclusi i fogli d'azione nativi, gli alert e i controlli di sistema associati, a presentarsi con lo schema cromatico scuro ufficiale di Apple.
   - **Verifica e Compilazione**: Eseguito un test completo di compilazione di tutti i target con Xcode, completato con esito positivo assoluto (`BUILD SUCCEEDED`, exit code `0`).
 
+### [2026-05-19 17:35]: Punteggio Unificato in Live Activity (Unified Score in Live Activity)
+* **Dettagli**: Implementata la visualizzazione in formato unificato `"1-0"` dei punteggi di gioco correnti sia sulla Lock Screen che in tutti gli stati della Dynamic Island (Expanded e Minimal) della Live Activity per massima chiarezza visiva ed eliminare la confusione con i set.
+* **Tech Notes**:
+  - **Lock Screen Center Widget Upgrade**: Riprogettato il box centrale della Live Activity su schermata di blocco. Ora mostra i punteggi correnti in tempo reale (es. `"5 — 3"`) in formato neon giallo evidenziato (`.foregroundColor(.yellow)` e `.shadow`), spostando il conteggio dei set in un badge a capsula sottostante più piccolo (`SET 0-0`). Ciò previene la confusione visiva per cui l'utente scambiava il vecchio indicatore dei set `0—0` al centro per il punteggio corrente dei punti.
+  - **Dynamic Island Center & Minimal Upgrade**: Aggiornata la zona centrale dello stato Expanded della Dynamic Island per riflettere lo stesso design (punti unificati in primo piano, set in secondo piano). Modificato lo stato Minimal (singolo pillolotto circolare a destra) per visualizzare la stringa unificata `p1Score-p2Score` (es. `"5-3"`) anziché mostrare unicamente il punteggio del giocatore al servizio.
+  - **Verifica e Compilazione**: Eseguito con successo un test completo di compilazione e firma su simulatore target con Xcode (`BUILD SUCCEEDED`, codice d'uscita `0`).
+
+### [2026-05-19 17:40]: Risoluzione Schermata Nera su Espansione Dynamic Island (Dynamic Island Expanded Crash Fix)
+* **Dettagli**: Risolto in modo definitivo il problema per cui l'espansione (pressione prolungata) della Dynamic Island mostrava una scheda completamente nera e vuota (layout collassato).
+* **Tech Notes**:
+  - **Ripristino Struttura Funzionale Originale**: Per garantire la compatibilità assoluta ed eliminare qualsiasi comportamento grafico indefinito a runtime (spesso causato da elementi di allineamento complessi o ombre sfumate in WidgetKit), è stata ripristinata la precisa architettura dei canali dell'Activity originale che si era dimostrata stabile al 100%.
+  - **Distribuzione Contenuti Aggiornata**:
+    - **`.leading`**: Ripristinato il blocco originale stabile (mostra il Nome del Giocatore 1 troncato in sicurezza a 8 caratteri ed il pallino di servizio giallo se attivo, sopra il punteggio grande Player 1).
+    - **`.trailing`**: Ripristinato il blocco originale stabile (mostra il Nome del Giocatore 2 troncato, pallino di battuta se attivo, sopra il punteggio grande Player 2).
+    - **`.center` (Upgrade Punteggio Unificato)**: Riprogettata la zona centrale al di sotto del notch usando un solidissimo `VStack` a due righe privo di ombre o allineamenti forzati (che mandavano in crash il motore di rendering). La prima riga mostra il punteggio unificato `"p1Score — p2Score"` (es. `"5 — 3"`) in grassetto giallo. La seconda riga mostra i set correnti in formato `"SET p1Sets-p2Sets"`.
+    - **`.bottom`**: Ripristinato il blocco originale stabile che mostra `"MATCH IN CORSO"` o l'annuncio del vincitore.
+  - **SwiftUI Substring Casting Safeguard**: Convertiti esplicitamente tutti i valori `prefix` in oggetti `String` puri per evitare problemi di serializzazione IPC di ActivityKit.
+  - **Verifica e Compilazione**: Testato e compilato con successo su Xcode (`BUILD SUCCEEDED`, exit code `0`).
+
+### [2026-05-19 17:55]: Creazione del Sito Web per GitHub Pages (Marketing, Support & Privacy Policy)
+* **Dettagli**: Sviluppato un sito web statico, responsive e moderno inserito interamente all'interno della cartella `/docs` del repository. Questo sito è perfettamente ottimizzato per essere ospitato gratuitamente tramite **GitHub Pages** (configurando la sorgente di pubblicazione dalla cartella `/docs` della root) per fornire gli URL obbligatori richiesti da Apple per la pubblicazione su App Store Connect (Support URL, Marketing URL, Privacy Policy URL).
+* **Tech Notes**:
+  - **Organizzazione Directory**: Struttura file pulita e isolata (`docs/index.html`, `docs/style.css`, `docs/app.js`, `docs/assets/app-icon.png`) per evitare qualsiasi danno o interferenza con i sorgenti Xcode e i target di compilazione iOS/watchOS.
+  - **Aestetica Neon Cyberpunk Coerente**: Design system che eredita le palette ad alto contrasto della companion app principale (Hot Pink e Cyan Blue), con sfumature radiali, pulsazioni di servizio e stile glassmorphism premium.
+  - **Widget Simulatore Web Interattivo (WOW Element)**: Sviluppato un simulatore web interattivo in puro JavaScript all'interno del mockup di iPhone. Gli utenti possono testare le meccaniche di punteggio del ping pong in tempo reale tramite tocchi rapidi (+1) accompagnati da indicatori fluttuanti di animazione, con gestione di rotazione automatica del servizio e regole deuce ufficiali ITTF.
+  - **URL di Supporto & Assistenza**: Scheda integrata dotata di form di contatto interattivo con validazione dinamica e transizioni di invio ad effetto neon.
+  - **URL Privacy Policy**: Scheda integrata contenente la Privacy Policy ufficiale conforme al livello "Data Not Collected" di Apple (offline-first, zero analytics SDK, zero tracking).
+  - **Branding**: Copiata programmaticamente l'icona dell'applicazione `AppIcon_1024.png` nella cartella `docs/assets/app-icon.png` per utilizzarla sia come favicon che come logo brandizzato nell'header.
+
+
+
+
+
 

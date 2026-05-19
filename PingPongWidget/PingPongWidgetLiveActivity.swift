@@ -78,30 +78,26 @@ public struct PingPongWidgetLiveActivity: Widget {
                     
                     Spacer()
                     
-                    // Set Score Dashboard Divider
+                    // Point Score & Set Dashboard Divider
                     VStack(spacing: 4) {
-                        Text("SET")
-                            .font(.system(size: 9, weight: .black, design: .rounded))
-                            .foregroundColor(.white.opacity(0.4))
-                            .tracking(1.5)
+                        Text("\(context.state.p1Score) — \(context.state.p2Score)")
+                            .font(.system(.title3, design: .rounded))
+                            .fontWeight(.black)
+                            .foregroundColor(.yellow)
+                            .shadow(color: .yellow.opacity(0.3), radius: 4)
                         
-                        HStack(spacing: 12) {
-                            Text("\(context.state.p1Sets)")
-                                .font(.system(.subheadline, design: .rounded))
-                                .fontWeight(.black)
-                                .foregroundColor(theme.p1Color)
+                        HStack(spacing: 6) {
+                            Text("SET")
+                                .font(.system(size: 8, weight: .black, design: .rounded))
+                                .foregroundColor(.white.opacity(0.4))
                             
-                            Text("—")
-                                .font(.system(.subheadline, design: .rounded))
-                                .foregroundColor(.white.opacity(0.2))
-                            
-                            Text("\(context.state.p2Sets)")
-                                .font(.system(.subheadline, design: .rounded))
-                                .fontWeight(.black)
-                                .foregroundColor(theme.p2Color)
+                            Text("\(context.state.p1Sets)—\(context.state.p2Sets)")
+                                .font(.system(.caption2, design: .rounded))
+                                .fontWeight(.bold)
+                                .foregroundColor(.white.opacity(0.7))
                         }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
                         .background(Capsule().fill(Color.white.opacity(0.06)))
                     }
                     
@@ -174,13 +170,16 @@ public struct PingPongWidgetLiveActivity: Widget {
             
             return DynamicIsland {
                 // EXPANDED STATE (Long press on Dynamic Island)
+                // EXPANDED STATE (Long press on Dynamic Island)
                 DynamicIslandExpandedRegion(.leading) {
                     VStack(alignment: .leading, spacing: 2) {
                         HStack(spacing: 4) {
                             if context.state.currentServer == "player1" {
-                                Circle().fill(Color.yellow).frame(width: 6, height: 6)
+                                Circle()
+                                    .fill(Color.yellow)
+                                    .frame(width: 6, height: 6)
                             }
-                            Text(context.attributes.p1Name.prefix(8))
+                            Text(String(context.attributes.p1Name.prefix(8)))
                                 .font(.system(.caption2, design: .rounded))
                                 .fontWeight(.bold)
                                 .foregroundColor(.white.opacity(0.8))
@@ -195,12 +194,14 @@ public struct PingPongWidgetLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.trailing) {
                     VStack(alignment: .trailing, spacing: 2) {
                         HStack(spacing: 4) {
-                            Text(context.attributes.p2Name.prefix(8))
+                            Text(String(context.attributes.p2Name.prefix(8)))
                                 .font(.system(.caption2, design: .rounded))
                                 .fontWeight(.bold)
                                 .foregroundColor(.white.opacity(0.8))
                             if context.state.currentServer == "player2" {
-                                Circle().fill(Color.yellow).frame(width: 6, height: 6)
+                                Circle()
+                                    .fill(Color.yellow)
+                                    .frame(width: 6, height: 6)
                             }
                         }
                         Text("\(context.state.p2Score)")
@@ -212,13 +213,14 @@ public struct PingPongWidgetLiveActivity: Widget {
                 
                 DynamicIslandExpandedRegion(.center) {
                     VStack(spacing: 2) {
-                        Text("SET")
-                            .font(.system(size: 9, weight: .black, design: .rounded))
-                            .foregroundColor(.white.opacity(0.3))
-                        Text("\(context.state.p1Sets) — \(context.state.p2Sets)")
-                            .font(.system(.caption, design: .rounded))
+                        Text("\(context.state.p1Score) — \(context.state.p2Score)")
+                            .font(.system(.headline, design: .rounded))
                             .fontWeight(.black)
-                            .foregroundColor(.white)
+                            .foregroundColor(.yellow)
+                        
+                        Text("SET \(context.state.p1Sets)—\(context.state.p2Sets)")
+                            .font(.system(size: 9, weight: .bold, design: .rounded))
+                            .foregroundColor(.white.opacity(0.5))
                     }
                 }
                 
@@ -261,11 +263,10 @@ public struct PingPongWidgetLiveActivity: Widget {
                 }
             } minimal: {
                 // MINIMAL STATE (When multiple live activities are active)
-                let isP1Server = context.state.currentServer == "player1"
-                Text("\(isP1Server ? context.state.p1Score : context.state.p2Score)")
+                Text("\(context.state.p1Score)—\(context.state.p2Score)")
                     .font(.system(.caption, design: .rounded))
                     .fontWeight(.black)
-                    .foregroundColor(isP1Server ? theme.p1Color : theme.p2Color)
+                    .foregroundColor(.white)
             }
         }
         .contentMarginsDisabled()
