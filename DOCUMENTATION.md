@@ -201,3 +201,19 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Resa Premium OLED Neon Glow**: Riprogettato il rendering dei punteggi (`p1Score` e `p2Score`) sulla schermata di blocco tramite un sistema a ZStack a doppio strato: un testo posteriore sfocato colorato ad effetto alone luminoso (`.blur(radius: 6)`) e un testo anteriore bianco brillante con doppia ombra densa del colore del tema del giocatore.
   - **Coerenza Dynamic Island**: Aggiornato il colore dei pallini di servizio, dei cerchietti indicatori compatti e dei testi dei punteggi in tutti gli stati della Dynamic Island (Expanded, Compact Leading/Trailing, Minimal) in modo che riflettano fedelmente la palette del tema attivo.
   - **Compilazione di Successo**: Compilato con successo l'intero bundle multipiattaforma in modalità Debug con Xcode (`BUILD SUCCEEDED`, exit code `0`).
+
+### [2026-05-19 17:20]: Integrazione Documentazione Xcode Cloud CI/CD
+* **Dettagli**: Aggiunta la documentazione strategica e la checklist operativa per pubblicare l'applicazione all'App Store sfruttando Xcode Cloud come motore CI/CD automatizzato.
+* **Tech Notes**:
+  - **Xcode Cloud Guide**: Aggiunta la *Sezione 9* nel file di riferimento `GUIDA_PUBBLICAZIONE_APP_STORE.md` spiegando il funzionamento del signing con *Cloud Managed Certificates*, la creazione del workflow di build per *TestFlight and App Store* e la gestione automatica dei numeri progressivi di build (`CFBundleVersion`).
+  - **Scheme Integrity Checklist**: Inserita la checklist critica per la configurazione dello Scheme Xcode `PingPong` per assicurare che tutti e tre i target (iOS, Watch, Widget Extension) partecipino all'azione di archiviazione automatica.
+  - **Checklist Operativa**: Aggiornato `TO_SIMO_DO.md` introducendo la sezione manuale dedicata a Xcode Cloud.
+
+### [2026-05-19 17:25]: Correzione Contrasto Testi Scuri nelle Impostazioni (Settings Dark Text Fix)
+* **Dettagli**: Risolto il problema per cui i testi di etichetta (label) dei menu a discesa (Picker) nella schermata delle Impostazioni apparivano neri/scuri su sfondo grigio scuro, rendendoli quasi invisibili.
+* **Tech Notes**:
+  - **SwiftUI Picker Label Customization**: Sostituiti gli inizializzatori impliciti `Picker("Titolo", selection: ...)` con la forma esplicita `Picker(selection: ...) { ... } label: { Text("Titolo").foregroundColor(.white) }` per tutte e quattro le opzioni Picker della vista delle impostazioni (`pointsPerSet`, `matchDuration`, `serveRotationInterval`, `graphicTheme`). Questo garantisce l'ereditarietà forzata del colore bianco su qualsiasi etichetta testuale del picker.
+  - **Dark Color Scheme Integration**: Applicato il modificatore `.preferredColorScheme(.dark)` al `NavigationStack` della `SettingsView`. Questo forza l'intero foglio modale, inclusi i fogli d'azione nativi, gli alert e i controlli di sistema associati, a presentarsi con lo schema cromatico scuro ufficiale di Apple.
+  - **Verifica e Compilazione**: Eseguito un test completo di compilazione di tutti i target con Xcode, completato con esito positivo assoluto (`BUILD SUCCEEDED`, exit code `0`).
+
+

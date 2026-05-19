@@ -30,3 +30,9 @@ Ho creato una guida dettagliata completa nel tuo workspace chiamata **`GUIDA_PUB
   - [ ] Associa la build caricata alla versione 1.0.0 su App Store Connect.
   - [ ] **FONDAMENTALE**: Copia e incolla la spiegazione del *Background Audio* (disponibile nella Sezione 7 della guida completa `GUIDA_PUBBLICAZIONE_APP_STORE.md`) nelle note di revisione.
   - [ ] **FONDAMENTALE**: Registra e allega un video demo di 1 minuto che mostra l'app in azione su iPhone, con la Live Activity funzionante sulla Lock Screen, per aiutare i revisori a testarla rapidamente senza intoppi.
+
+## 6. Configurazione Xcode Cloud (Workflow Automatico) ☁️
+
+- [ ] **1. Abilita la spunta "Archive" in Xcode**:
+  - Apri lo Scheme `PingPong` -> `Edit Scheme...` -> `Build`.
+  - Assicurati che per tutti e tre i target (`PingPong`, `PingPongWidgetExtension`, `PingPongWatch Watch App`) sia spuntata la colonna **Archive**.

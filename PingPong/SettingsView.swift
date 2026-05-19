@@ -41,18 +41,24 @@ struct SettingsView: View {
                     }
                     
                     Section(header: Text(Localized.rulesHeader).foregroundColor(.gray)) {
-                        Picker(Localized.pointsPerSet, selection: $viewModel.targetScore) {
+                        Picker(selection: $viewModel.targetScore) {
                             Text(Localized.points11).tag(11)
                             Text(Localized.points21).tag(21)
+                        } label: {
+                            Text(Localized.pointsPerSet)
+                                .foregroundColor(.white)
                         }
                         .pickerStyle(.menu)
                         .tint(.white)
                         .listRowBackground(Color(white: 0.15))
                         
-                        Picker(Localized.matchDuration, selection: $viewModel.bestOfSets) {
+                        Picker(selection: $viewModel.bestOfSets) {
                             Text(Localized.singleSet).tag(1)
                             Text(Localized.bestOf3).tag(3)
                             Text(Localized.bestOf5).tag(5)
+                        } label: {
+                            Text(Localized.matchDuration)
+                                .foregroundColor(.white)
                         }
                         .pickerStyle(.menu)
                         .tint(.white)
@@ -63,9 +69,12 @@ struct SettingsView: View {
                             .foregroundColor(.white)
                             .listRowBackground(Color(white: 0.15))
                         
-                        Picker(Localized.serviceRotation, selection: $viewModel.serveRotationInterval) {
+                        Picker(selection: $viewModel.serveRotationInterval) {
                             Text(Localized.every2Serves).tag(2)
                             Text(Localized.every5Serves).tag(5)
+                        } label: {
+                            Text(Localized.serviceRotation)
+                                .foregroundColor(.white)
                         }
                         .pickerStyle(.menu)
                         .tint(.white)
@@ -80,10 +89,13 @@ struct SettingsView: View {
                     }
                     
                     Section(header: Text(Localized.styleHeader).foregroundColor(.gray)) {
-                        Picker(Localized.graphicTheme, selection: $viewModel.themeIndex) {
+                        Picker(selection: $viewModel.themeIndex) {
                             ForEach(0..<themesList.count, id: \.self) { idx in
                                 Text(themesList[idx].0).tag(idx)
                             }
+                        } label: {
+                            Text(Localized.graphicTheme)
+                                .foregroundColor(.white)
                         }
                         .pickerStyle(.menu)
                         .tint(.white)
@@ -132,6 +144,7 @@ struct SettingsView: View {
                     .fontWeight(.semibold)
                 }
             }
+            .preferredColorScheme(.dark)
         }
     }
 }

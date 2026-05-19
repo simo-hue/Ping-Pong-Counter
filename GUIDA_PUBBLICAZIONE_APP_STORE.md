@@ -192,3 +192,77 @@ All'interno della scheda di invio dell'applicazione su App Store Connect, scorri
     *   *Tempi medi di approvazione*: La revisione richiede solitamente **tra le 12 e le 36 ore**.
     *   Se l'app viene approvata, passerà allo stato *Pronta per la vendita* (Ready for Sale) e sarà visibile su App Store entro poche ore.
     *   Nel caso raro di una **Rejection**, Apple ti contatterà tramite il *Centro Risoluzione Problemi* (Resolution Center) spiegando il motivo esatto. Grazie alle difese inserite in questa guida (giustificazione audio e video dimostrativo), sarai in grado di rispondere immediatamente o risolvere eventuali obiezioni con un semplice chiarimento scritto.
+
+---
+
+## 9. Integrazione e Rilascio Continuo con Xcode Cloud (CI/CD) ☁️
+
+Ora che hai attivato Xcode Cloud e lo hai collegato al tuo repository GitHub, puoi automatizzare l'intero processo di compilazione, firma digitale e caricamento su App Store Connect ad ogni commit o merge sul ramo principale. Questo elimina la necessità di eseguire l'archiviazione manuale locale e garantisce build pulite e pronte per il rilascio.
+
+### A. Come funziona la firma automatica (Signing) in Xcode Cloud
+Xcode Cloud gestisce la firma del codice in modo sicuro utilizzando i **Cloud Managed Certificates**:
+1. Non devi esportare o caricare certificati di distribuzione (`.p12`) o provisioning profile manuali su Xcode Cloud.
+2. Quando Xcode Cloud compila l'applicazione, si collega direttamente al tuo portale Apple Developer utilizzando il tuo Apple ID di sviluppo (o la chiave API di App Store Connect) per generare certificati di distribuzione temporanei e firmare i 3 target del progetto (`PingPong`, `PingPongWidget` e `PingPongWatch Watch App`).
+3. **Requisito Chiave**: Assicurati che i tre Bundle ID descritti nella [Sezione 2](#2-configurazione-dei-bundle-id-e-provisioning-profiles) siano stati preventivamente registrati manualmente sul portale Apple Developer e che l'**App Group** sia configurato.
+
+### B. Creazione del Workflow "App Store Release" in Xcode
+Puoi configurare il flusso di build continuo (Workflow) direttamente da Xcode:
+1. Apri il progetto `PingPong.xcodeproj` in Xcode sul tuo Mac.
+2. Apri il **Report Navigator** nella barra sinistra (l'icona a forma di fumetto con una freccia in basso a destra o usa la combinazione `Cmd + 9`).
+3. Seleziona la scheda **Cloud** in alto.
+4. Fai clic su **Create Workflow...** (o vai nel menu superiore di Xcode e seleziona **Product** -> **Xcode Cloud** -> **Create Workflow...**).
+5. Seleziona il prodotto `PingPong` e fai clic su **Next**.
+6. Configura i dettagli del Workflow come segue:
+   *   **Name**: `App Store Release`
+   *   **Description**: `Compilazione automatica e invio a TestFlight/App Store ad ogni merge su main.`
+   *   **Repository**: Assicurati che sia selezionato il tuo repository GitHub connesso.
+7. Nella sezione **Start Conditions** (Condizioni di avvio):
+   *   Seleziona la condizione predefinita **Branch Changes**.
+   *   Imposta il branch target su **`main`** (o il tuo branch di rilascio principale).
+   *   Lascia le impostazioni di default per compilare ad ogni modifica o configura filtri personalizzati se necessario.
+8. Nella sezione **Actions** (Azioni):
+   *   Xcode Cloud ha un'azione di default chiamata **Build**. Fai clic sul pulsante **+** o modifica l'azione per impostarla come **Archive**.
+   *   **Platform**: Seleziona **iOS**.
+   *   **Scheme**: Seleziona **PingPong**.
+   *   **Deployment Preparation**: Questo è il passaggio più importante. Seleziona **TestFlight and App Store** dal menu a tendina. *(Questa opzione indica a Xcode Cloud di effettuare una compilazione di produzione firmata correttamente per il rilascio commerciale, anziché una build di sviluppo o di test interno semplice)*.
+9. Nella sezione **Post-Actions** (Azioni successive):
+   *   Fai clic sul pulsante **+** sotto Post-Actions.
+   *   Seleziona **TestFlight Internal Testing** (oppure *App Store Connect* se desideri caricarlo direttamente senza passare per TestFlight, anche se TestFlight è altamente consigliato per una convalida finale).
+   *   Sotto **Groups**, fai clic su **+** e seleziona un gruppo di tester interni di App Store Connect (es. *App Store Connect Users*). Questo farà in modo che, non appena la build viene compilata con successo da Xcode Cloud, questa venga distribuita immediatamente sul tuo dispositivo tramite l'app TestFlight.
+10. Fai clic su **Save**.
+
+### C. Gestione Automatica del Numero di Build (Build Numbering)
+Uno degli aspetti più complessi dei flussi CI/CD tradizionali è l'incremento del numero di build (`CFBundleVersion`). Xcode Cloud risolve questo problema nativamente:
+1. Ad ogni esecuzione del workflow, Xcode Cloud assegna un numero di build incrementale univoco (es. 1, 2, 3...).
+2. Durante la compilazione sui server Apple, Xcode Cloud **sovrascrive automaticamente** il valore di *Build* impostato in Xcode con questo numero progressivo per tutti i target del bundle (`PingPong`, `PingPongWidget`, `PingPongWatch Watch App`).
+3. Non devi fare commit manuali per incrementare il numero di build! Ti basta tenere la `MARKETING_VERSION` (Version in Xcode) allineata su `1.0.0` (o successive) e spingere il codice su GitHub.
+
+### D. Verifica degli Scheme di Xcode (Checklist Fondamentale)
+Affinché Xcode Cloud compili con successo tutti i componenti dell'app (inclusi widget e orologio):
+1. Apri Xcode e seleziona lo Scheme **PingPong** nel selettore in alto a sinistra.
+2. Fai clic sullo Scheme e seleziona **Edit Scheme...**.
+3. Nella barra laterale sinistra della finestra a comparsa, seleziona la voce **Build**.
+4. Assicurati che tutti e tre i target siano elencati:
+   *   `PingPong` (iOS App)
+   *   `PingPongWidgetExtension` (Widget)
+   *   `PingPongWatch Watch App` (Apple Watch)
+5. Assicurati che per ciascuno di essi la spunta sotto la colonna **Archive** sia **attiva**. *(Se non lo è, Xcode Cloud non includerà la companion app watchOS o i widget nel pacchetto finale di distribuzione, portando a sottomissioni incomplete)*.
+6. Fai clic su **Close**.
+
+### E. Flusso Operativo per il Rilascio Finale
+Ora il tuo sistema è completamente automatizzato! Ecco il flusso che seguirai d'ora in poi per pubblicare:
+1. **Scrivi il codice e fai i test locali**.
+2. **Aggiorna la versione** commerciale (es. `1.0.0`) in Xcode se stai rilasciando una nuova versione.
+3. **Esegui il Push su GitHub** sul branch `main`.
+4. **Xcode Cloud si attiva automaticamente**:
+   *   Puoi monitorare la compilazione direttamente da Xcode (Report Navigator -> Cloud) o accedendo ad App Store Connect -> Xcode Cloud.
+   *   Il server scarica il codice da GitHub, risolve le dipendenze, firma il bundle per iOS + watchOS + Widget ed esegue l'archiviazione.
+5. **Ricezione su TestFlight**:
+   *   Entro 10-15 minuti, riceverai una notifica email e una notifica push sul tuo iPhone dall'app TestFlight: la nuova build è pronta per essere testata.
+6. **Sottomissione finale ad App Store**:
+   *   Una volta verificata la build su TestFlight, accedi ad App Store Connect.
+   *   Vai su **App Store** -> **1.0.0 Pronta per l'invio**.
+   *   Scorri fino alla sezione **Build**, clicca su **+**, seleziona la build generata da Xcode Cloud e fai clic su **Salva**.
+   *   Assicurati di aver inserito i metadati e le note di revisione protettive (come descritto nella [Sezione 7](#7-strategia-blindata-anti-rejection)).
+   *   Clicca su **Invia per la revisione** in alto a destra!
+
