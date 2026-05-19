@@ -45,6 +45,25 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Safe Area Padding Intelligente**: Integrato il padding dinamico tramite il modificatore nativo `.safeAreaPadding(.vertical / .horizontal, ...)` calcolato dinamicamente a seconda dell'orientamento dello schermo. I testi dei punteggi, i nomi e i selettori di battuta rimangono perfettamente leggibili e centrati all'interno della zona di sicurezza, evitando qualsiasi taglio causato da Notch fisici, Dynamic Island o bar di scorrimento home di iOS.
   - **Swift 6 Strict Concurrency Conformity**: Aggiornato il bridge `WatchConnector` rendendo i delegati `nonisolated` e incapsulando in sicurezza i cambi di stato sul `@MainActor`, garantendo che l'intera base di codice compili senza un solo warning sul motore di Xcode più recente.
 
+### [2026-05-19 11:22]: Premium UI/UX Micro-Interactions and Native Resolution Fix
+* **Dettagli**: Risolto il problema del letterboxing (barre nere in alto e in basso) forzando la renderizzazione nativa ad alta risoluzione su tutti i modelli di iPhone. Inserite inoltre micro-interazioni di qualità arcade per massimizzare la soddisfazione utente.
+* **Tech Notes**:
+  - **Xcode Launch Screen Generation**: Aggiunta la chiave `INFOPLIST_KEY_UILaunchScreen_Generation = YES;` nel file `project.pbxproj` per entrambi i target Debug e Release. Questo indica a iOS che l'app supporta nativamente la piena risoluzione dello schermo, rimuovendo istantaneamente il letterboxing di compatibilità.
+  - **OLED Neon Glow Score Overlay**: Sostituita la visualizzazione semplice del punteggio con un sistema ZStack a due livelli: uno strato posteriore sfocato (`.blur(radius: 12)`) con opacità del tema e uno anteriore bianco brillante con doppia ombra colorata, ricreando un autentico display al neon ad alta definizione.
+  - **Floating Arcade +1 Spawns**: Aggiunto un sistema di feedback interattivo che fa fluttuare verticalmente e sfumare un indicatore "+1" del rispettivo colore quando viene assegnato un punto, arricchendo l'esperienza visiva dei giocatori.
+  - **Breathing Serve Pulse**: Integrato un ciclo di animazione continua (.repeatForever) che fa pulsare ed emanare calore luminoso al dot del servizio attivo.
+  - **Simmetria di Controllo**: Aggiornata l'icona del pulsante impostazioni in `gearshape.circle.fill` con dimensione unificata a 26 per allinearsi perfettamente con le altre icone circolari del pannello.
+
+### [2026-05-19 11:24]: Risoluzione Architettura Gesti (Separazione Tap e Drag)
+* **Dettagli**: Risolto il problema per cui i tocchi statici sullo schermo per incrementare il punteggio non venivano rilevati dal motore dei gesti di SwiftUI.
+* **Tech Notes**:
+  - **Separazione dei Gesti**: Rimosso il singolo `DragGesture(minimumDistance: 10)` che tentava di rilevare sia tap che drag (fallendo sui tap statici che non superavano la distanza minima di 10 punti).
+  - **onTapGesture Nativo**: Introdotto `.onTapGesture` dedicato sulla metà del campo da gioco. Questo rileva istantaneamente e con precisione assoluta il tap sul campo per fare `+1` (incremento), senza alcun ritardo.
+  - **DragGesture Separato**: Applicato un `.gesture(DragGesture(minimumDistance: 15))` esclusivo per rilevare lo scorrimento verso il basso (swipe down) che attiva il `-1` (decremento).
+  - **Nessuna Interferenza sui Tasti**: Questa architettura garantisce che i gesti del campo non interferiscano in alcun modo con i pulsanti attivi interni (come "SERVIZIO" e la modifica dei nomi dei giocatori), garantendo un'esperienza fluida e professionale a 360 gradi.
+
+
+
 
 
 

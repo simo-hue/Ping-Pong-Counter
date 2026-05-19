@@ -107,6 +107,11 @@ struct ContentView: View {
                 // Frosted Glass Net & Floating Control Center
                 floatingControlCenter(isLandscape: isLandscape)
             }
+            .onAppear {
+                withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+                    serverPulseScale = 1.3
+                }
+            }
             .sheet(isPresented: $isShowingSettings) {
                 SettingsView(viewModel: viewModel)
             }
@@ -293,25 +298,47 @@ struct ContentView: View {
             .safeAreaPadding(.horizontal, isLandscape ? 24 : 12)
         }
         .contentShape(Rectangle())
-        // Single Gesture: Tap to increment, swipe down to decrement
+        .onTapGesture {
+            // Tap registered -> scale up & increment score
+            if isP1 {
+                p1PlusOffset = 0
+                p1PlusOpacity = 1.0
+                withAnimation(.spring(response: 0.25, dampingFraction: 0.45)) {
+                    animateP1 = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    withAnimation(.easeOut(duration: 0.6)) {
+                        p1PlusOffset = -80
+                        p1PlusOpacity = 0.0
+                    }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    animateP1 = false
+                }
+            } else {
+                p2PlusOffset = 0
+                p2PlusOpacity = 1.0
+                withAnimation(.spring(response: 0.25, dampingFraction: 0.45)) {
+                    animateP2 = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    withAnimation(.easeOut(duration: 0.6)) {
+                        p2PlusOffset = -80
+                        p2PlusOpacity = 0.0
+                    }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    animateP2 = false
+                }
+            }
+            viewModel.incrementScore(for: player)
+        }
         .gesture(
-            DragGesture(minimumDistance: 10, coordinateSpace: .local)
+            DragGesture(minimumDistance: 15, coordinateSpace: .local)
                 .onEnded { value in
                     if value.translation.height > 30 {
-                        // Swipe down -> decrement
+                        // Swipe down -> decrement score
                         viewModel.decrementScore(for: player)
-                    } else if abs(value.translation.height) < 15 && abs(value.translation.width) < 15 {
-                        // Tap registered -> scale up & increment score
-                        withAnimation {
-                            if isP1 {
-                                animateP1 = true
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { animateP1 = false }
-                            } else {
-                                animateP2 = true
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { animateP2 = false }
-                            }
-                        }
-                        viewModel.incrementScore(for: player)
                     }
                 }
         )
@@ -345,8 +372,8 @@ struct ContentView: View {
             Button {
                 isShowingSettings = true
             } label: {
-                Image(systemName: "gearshape.fill")
-                    .font(.system(size: 24))
+                Image(systemName: "gearshape.circle.fill")
+                    .font(.system(size: 26))
                     .foregroundColor(.white)
             }
             
