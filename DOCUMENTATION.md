@@ -104,6 +104,13 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Swift 6 Concurrency & Sendability**: Importato `@preconcurrency import WatchConnectivity` per sopprimere warning esterni. Sostituito il wrapping legacy di `DispatchQueue.main.async` con blocchi asincroni nativi `@MainActor Task` e rimosse le catture di parametri non-Sendable in closure `@Sendable` accedendo direttamente a `WCSession.default`.
   - **Migrazione Standard Icone Single Size**: Riconfigurato `Contents.json` nel catalogo degli asset `AppIcon.appiconset` per utilizzare lo standard moderno di Apple **Single Size universal** a 1024x1024 pixel. Copiato il file `AppIcon_1024.png` direttamente nella cartella fisica degli asset, rimuovendo all'istante 23 avvisi relativi a icone legacy non presenti.
 
+### [2026-05-19 11:57]: Allineamento Visivo degli Indicatori di Set (Scoreboard Dots)
+* **Dettagli**: Corretto il comportamento visivo dei pallini segna-set nella schermata principale per mostrare l'intera capienza del match selezionata (3 pallini per Best of 3, 5 pallini per Best of 5), mantenendo intatte le regole matematiche di vittoria.
+* **Tech Notes**:
+  - **Svincolo visuale**: Sostituita la formula `ceil(bestOfSets / 2.0)` (che calcolava solo i set minimi necessari per vincere, es. 2 per un best of 3) con il valore intero `bestOfSets` all'interno del loop `ForEach` in `ContentView.swift`.
+  - **Coerenza logica**: Le regole interne di gioco e i trigger di traguardo in `ScoreViewModel.swift` rimangono intatti e protetti matematicamente, garantendo che un match "Best of 3" si concluda correttamente al raggiungimento dei 2 set vinti.
+
+
 
 
 

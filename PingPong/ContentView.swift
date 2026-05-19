@@ -180,8 +180,8 @@ struct ContentView: View {
                 
                 // Sets dots
                 HStack(spacing: 8) {
-                    let totalSetsNeeded = Int(ceil(Double(viewModel.bestOfSets) / 2.0))
-                    ForEach(0..<totalSetsNeeded, id: \.self) { idx in
+                    let totalSets = viewModel.bestOfSets
+                    ForEach(0..<totalSets, id: \.self) { idx in
                         Circle()
                             .fill(idx < sets ? themeColor : Color.white.opacity(0.15))
                             .frame(width: 14, height: 14)
