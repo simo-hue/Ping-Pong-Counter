@@ -26,12 +26,20 @@ final class SpeechManager: NSObject, ObservableObject {
     }
     
     private func configureVoice() {
-        // Look for Italian voice since requested in Italian, fallback to system default
+        let isIT = Localized.isItalian
         let voices = AVSpeechSynthesisVoice.speechVoices()
-        if let italianVoice = voices.first(where: { $0.language.contains("it-IT") }) {
-            self.voice = italianVoice
+        if isIT {
+            if let italianVoice = voices.first(where: { $0.language.contains("it-IT") }) {
+                self.voice = italianVoice
+            } else {
+                self.voice = AVSpeechSynthesisVoice(language: "it-IT") ?? AVSpeechSynthesisVoice(language: "en-US")
+            }
         } else {
-            self.voice = AVSpeechSynthesisVoice(language: "it-IT") ?? AVSpeechSynthesisVoice(language: "en-US")
+            if let englishVoice = voices.first(where: { $0.language.contains("en-US") }) {
+                self.voice = englishVoice
+            } else {
+                self.voice = AVSpeechSynthesisVoice(language: "en-US")
+            }
         }
     }
     
@@ -44,7 +52,7 @@ final class SpeechManager: NSObject, ObservableObject {
         
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = voice
-        utterance.rate = 0.52 // Natural Italian speaking rate
+        utterance.rate = Localized.isItalian ? 0.52 : 0.50 // Adjusted speaking rates
         utterance.pitchMultiplier = 1.0
         utterance.volume = 1.0
         
@@ -64,38 +72,41 @@ final class SpeechManager: NSObject, ObservableObject {
         isDeuce: Bool,
         winnerName: String?
     ) {
+        // Re-configure voice language on each announcement in case system locale changed
+        configureVoice()
+
         if let winner = winnerName {
-            speak("Partita conclusa! Vince \(winner)!", immediate: true)
+            speak(Localized.speechWinner(name: winner), immediate: true)
             return
         }
         
         if isMatchPoint {
             if p1Score > p2Score {
-                speak("Match Point per \(p1Name)! Punteggio: \(p1Score) a \(p2Score). Batte \(serverName).", immediate: true)
+                speak(Localized.speechMatchPoint(for: p1Name, p1Score: p1Score, p2Score: p2Score, server: serverName), immediate: true)
             } else {
-                speak("Match Point per \(p2Name)! Punteggio: \(p2Score) a \(p1Score). Batte \(serverName).", immediate: true)
+                speak(Localized.speechMatchPoint(for: p2Name, p1Score: p2Score, p2Score: p1Score, server: serverName), immediate: true)
             }
             return
         }
         
         if isSetPoint {
             if p1Score > p2Score {
-                speak("Set Point per \(p1Name)! Punteggio: \(p1Score) a \(p2Score). Batte \(serverName).", immediate: true)
+                speak(Localized.speechSetPoint(for: p1Name, p1Score: p1Score, p2Score: p2Score, server: serverName), immediate: true)
             } else {
-                speak("Set Point per \(p2Name)! Punteggio: \(p2Score) a \(p1Score). Batte \(serverName).", immediate: true)
+                speak(Localized.speechSetPoint(for: p2Name, p1Score: p2Score, p2Score: p1Score, server: serverName), immediate: true)
             }
             return
         }
         
         if isDeuce {
-            speak("Parità! Vantaggi! \(p1Score) pari. Batte \(serverName).", immediate: true)
+            speak(Localized.speechDeuce(score: p1Score, server: serverName), immediate: true)
             return
         }
         
         if p1Score == p2Score {
-            speak("Parità. \(p1Score) pari. Batte \(serverName).", immediate: true)
+            speak(Localized.speechAll(score: p1Score, server: serverName), immediate: true)
         } else {
-            speak("\(p1Score) a \(p2Score). Batte \(serverName).", immediate: true)
+            speak(Localized.speechStandard(p1Score: p1Score, p2Score: p2Score, server: serverName), immediate: true)
         }
     }
 }

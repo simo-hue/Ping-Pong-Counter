@@ -44,13 +44,13 @@ final class ScoreViewModel: ObservableObject {
     }
     
     // Player Details
-    @Published var p1Name: String = "Giocatore 1" {
+    @Published var p1Name: String = Localized.defaultP1Name {
         didSet {
             UserDefaults.standard.set(p1Name, forKey: "p1Name")
             syncWithWatch()
         }
     }
-    @Published var p2Name: String = "Giocatore 2" {
+    @Published var p2Name: String = Localized.defaultP2Name {
         didSet {
             UserDefaults.standard.set(p2Name, forKey: "p2Name")
             syncWithWatch()
@@ -104,8 +104,8 @@ final class ScoreViewModel: ObservableObject {
         self.winByTwo = UserDefaults.standard.object(forKey: "winByTwo") as? Bool ?? true
         self.bestOfSets = UserDefaults.standard.object(forKey: "bestOfSets") as? Int ?? 3
         self.serveRotationInterval = UserDefaults.standard.object(forKey: "serveRotationInterval") as? Int ?? 2
-        self.p1Name = UserDefaults.standard.string(forKey: "p1Name") ?? "Giocatore 1"
-        self.p2Name = UserDefaults.standard.string(forKey: "p2Name") ?? "Giocatore 2"
+        self.p1Name = UserDefaults.standard.string(forKey: "p1Name") ?? Localized.defaultP1Name
+        self.p2Name = UserDefaults.standard.string(forKey: "p2Name") ?? Localized.defaultP2Name
         self.themeIndex = UserDefaults.standard.object(forKey: "themeIndex") as? Int ?? 0
         self.isVoiceEnabled = UserDefaults.standard.object(forKey: "isVoiceEnabled") as? Bool ?? false
         
@@ -399,7 +399,7 @@ final class ScoreViewModel: ObservableObject {
 }
 
 // MARK: - WatchConnectivity Bridge
-import WatchConnectivity
+@preconcurrency import WatchConnectivity
 
 final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     static let shared = WatchConnector()
@@ -442,30 +442,27 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     // MARK: - WCSessionDelegate
     
     nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            Task { @MainActor in
-                guard let viewModel = self.viewModel else { return }
-                
-                if let action = message["action"] as? String {
-                    switch action {
-                    case "increment":
-                        if let playerStr = message["player"] as? String, let player = Player(rawValue: playerStr) {
-                            viewModel.incrementScore(for: player)
-                        }
-                    case "decrement":
-                        if let playerStr = message["player"] as? String, let player = Player(rawValue: playerStr) {
-                            viewModel.decrementScore(for: player)
-                        }
-                    case "undo":
-                        viewModel.undo()
-                    case "reset":
-                        viewModel.resetMatch()
-                    case "swapSides":
-                        viewModel.swapSides()
-                    default:
-                        break
+        Task { @MainActor in
+            guard let viewModel = self.viewModel else { return }
+            
+            if let action = message["action"] as? String {
+                switch action {
+                case "increment":
+                    if let playerStr = message["player"] as? String, let player = Player(rawValue: playerStr) {
+                        viewModel.incrementScore(for: player)
                     }
+                case "decrement":
+                    if let playerStr = message["player"] as? String, let player = Player(rawValue: playerStr) {
+                        viewModel.decrementScore(for: player)
+                    }
+                case "undo":
+                    viewModel.undo()
+                case "reset":
+                    viewModel.resetMatch()
+                case "swapSides":
+                    viewModel.swapSides()
+                default:
+                    break
                 }
             }
         }
@@ -474,8 +471,8 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     #if os(iOS)
     nonisolated func sessionDidBecomeInactive(_ session: WCSession) {}
     nonisolated func sessionDidDeactivate(_ session: WCSession) {
-        DispatchQueue.main.async {
-            session.activate()
+        Task { @MainActor in
+            WCSession.default.activate()
         }
     }
     #endif

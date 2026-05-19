@@ -122,10 +122,10 @@ struct ContentView: View {
                 }
             }
             // Inline player name editor dialog
-            .alert("Modifica Nome", isPresented: $isShowingNameEditor) {
-                TextField("Nome Giocatore", text: $editingNameText)
+            .alert(Localized.isItalian ? "Modifica Nome" : "Edit Name", isPresented: $isShowingNameEditor) {
+                TextField(Localized.isItalian ? "Nome Giocatore" : "Player Name", text: $editingNameText)
                     .textInputAutocapitalization(.words)
-                Button("Salva") {
+                Button(Localized.isItalian ? "Salva" : "Save") {
                     let trimmed = editingNameText.trimmingCharacters(in: .whitespacesAndNewlines)
                     if !trimmed.isEmpty {
                         if editingPlayer == .player1 {
@@ -135,9 +135,9 @@ struct ContentView: View {
                         }
                     }
                 }
-                Button("Annulla", role: .cancel) {}
+                Button(Localized.isItalian ? "Annulla" : "Cancel", role: .cancel) {}
             } message: {
-                Text("Inserisci il nome per il \(editingPlayer == .player1 ? "primo" : "secondo") giocatore.")
+                Text(Localized.isItalian ? "Inserisci il nome per il \(editingPlayer == .player1 ? "primo" : "secondo") giocatore." : "Enter the name for \(editingPlayer == .player1 ? "first" : "second") player.")
             }
         }
     }
@@ -219,7 +219,7 @@ struct ContentView: View {
                 
                 // Subtle Onboarding Guide (Fades out immediately when a point is scored)
                 if viewModel.p1Score == 0 && viewModel.p2Score == 0 && viewModel.p1Sets == 0 && viewModel.p2Sets == 0 {
-                    Text("Tocca per +1 • Scorri giù per -1")
+                    Text(Localized.isItalian ? "Tocca per +1 • Scorri giù per -1" : "Tap for +1 • Swipe down for -1")
                         .font(.system(.caption2, design: .rounded))
                         .fontWeight(.bold)
                         .foregroundColor(.white.opacity(0.2))
@@ -266,7 +266,7 @@ struct ContentView: View {
                                 .scaleEffect(serverPulseScale)
                                 .shadow(color: .yellow.opacity(0.8), radius: 6)
                             
-                            Text("SERVIZIO")
+                            Text(Localized.serveButton)
                                 .font(.system(.caption2, design: .rounded))
                                 .fontWeight(.black)
                                 .foregroundColor(.yellow)
@@ -276,7 +276,7 @@ struct ContentView: View {
                                 .fill(Color.white.opacity(0.12))
                                 .frame(width: 9, height: 9)
                             
-                            Text("IMPOSTA SERVIZIO")
+                            Text(Localized.isItalian ? "IMPOSTA SERVIZIO" : "SET SERVE")
                                 .font(.system(.caption2, design: .rounded))
                                 .fontWeight(.bold)
                                 .foregroundColor(.white.opacity(0.22))
@@ -385,11 +385,11 @@ struct ContentView: View {
                     .font(.system(size: 26))
                     .foregroundColor(.white)
             }
-            .confirmationDialog("Sei sicuro di voler azzerare l'incontro?", isPresented: $isShowingResetConfirm, titleVisibility: .visible) {
-                Button("Sì, azzera tutto", role: .destructive) {
+            .confirmationDialog(Localized.isItalian ? "Sei sicuro di voler azzerare l'incontro?" : "Are you sure you want to reset the match?", isPresented: $isShowingResetConfirm, titleVisibility: .visible) {
+                Button(Localized.isItalian ? "Sì, azzera tutto" : "Yes, reset all", role: .destructive) {
                     viewModel.resetMatch()
                 }
-                Button("Annulla", role: .cancel) {}
+                Button(Localized.isItalian ? "Annulla" : "Cancel", role: .cancel) {}
             }
         }
         .padding(.horizontal, 24)
@@ -441,7 +441,7 @@ struct ContentView: View {
                     .scaleEffect(1.2)
                     .padding(.bottom, 10)
                 
-                Text("VINCITORE!")
+                Text(Localized.winnerTitle)
                     .font(.system(.title3, design: .rounded))
                     .fontWeight(.bold)
                     .foregroundColor(.yellow)
@@ -458,7 +458,7 @@ struct ContentView: View {
                     .fontWeight(.bold)
                     .foregroundColor(.white.opacity(0.8))
                 
-                Text("Match concluso con successo")
+                Text(Localized.isItalian ? "Match concluso con successo" : "Match successfully completed")
                     .font(.system(.subheadline))
                     .foregroundColor(.gray)
                 
@@ -467,7 +467,7 @@ struct ContentView: View {
                 } label: {
                     HStack {
                         Image(systemName: "arrow.counterclockwise")
-                        Text("Nuova Partita")
+                        Text(Localized.isItalian ? "Nuova Partita" : "New Match")
                     }
                     .font(.system(.headline, design: .rounded))
                     .fontWeight(.bold)

@@ -22,11 +22,11 @@ struct SettingsView: View {
                 .ignoresSafeArea()
                 
                 Form {
-                    Section(header: Text("Giocatori").foregroundColor(.gray)) {
+                    Section(header: Text(Localized.playersHeader).foregroundColor(.gray)) {
                         HStack {
                             Image(systemName: "person.fill")
                                 .foregroundColor(themesList[viewModel.themeIndex].2)
-                            TextField("Giocatore 1 (Sinistra)", text: $viewModel.p1Name)
+                            TextField(Localized.p1Placeholder, text: $viewModel.p1Name)
                                 .foregroundColor(.white)
                         }
                         .listRowBackground(Color(white: 0.15))
@@ -34,53 +34,53 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "person.fill")
                                 .foregroundColor(themesList[viewModel.themeIndex].3)
-                            TextField("Giocatore 2 (Destra)", text: $viewModel.p2Name)
+                            TextField(Localized.p2Placeholder, text: $viewModel.p2Name)
                                 .foregroundColor(.white)
                         }
                         .listRowBackground(Color(white: 0.15))
                     }
                     
-                    Section(header: Text("Regole Partita").foregroundColor(.gray)) {
-                        Picker("Punti per Set", selection: $viewModel.targetScore) {
-                            Text("11 Punti (Standard)").tag(11)
-                            Text("21 Punti (Classico)").tag(21)
+                    Section(header: Text(Localized.rulesHeader).foregroundColor(.gray)) {
+                        Picker(Localized.pointsPerSet, selection: $viewModel.targetScore) {
+                            Text(Localized.points11).tag(11)
+                            Text(Localized.points21).tag(21)
                         }
                         .pickerStyle(.menu)
                         .tint(.white)
                         .listRowBackground(Color(white: 0.15))
                         
-                        Picker("Durata Match (Set)", selection: $viewModel.bestOfSets) {
-                            Text("Set Singolo").tag(1)
-                            Text("Al meglio di 3 set").tag(3)
-                            Text("Al meglio di 5 set").tag(5)
+                        Picker(Localized.matchDuration, selection: $viewModel.bestOfSets) {
+                            Text(Localized.singleSet).tag(1)
+                            Text(Localized.bestOf3).tag(3)
+                            Text(Localized.bestOf5).tag(5)
                         }
                         .pickerStyle(.menu)
                         .tint(.white)
                         .listRowBackground(Color(white: 0.15))
                         
-                        Toggle("Vantaggi (Vinci con 2 punti di scarto)", isOn: $viewModel.winByTwo)
+                        Toggle(Localized.winByTwo, isOn: $viewModel.winByTwo)
                             .tint(themesList[viewModel.themeIndex].2)
                             .foregroundColor(.white)
                             .listRowBackground(Color(white: 0.15))
                         
-                        Picker("Rotazione Servizio", selection: $viewModel.serveRotationInterval) {
-                            Text("Ogni 2 servizi").tag(2)
-                            Text("Ogni 5 servizi").tag(5)
+                        Picker(Localized.serviceRotation, selection: $viewModel.serveRotationInterval) {
+                            Text(Localized.every2Serves).tag(2)
+                            Text(Localized.every5Serves).tag(5)
                         }
                         .pickerStyle(.menu)
                         .tint(.white)
                         .listRowBackground(Color(white: 0.15))
                     }
                     
-                    Section(header: Text("Audio & Voce").foregroundColor(.gray)) {
-                        Toggle("Assistente Vocale (Sintesi Vocale)", isOn: $viewModel.isVoiceEnabled)
+                    Section(header: Text(Localized.audioHeader).foregroundColor(.gray)) {
+                        Toggle(Localized.voiceAssistant, isOn: $viewModel.isVoiceEnabled)
                             .tint(themesList[viewModel.themeIndex].2)
                             .foregroundColor(.white)
                             .listRowBackground(Color(white: 0.15))
                     }
                     
-                    Section(header: Text("Stile & Temi").foregroundColor(.gray)) {
-                        Picker("Tema Grafico", selection: $viewModel.themeIndex) {
+                    Section(header: Text(Localized.styleHeader).foregroundColor(.gray)) {
+                        Picker(Localized.graphicTheme, selection: $viewModel.themeIndex) {
                             ForEach(0..<themesList.count, id: \.self) { idx in
                                 Text(themesList[idx].0).tag(idx)
                             }
@@ -91,7 +91,7 @@ struct SettingsView: View {
                         
                         // Theme Preview Box
                         HStack(spacing: 20) {
-                            Text("Anteprima Tema:")
+                            Text(Localized.themePreview)
                                 .foregroundColor(.white)
                             Spacer()
                             RoundedRectangle(cornerRadius: 8)
@@ -112,7 +112,7 @@ struct SettingsView: View {
                             HStack {
                                 Spacer()
                                 Image(systemName: "arrow.counterclockwise.circle.fill")
-                                Text("Resetta Partita")
+                                Text(Localized.resetMatch)
                                 Spacer()
                             }
                         }
@@ -121,11 +121,11 @@ struct SettingsView: View {
                 }
                 .scrollContentBackground(.hidden)
             }
-            .navigationTitle("Impostazioni")
+            .navigationTitle(Localized.settingsTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Chiudi") {
+                    Button(Localized.closeButton) {
                         dismiss()
                     }
                     .foregroundColor(.white)
