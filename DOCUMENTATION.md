@@ -62,6 +62,16 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **DragGesture Separato**: Applicato un `.gesture(DragGesture(minimumDistance: 15))` esclusivo per rilevare lo scorrimento verso il basso (swipe down) che attiva il `-1` (decremento).
   - **Nessuna Interferenza sui Tasti**: Questa architettura garantisce che i gesti del campo non interferiscano in alcun modo con i pulsanti attivi interni (come "SERVIZIO" e la modifica dei nomi dei giocatori), garantendo un'esperienza fluida e professionale a 360 gradi.
 
+### [2026-05-19 11:31]: Supporto Live Activities e Dynamic Island (Attività in Tempo Reale)
+* **Dettagli**: Implementato il supporto completo alle Live Activities e alla Dynamic Island di iOS, consentendo di seguire il punteggio live, i set e il servizio direttamente dalla Lock Screen o in background.
+* **Tech Notes**:
+  - **Condivisione Attributi (PingPongAttributes.swift)**: Creato il modello condiviso conforme ad `ActivityAttributes` che gestisce lo stato statico (nomi giocatori) e lo stato dinamico (punteggi, set, servitore attivo, vincitore).
+  - **Ciclo di Vita Gestito (LiveActivityManager.swift)**: Creato un singleton centralizzato (`LiveActivityManager`) adibito a richiedere l'avvio, aggiornare lo stato in background tramite task asincroni, ed eliminare l'attività alla conclusione o al reset del match.
+  - **Integrazione ViewModel**: Agganciato `LiveActivityManager.shared.updateOrCreateActivity(...)` all'interno del metodo centralizzato `syncWithWatch()` in `ScoreViewModel.swift`, in modo che qualsiasi punto registrato da iPhone o da Apple Watch aggiorni in automatico lo stato in tempo reale sia sulla Lock Screen che sulla Dynamic Island.
+  - **Info.plist Entitlements**: Abilitata la chiave target `INFOPLIST_KEY_NSSupportsLiveActivities = YES;` nelle impostazioni di compilazione Debug e Release di `project.pbxproj`.
+  - **Widget UI Pre-generata (PingPongWidget/)**: Progettato il layout per Lock Screen e Dynamic Island con supporto a tutti gli stati visuali (Expanded, Compact Leading/Trailing, Minimal) implementando colori HSL coerenti coi temi neon dell'app, sfondi glassmorphic oscurati e indicatori grafici di vittoria (Coppa dorata).
+
+
 
 
 

@@ -334,6 +334,18 @@ final class ScoreViewModel: ObservableObject {
             currentServer: currentServer,
             winner: winner
         )
+        
+        // Push real-time updates to Lock Screen & Dynamic Island (Live Activities)
+        LiveActivityManager.shared.updateOrCreateActivity(
+            p1Name: p1Name,
+            p2Name: p2Name,
+            p1Score: p1Score,
+            p2Score: p2Score,
+            p1Sets: p1Sets,
+            p2Sets: p2Sets,
+            currentServer: currentServer == .player1 ? "player1" : "player2",
+            winner: winner == nil ? nil : (winner == .player1 ? "player1" : "player2")
+        )
     }
 }
 

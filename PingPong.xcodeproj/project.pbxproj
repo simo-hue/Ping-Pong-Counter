@@ -14,6 +14,8 @@
 		D60000092C1E000100000001 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D600000A2C1E000100000001 /* HapticManager.swift */; };
 		D600000B2C1E000100000001 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D600000C2C1E000100000001 /* SpeechManager.swift */; };
 		D600000D2C1E000200000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D600000E2C1E000200000001 /* Assets.xcassets */; };
+		D60000FF2C1E000100000001 /* PingPongAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FE2C1E000100000001 /* PingPongAttributes.swift */; };
+		D60000FD2C1E000100000001 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FC2C1E000100000001 /* LiveActivityManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		D600000A2C1E000100000001 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		D600000C2C1E000100000001 /* SpeechManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
 		D600000E2C1E000200000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D60000FE2C1E000100000001 /* PingPongAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingPongAttributes.swift; sourceTree = "<group>"; };
+		D60000FC2C1E000100000001 /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
 		D600000F2C1E000200000001 /* PingPong.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PingPong.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -64,6 +68,8 @@
 				D600000A2C1E000100000001 /* HapticManager.swift */,
 				D600000C2C1E000100000001 /* SpeechManager.swift */,
 				D600000E2C1E000200000001 /* Assets.xcassets */,
+				D60000FE2C1E000100000001 /* PingPongAttributes.swift */,
+				D60000FC2C1E000100000001 /* LiveActivityManager.swift */,
 			);
 			path = PingPong;
 			sourceTree = "<group>";
@@ -144,6 +150,8 @@
 				D60000072C1E000100000001 /* SettingsView.swift in Sources */,
 				D60000092C1E000100000001 /* HapticManager.swift in Sources */,
 				D600000B2C1E000100000001 /* SpeechManager.swift in Sources */,
+				D60000FF2C1E000100000001 /* PingPongAttributes.swift in Sources */,
+				D60000FD2C1E000100000001 /* LiveActivityManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,6 +288,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -307,6 +316,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

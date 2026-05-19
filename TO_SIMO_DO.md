@@ -48,3 +48,35 @@ Ho già creato tutti i file pronti per watchOS all'interno della cartella `PingP
    - Premi **Play** (`Cmd + R`) per avviare contemporaneamente l'app sul simulatore dell'iPhone e dell'Apple Watch. 
    - Qualsiasi tocco sull'Apple Watch aggiornerà l'iPhone in tempo reale e viceversa, con un'esperienza di sincronizzazione a mani libere superlativa!
 
+## 4. Attivare Live Activities & Dynamic Island in Xcode (1 Minuto) 🚀
+Ho pre-generato l'intera struttura del Widget e configurato i permessi di sicurezza in modo che compilino all'istante. Per attivare la visualizzazione su Lock Screen e Dynamic Island, segui questi semplici passaggi in Xcode:
+
+1. **Aggiungi il Target Widget in Xcode**:
+   - Con il progetto aperto in Xcode, vai nel menu superiore su **File** -> **New** -> **Target...**
+   - Nella barra di ricerca scrivi **Widget Extension**, selezionalo e fai clic su **Next**.
+   - Configura le seguenti informazioni:
+     - *Product Name*: **`PingPongWidget`**
+     - *Include Live Activity*: Spunta la casella **SÌ** (molto importante!).
+     - *Include Configuration Intent*: Lascialo deselezionato.
+   - Fai clic su **Finish** e poi su **Activate** se Xcode ti chiede di attivare lo schema.
+
+2. **Aggiungi i File pre-generati al Target Widget**:
+   - Xcode creerà una cartella chiamata `PingPongWidget` nella barra laterale sinistra del navigatore di progetto.
+   - Espandila, seleziona i file di default creati da Xcode (`PingPongWidget.swift`, `PingPongWidgetBundle.swift`, `PingPongWidgetLiveActivity.swift`) ed **eliminali** (clicca *Move to Trash*).
+   - Fai clic destro sulla cartella `PingPongWidget` in Xcode, seleziona **Add Files to "PingPong"...**
+   - Seleziona i 2 file che ho preparato per te nel workspace all'interno della cartella `PingPongWidget`:
+     - `PingPongWidgetBundle.swift`
+     - `PingPongWidgetLiveActivity.swift`
+   - Sotto la sezione **Targets** a fondo pagina, assicurati che la spunta ci sia unicamente su **`PingPongWidgetExtension`**.
+   - Clicca su **Add**.
+
+3. **Condividi il file di Attributi (Target Membership)**:
+   - Nella barra laterale sinistra di Xcode, espandi la cartella principale `PingPong` e seleziona il file **`PingPongAttributes.swift`**.
+   - Nella barra laterale destra (se non è visibile, mostrala premendo `Cmd + Option + 0`), vai sulla scheda **File Inspector** (la prima icona in alto).
+   - Sotto la sezione **Target Membership**, aggiungi la spunta alla casella **`PingPongWidgetExtension`** (lasciando attiva anche quella di `PingPong`).
+
+4. **Pronti per il Futuro!**:
+   - Avvia l'applicazione sul tuo simulatore iPhone premendo **Play** (`Cmd + R`).
+   - Quando fai il primo punto nel match, **blocca lo schermo del simulatore** (`Cmd + L`) o torna alla schermata Home: vedrai lo spettacolare tabellone neon interattivo brillare in tempo reale direttamente sulla Lock Screen e nella Dynamic Island!
+
+
