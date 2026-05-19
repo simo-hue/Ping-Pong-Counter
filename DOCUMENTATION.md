@@ -139,5 +139,9 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Rimozione File Obsoleti**: Eliminato `ContentView.swift` generato dal template di Xcode per evitare conflitti di duplicazione delle classi.
   - **Verifica della Build**: Eseguito un test di compilazione nativa asincrona con `xcodebuild`, conclusosi con esito positivo (`BUILD SUCCEEDED`, codice di uscita `0`), che convalida l'integrità del bundle iOS e della companion app per Apple Watch.
 
-
-
+### [2026-05-19 12:16]: Integrazione Nativa e Risoluzione Scope Target Widget & Live Activities
+* **Dettagli**: Completato l'accoppiamento dei sorgenti cyberpunk per la Lock Screen e la Dynamic Island nel target `PingPongWidgetExtension` e risolti automaticamente i problemi di visibilità delle classi condivise.
+* **Tech Notes**:
+  - **Sostituzione Boilerplate**: Rimosso il widget di timeline generico generato da Xcode (`PingPongWidget.swift`) ed attivati i file nativi `PingPongWidgetLiveActivity.swift` e `PingPongWidgetBundle.swift`.
+  - **Risoluzione Scope delle Classi**: Corretto il problema di compilazione `"cannot find 'PingPongAttributes' in scope"` iniettando programmaticamente `PingPongAttributes.swift` nella build-phase `Sources` del target `PingPongWidgetExtension` in `project.pbxproj` (Target Membership automatico).
+  - **Verifica di Compilazione**: Eseguito il comando di build specifico per `PingPongWidgetExtension` ottenendo esito positivo assoluto (`BUILD SUCCEEDED` con exit code `0`), garantendo la corretta inclusione del codice di estensione.
