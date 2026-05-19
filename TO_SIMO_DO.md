@@ -1,41 +1,5 @@
 # Azioni Manuali per Simo 🏓
 
-## 2. Preparazione per l'App Store Connect (Pubblicazione)
-Per pubblicare l'app, Apple richiede alcune impostazioni personali di firma digitale:
-1. **Configura il Team di Sviluppo**:
-   - In Xcode, seleziona l'icona del progetto in cima alla barra laterale sinistra (**PingPong**).
-   - Fai clic sulla scheda **Signing & Capabilities** (Firma e Abilitazioni).
-   - Sotto la sezione **Signing**, seleziona il tuo account personale dal menu a tendina **Team**.
-2. **Personalizza il Bundle Identifier** (opzionale):
-   - Di default ho configurato `com.simo.pingpong`. Se preferisci un altro identificatore per l'App Store Connect, puoi modificarlo nel campo **Bundle Identifier** all'interno dello stesso pannello di firma.
-3. **Archivia e Carica**:
-   - Imposta la destinazione di build su **Any iOS Device (arm64)** (oppure il tuo dispositivo collegato).
-   - Vai sul menu superiore **Product** -> **Archive**.
-   - Al termine dell'archiviazione, si aprirà l'Organizer di Xcode da cui potrai cliccare su **Distribute App** per caricarla su App Store Connect.
-
-## 3. Companion App per Apple Watch ⌚ [CONFIGURATA & INTEGRATA]
-
-Ho configurato ed integrato completamente i sorgenti nativi watchOS companion direttamente all'interno del target Xcode che hai creato! Ho verificato la build ed è perfettamente funzionante con codice di uscita `0`.
-
-Per testarla subito sul tuo simulatore o dispositivo fisico:
-1. **Seleziona la Destinazione in Xcode**: Nella barra superiore delle destinazioni di Xcode, seleziona il simulatore **`PingPongWatch Watch App`** accoppiato al tuo iPhone (o il tuo orologio fisico).
-2. **Avvia il Match**: Premi **Play** (oppure `Cmd + R`) per compilare ed eseguire l'app.
-3. **Gioca!**: Qualsiasi punto o azione registrati sull'Apple Watch aggiornerà l'iPhone in tempo reale e viceversa tramite la connessione bidirezionale ultra-rapida con feedback aptico integrato!
-
-
-## 4. Live Activities & Dynamic Island 🚀 [CONFIGURATE & INTEGRATE]
-
-Ho completato interamente l'integrazione del widget e configurato la Target Membership di `PingPongAttributes.swift` direttamente nei file di progetto! La build del modulo compile con successo assoluto (`BUILD SUCCEEDED`, codice `0`).
-
-Per testare subito la Lock Screen interattiva e la Dynamic Island sul simulatore:
-1. **Seleziona la Destinazione**: Fai clic sullo schema di avvio principale **`PingPong`** nella barra degli strumenti in alto di Xcode e seleziona un simulatore iPhone (ad esempio *iPhone 16 Pro*).
-2. **Avvia l'App**: Premi **Play** (`Cmd + R`) per installare e l'eseguire l'applicazione.
-3. **Avvia una Partita**: Tocca lo schermo per avviare il match.
-4. **Guarda la Magia**: 
-   - Premi `Cmd + L` sul Mac per **bloccare lo schermo del simulatore**: vedrai il meraviglioso widget neon frosted visualizzare i punteggi, i set e il server di battuta.
-   - Sblocca il simulatore e torna alla schermata **Home** dell'iPhone (`Cmd + Shift + H`): la **Dynamic Island** mostrerà i punteggi sintetici, e con una pressione prolungata si espanderà svelando il tabellone completo!
-
-
 ## 5. Checklist di Pubblicazione su App Store Connect 🚀
 
 Ho creato una guida dettagliata completa nel tuo workspace chiamata **`GUIDA_PUBBLICAZIONE_APP_STORE.md`** per darti tutte le informazioni necessarie ad evitare rifiuti (rejection) da Apple. Qui trovi la lista di controllo rapida delle attività manuali da completare:

@@ -11,6 +11,7 @@
 		2437AAEE2FBC6F9D0067E1F9 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2437AAED2FBC6F9D0067E1F9 /* WidgetKit.framework */; };
 		2437AAF02FBC6F9D0067E1F9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2437AAEF2FBC6F9D0067E1F9 /* SwiftUI.framework */; };
 		2437AAFD2FBC6F9F0067E1F9 /* PingPongWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2437AAEB2FBC6F9D0067E1F9 /* PingPongWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2437AAFF2FBC6F9D0067E999 /* PingPongAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FE2C1E000100000001 /* PingPongAttributes.swift */; };
 		D60000012C1E000100000001 /* PingPongApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000022C1E000100000001 /* PingPongApp.swift */; };
 		D60000032C1E000100000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000042C1E000100000001 /* ContentView.swift */; };
 		D60000052C1E000100000001 /* ScoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000062C1E000100000001 /* ScoreViewModel.swift */; };
@@ -21,7 +22,6 @@
 		D60000FB2C1E000100000001 /* Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FA2C1E000100000001 /* Localized.swift */; };
 		D60000FD2C1E000100000001 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FC2C1E000100000001 /* LiveActivityManager.swift */; };
 		D60000FF2C1E000100000001 /* PingPongAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FE2C1E000100000001 /* PingPongAttributes.swift */; };
-		2437AAFF2FBC6F9D0067E999 /* PingPongAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FE2C1E000100000001 /* PingPongAttributes.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,7 +78,7 @@
 		D600000A2C1E000100000001 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		D600000C2C1E000100000001 /* SpeechManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
 		D600000E2C1E000200000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		D600000F2C1E000200000001 /* PingPong.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PingPong.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D600000F2C1E000200000001 /* Ping Pong Counter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ping Pong Counter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D60000FA2C1E000100000001 /* Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localized.swift; sourceTree = "<group>"; };
 		D60000FC2C1E000100000001 /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
 		D60000FE2C1E000100000001 /* PingPongAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingPongAttributes.swift; sourceTree = "<group>"; };
@@ -149,7 +149,7 @@
 		D60000122C1E000200000001 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D600000F2C1E000200000001 /* PingPong.app */,
+				D600000F2C1E000200000001 /* Ping Pong Counter.app */,
 				2437AAD22FBC6DBA0067E1F9 /* PingPongWatch Watch App.app */,
 				2437AAEB2FBC6F9D0067E1F9 /* PingPongWidgetExtension.appex */,
 			);
@@ -238,7 +238,7 @@
 			);
 			name = PingPong;
 			productName = PingPong;
-			productReference = D600000F2C1E000200000001 /* PingPong.app */;
+			productReference = D600000F2C1E000200000001 /* Ping Pong Counter.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -643,7 +643,7 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.simo.pingpong;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Ping Pong Counter";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -671,7 +671,7 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.simo.pingpong;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Ping Pong Counter";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

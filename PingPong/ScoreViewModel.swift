@@ -81,6 +81,7 @@ final class ScoreViewModel: ObservableObject {
     @Published var themeIndex: Int = 0 {
         didSet {
             UserDefaults.standard.set(themeIndex, forKey: "themeIndex")
+            syncLiveActivity()
         }
     }
     
@@ -396,7 +397,8 @@ final class ScoreViewModel: ObservableObject {
             p1Sets: p1Sets,
             p2Sets: p2Sets,
             currentServer: currentServer == .player1 ? "player1" : "player2",
-            winner: winner == nil ? nil : (winner == .player1 ? "player1" : "player2")
+            winner: winner == nil ? nil : (winner == .player1 ? "player1" : "player2"),
+            themeIndex: themeIndex
         )
     }
 }

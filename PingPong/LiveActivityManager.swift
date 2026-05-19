@@ -19,7 +19,7 @@ public final class LiveActivityManager: ObservableObject {
         }
     }
     
-    public func updateOrCreateActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil) {
+    public func updateOrCreateActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int) {
         if currentActivity == nil {
             startLiveActivity(
                 p1Name: p1Name,
@@ -28,7 +28,8 @@ public final class LiveActivityManager: ObservableObject {
                 p2Score: p2Score,
                 p1Sets: p1Sets,
                 p2Sets: p2Sets,
-                currentServer: currentServer
+                currentServer: currentServer,
+                themeIndex: themeIndex
             )
         } else {
             updateLiveActivity(
@@ -37,12 +38,13 @@ public final class LiveActivityManager: ObservableObject {
                 p1Sets: p1Sets,
                 p2Sets: p2Sets,
                 currentServer: currentServer,
-                winner: winner
+                winner: winner,
+                themeIndex: themeIndex
             )
         }
     }
     
-    public func startLiveActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String) {
+    public func startLiveActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, themeIndex: Int) {
         // First, ensure any old active session is fully cleaned up
         endLiveActivity()
         
@@ -61,7 +63,8 @@ public final class LiveActivityManager: ObservableObject {
             p1Sets: p1Sets,
             p2Sets: p2Sets,
             currentServer: currentServer,
-            winner: nil
+            winner: nil,
+            themeIndex: themeIndex
         )
         
         do {
@@ -77,7 +80,7 @@ public final class LiveActivityManager: ObservableObject {
         }
     }
     
-    public func updateLiveActivity(p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil) {
+    public func updateLiveActivity(p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int) {
         guard let activity = currentActivity else { return }
         
         let updatedState = PingPongAttributes.ContentState(
@@ -86,7 +89,8 @@ public final class LiveActivityManager: ObservableObject {
             p1Sets: p1Sets,
             p2Sets: p2Sets,
             currentServer: currentServer,
-            winner: winner
+            winner: winner,
+            themeIndex: themeIndex
         )
         
         Task {
