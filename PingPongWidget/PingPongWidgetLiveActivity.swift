@@ -36,6 +36,123 @@ struct WidgetTheme {
     }
 }
 
+private enum DynamicIslandScoreSide {
+    case leading
+    case trailing
+
+    var alignment: Alignment {
+        switch self {
+        case .leading:
+            return .leading
+        case .trailing:
+            return .trailing
+        }
+    }
+}
+
+private struct DynamicIslandCompactScore: View {
+    let score: Int
+    let tint: Color
+    let isServing: Bool
+    let side: DynamicIslandScoreSide
+    let accessibilityName: String
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 3) {
+                if side == .leading {
+                    serveDot
+                    scoreText
+                } else {
+                    scoreText
+                    serveDot
+                }
+            }
+
+            scoreText
+        }
+        .frame(maxWidth: 44, alignment: side.alignment)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(accessibilityName) \(score)")
+    }
+
+    private var scoreText: some View {
+        Text("\(score)")
+            .font(.system(size: 17, weight: .black, design: .rounded))
+            .monospacedDigit()
+            .foregroundStyle(.white)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .shadow(color: tint.opacity(0.75), radius: 3)
+    }
+
+    private var serveDot: some View {
+        Circle()
+            .fill(isServing ? Color.yellow : tint)
+            .frame(width: isServing ? 7 : 5, height: isServing ? 7 : 5)
+            .shadow(color: (isServing ? Color.yellow : tint).opacity(0.7), radius: 3)
+    }
+}
+
+private struct DynamicIslandExpandedPlayer: View {
+    let name: String
+    let score: Int
+    let tint: Color
+    let isServing: Bool
+    let alignment: HorizontalAlignment
+
+    var body: some View {
+        VStack(alignment: alignment, spacing: 3) {
+            HStack(spacing: 4) {
+                if alignment == .leading {
+                    serveIndicator
+                    playerName
+                } else {
+                    playerName
+                    serveIndicator
+                }
+            }
+
+            Text("\(score)")
+                .font(.system(size: 28, weight: .black, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .shadow(color: tint.opacity(0.85), radius: 5)
+        }
+    }
+
+    private var playerName: some View {
+        Text(String(name.prefix(7)).uppercased())
+            .font(.system(size: 10, weight: .black, design: .rounded))
+            .foregroundStyle(.white.opacity(0.72))
+            .lineLimit(1)
+            .minimumScaleFactor(0.65)
+    }
+
+    private var serveIndicator: some View {
+        Circle()
+            .fill(isServing ? Color.yellow : tint.opacity(0.65))
+            .frame(width: 6, height: 6)
+    }
+}
+
+private struct DynamicIslandMinimalScore: View {
+    let p1Score: Int
+    let p2Score: Int
+
+    var body: some View {
+        Text("\(p1Score)-\(p2Score)")
+            .font(.system(size: 12, weight: .black, design: .rounded))
+            .monospacedDigit()
+            .foregroundStyle(.white)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .accessibilityLabel("Score \(p1Score) a \(p2Score)")
+    }
+}
+
 public struct PingPongWidgetLiveActivity: Widget {
     public init() {}
     
@@ -169,105 +286,92 @@ public struct PingPongWidgetLiveActivity: Widget {
             let theme = WidgetTheme.theme(for: context.state.themeIndex)
             
             return DynamicIsland {
-                // EXPANDED STATE (Long press on Dynamic Island)
-                // EXPANDED STATE (Long press on Dynamic Island)
                 DynamicIslandExpandedRegion(.leading) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack(spacing: 4) {
-                            if context.state.currentServer == "player1" {
-                                Circle()
-                                    .fill(Color.yellow)
-                                    .frame(width: 6, height: 6)
-                            }
-                            Text(String(context.attributes.p1Name.prefix(8)))
-                                .font(.system(.caption2, design: .rounded))
-                                .fontWeight(.bold)
-                                .foregroundColor(.white.opacity(0.8))
-                        }
-                        Text("\(context.state.p1Score)")
-                            .font(.system(size: 26, weight: .black, design: .rounded))
-                            .foregroundColor(theme.p1Color)
-                    }
-                    .padding(.leading, 8)
+                    DynamicIslandExpandedPlayer(
+                        name: context.attributes.p1Name,
+                        score: context.state.p1Score,
+                        tint: theme.p1Color,
+                        isServing: context.state.currentServer == "player1",
+                        alignment: .leading
+                    )
                 }
                 
                 DynamicIslandExpandedRegion(.trailing) {
-                    VStack(alignment: .trailing, spacing: 2) {
-                        HStack(spacing: 4) {
-                            Text(String(context.attributes.p2Name.prefix(8)))
-                                .font(.system(.caption2, design: .rounded))
-                                .fontWeight(.bold)
-                                .foregroundColor(.white.opacity(0.8))
-                            if context.state.currentServer == "player2" {
-                                Circle()
-                                    .fill(Color.yellow)
-                                    .frame(width: 6, height: 6)
-                            }
-                        }
-                        Text("\(context.state.p2Score)")
-                            .font(.system(size: 26, weight: .black, design: .rounded))
-                            .foregroundColor(theme.p2Color)
-                    }
-                    .padding(.trailing, 8)
+                    DynamicIslandExpandedPlayer(
+                        name: context.attributes.p2Name,
+                        score: context.state.p2Score,
+                        tint: theme.p2Color,
+                        isServing: context.state.currentServer == "player2",
+                        alignment: .trailing
+                    )
                 }
                 
                 DynamicIslandExpandedRegion(.center) {
                     VStack(spacing: 2) {
-                        Text("\(context.state.p1Score) — \(context.state.p2Score)")
-                            .font(.system(.headline, design: .rounded))
+                        Text("SET")
+                            .font(.system(size: 8, weight: .black, design: .rounded))
+                            .foregroundColor(.white.opacity(0.42))
+
+                        Text("\(context.state.p1Sets)-\(context.state.p2Sets)")
+                            .font(.system(size: 16, weight: .black, design: .rounded))
                             .fontWeight(.black)
+                            .monospacedDigit()
                             .foregroundColor(.yellow)
-                        
-                        Text("SET \(context.state.p1Sets)—\(context.state.p2Sets)")
-                            .font(.system(size: 9, weight: .bold, design: .rounded))
-                            .foregroundColor(.white.opacity(0.5))
                     }
                 }
                 
                 DynamicIslandExpandedRegion(.bottom) {
                     if let winner = context.state.winner {
                         let winnerName = winner == "player1" ? context.attributes.p1Name : context.attributes.p2Name
-                        Text("🏆 Vince \(winnerName)!")
-                            .font(.system(.caption2, design: .rounded))
-                            .fontWeight(.black)
-                            .foregroundColor(.yellow)
+                        HStack(spacing: 5) {
+                            Image(systemName: "trophy.fill")
+                                .foregroundStyle(.yellow)
+                            Text("Vince \(winnerName)!")
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.75)
+                        }
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .foregroundColor(.yellow)
                     } else {
-                        Text("MATCH IN CORSO")
-                            .font(.system(size: 9, weight: .bold, design: .rounded))
-                            .foregroundColor(.white.opacity(0.2))
-                            .tracking(2)
+                        HStack(spacing: 8) {
+                            Text("\(context.state.p1Score)")
+                                .foregroundStyle(theme.p1Color)
+                            Text("MATCH")
+                                .foregroundStyle(.white.opacity(0.45))
+                            Text("\(context.state.p2Score)")
+                                .foregroundStyle(theme.p2Color)
+                        }
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .monospacedDigit()
                     }
                 }
                 
             } compactLeading: {
-                // COMPACT STATE (Left pill side) - P1 indicator
-                HStack(spacing: 4) {
-                    Circle()
-                        .fill(theme.p1Color)
-                        .frame(width: 6, height: 6)
-                    Text("\(context.state.p1Score)")
-                        .font(.system(.subheadline, design: .rounded))
-                        .fontWeight(.black)
-                        .foregroundColor(theme.p1Color)
-                }
+                DynamicIslandCompactScore(
+                    score: context.state.p1Score,
+                    tint: theme.p1Color,
+                    isServing: context.state.currentServer == "player1",
+                    side: .leading,
+                    accessibilityName: context.attributes.p1Name
+                )
             } compactTrailing: {
-                // COMPACT STATE (Right pill side) - P2 indicator
-                HStack(spacing: 4) {
-                    Text("\(context.state.p2Score)")
-                        .font(.system(.subheadline, design: .rounded))
-                        .fontWeight(.black)
-                        .foregroundColor(theme.p2Color)
-                    Circle()
-                        .fill(theme.p2Color)
-                        .frame(width: 6, height: 6)
-                }
+                DynamicIslandCompactScore(
+                    score: context.state.p2Score,
+                    tint: theme.p2Color,
+                    isServing: context.state.currentServer == "player2",
+                    side: .trailing,
+                    accessibilityName: context.attributes.p2Name
+                )
             } minimal: {
-                // MINIMAL STATE (When multiple live activities are active)
-                Text("\(context.state.p1Score)—\(context.state.p2Score)")
-                    .font(.system(.caption, design: .rounded))
-                    .fontWeight(.black)
-                    .foregroundColor(.white)
+                DynamicIslandMinimalScore(
+                    p1Score: context.state.p1Score,
+                    p2Score: context.state.p2Score
+                )
             }
+            .keylineTint(theme.p1Color.opacity(0.7))
+            .contentMargins(.all, 0, for: .compactLeading)
+            .contentMargins(.all, 0, for: .compactTrailing)
+            .contentMargins(.bottom, 8, for: .expanded)
         }
         .contentMarginsDisabled()
     }

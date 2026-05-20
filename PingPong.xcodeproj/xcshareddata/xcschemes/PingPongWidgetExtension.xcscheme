@@ -31,7 +31,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D60000142C1E000200000001"
-               BuildableName = "PingPong.app"
+               BuildableName = "Ping Pong Counter.app"
                BlueprintName = "PingPong"
                ReferencedContainer = "container:PingPong.xcodeproj">
             </BuildableReference>
@@ -73,7 +73,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D60000142C1E000200000001"
-            BuildableName = "PingPong.app"
+            BuildableName = "Ping Pong Counter.app"
             BlueprintName = "PingPong"
             ReferencedContainer = "container:PingPong.xcodeproj">
          </BuildableReference>
@@ -109,7 +109,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D60000142C1E000200000001"
-            BuildableName = "PingPong.app"
+            BuildableName = "Ping Pong Counter.app"
             BlueprintName = "PingPong"
             ReferencedContainer = "container:PingPong.xcodeproj">
          </BuildableReference>

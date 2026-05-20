@@ -21,6 +21,10 @@ public final class LiveActivityManager: ObservableObject {
     
     public func updateOrCreateActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int) {
         if currentActivity == nil {
+            reconnectToExistingActivity()
+        }
+        
+        if currentActivity == nil {
             startLiveActivity(
                 p1Name: p1Name,
                 p2Name: p2Name,
@@ -45,8 +49,15 @@ public final class LiveActivityManager: ObservableObject {
     }
     
     public func startLiveActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, themeIndex: Int) {
-        // First, ensure any old active session is fully cleaned up
-        endLiveActivity()
+        // Clear any old session without letting its async dismissal erase the new activity reference.
+        let previousActivity = currentActivity
+        currentActivity = nil
+        if let previousActivity {
+            Task {
+                await previousActivity.end(nil, dismissalPolicy: .immediate)
+                print("Previous Live Activity terminated successfully.")
+            }
+        }
         
         // On simulator, areActivitiesEnabled can fail due to sandbox cache issues, bypass it
         #if !targetEnvironment(simulator)
@@ -102,12 +113,11 @@ public final class LiveActivityManager: ObservableObject {
     
     public func endLiveActivity() {
         guard let activity = currentActivity else { return }
+        currentActivity = nil
         
         Task {
             await activity.end(nil, dismissalPolicy: .immediate)
-            self.currentActivity = nil
             print("Live Activity terminated successfully.")
         }
     }
 }
-
