@@ -9,6 +9,10 @@ struct SettingsView: View {
         ("Mint & Royal", "Verde & Viola", Color(red: 0.0, green: 0.85, blue: 0.55), Color(red: 0.55, green: 0.3, blue: 0.9)),
         ("Solar Flare", "Arancione & Teal", Color(red: 1.0, green: 0.55, blue: 0.0), Color(red: 0.0, green: 0.8, blue: 0.8))
     ]
+
+    private var selectedThemeIndex: Int {
+        themesList.indices.contains(viewModel.themeIndex) ? viewModel.themeIndex : 0
+    }
     
     var body: some View {
         NavigationStack {
@@ -25,7 +29,7 @@ struct SettingsView: View {
                     Section(header: Text(Localized.playersHeader).foregroundColor(.gray)) {
                         HStack {
                             Image(systemName: "person.fill")
-                                .foregroundColor(themesList[viewModel.themeIndex].2)
+                                .foregroundColor(themesList[selectedThemeIndex].2)
                             TextField(Localized.p1Placeholder, text: $viewModel.p1Name)
                                 .foregroundColor(.white)
                         }
@@ -33,7 +37,7 @@ struct SettingsView: View {
                         
                         HStack {
                             Image(systemName: "person.fill")
-                                .foregroundColor(themesList[viewModel.themeIndex].3)
+                                .foregroundColor(themesList[selectedThemeIndex].3)
                             TextField(Localized.p2Placeholder, text: $viewModel.p2Name)
                                 .foregroundColor(.white)
                         }
@@ -65,7 +69,7 @@ struct SettingsView: View {
                         .listRowBackground(Color(white: 0.15))
                         
                         Toggle(Localized.winByTwo, isOn: $viewModel.winByTwo)
-                            .tint(themesList[viewModel.themeIndex].2)
+                            .tint(themesList[selectedThemeIndex].2)
                             .foregroundColor(.white)
                             .listRowBackground(Color(white: 0.15))
                         
@@ -83,7 +87,7 @@ struct SettingsView: View {
                     
                     Section(header: Text(Localized.audioHeader).foregroundColor(.gray)) {
                         Toggle(Localized.voiceAssistant, isOn: $viewModel.isVoiceEnabled)
-                            .tint(themesList[viewModel.themeIndex].2)
+                            .tint(themesList[selectedThemeIndex].2)
                             .foregroundColor(.white)
                             .listRowBackground(Color(white: 0.15))
                     }
@@ -107,10 +111,10 @@ struct SettingsView: View {
                                 .foregroundColor(.white)
                             Spacer()
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(themesList[viewModel.themeIndex].2)
+                                .fill(themesList[selectedThemeIndex].2)
                                 .frame(width: 40, height: 25)
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(themesList[viewModel.themeIndex].3)
+                                .fill(themesList[selectedThemeIndex].3)
                                 .frame(width: 40, height: 25)
                         }
                         .listRowBackground(Color(white: 0.15))

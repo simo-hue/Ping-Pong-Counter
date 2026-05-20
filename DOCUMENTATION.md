@@ -262,6 +262,17 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **ActivityKit Lifecycle**: Aggiornato `LiveActivityManager` per riconnettersi a eventuali attivita esistenti prima di crearne una nuova e per chiudere una race in cui la dismiss asincrona di una vecchia Live Activity poteva azzerare il riferimento alla nuova.
   - **Verifica**: Eseguiti `build_sim` e `build_run_sim` con XcodeBuildMCP su iPhone 17 Pro iOS Simulator. La build e il run sono completati con successo, senza warning o errori; la Lock Screen ha mostrato correttamente la Live Activity e il prompt di autorizzazione iOS.
 
+### [2026-05-20 08:40 CEST]: Audit Pignolo Stabilita App, Logica Match e Watch Sync
+* **Dettagli**: Eseguito un controllo approfondito dei sorgenti iOS, widget e watchOS per individuare errori logici e rischi runtime. Sono stati corretti i punti che potevano causare crash da preferenze corrotte, reset non annullabili, perdita dello stato partita al riavvio, sincronizzazioni duplicate verso Live Activities/Watch e disallineamento delle regole locali su Apple Watch.
+* **Tech Notes**:
+  - **State Persistence**: `ScoreViewModel` ora ripristina e persiste punteggi, set, server corrente, server iniziale del set e vincitore tramite `UserDefaults`, evitando che un rilancio dell'app azzeri una partita in corso.
+  - **Preference Validation**: Validati `targetScore`, `bestOfSets`, `serveRotationInterval` e `themeIndex`; `ContentView` e `SettingsView` hanno fallback difensivi per evitare accessi fuori range ai temi.
+  - **Batched Sync**: Introdotto un gate di bootstrap e mutazioni batch per ridurre aggiornamenti multipli a Live Activity/Watch durante init, reset, undo, swap e variazioni di punteggio.
+  - **Undo Reset**: Il reset salva lo snapshot precedente solo quando esiste uno stato partita significativo, rendendo effettivamente annullabile un reset accidentale senza creare history inutile a 0-0.
+  - **WatchConnectivity**: L'iPhone invia stato e regole al Watch via `updateApplicationContext` quando il Watch e abbinato/installato, e via `sendMessage` quando raggiungibile. Il Watch applica lo stato autorevole e usa localmente le stesse regole di punteggio, deuce, servizio e target score dell'iPhone.
+  - **watchOS Deployment**: Abbassato `WATCHOS_DEPLOYMENT_TARGET` a `10.0`, coerente con l'iOS deployment target 17.0 e con le API effettivamente usate, evitando una restrizione artificiale a watchOS 26.5.
+  - **Logging Fix**: Corretto il log di errore `AVAudioSession`, che prima stampava la stringa letterale dell'interpolazione invece del messaggio reale.
+  - **Verifica**: Compilati con successo e senza warning gli scheme `PingPong`, `PingPongWatch Watch App` e `PingPongWidgetExtension` via XcodeBuildMCP. Eseguito anche `xcodebuild analyze` sullo scheme principale con esito `ANALYZE SUCCEEDED`.
 
 
 

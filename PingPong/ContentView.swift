@@ -48,7 +48,7 @@ struct ContentView: View {
     ]
     
     var currentTheme: (name: String, p1Color: Color, p2Color: Color, bgStart: Color, bgEnd: Color) {
-        themesList[viewModel.themeIndex]
+        themesList[themesList.indices.contains(viewModel.themeIndex) ? viewModel.themeIndex : 0]
     }
     
     var body: some View {

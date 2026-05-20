@@ -1,4 +1,4 @@
-import WatchConnectivity
+@preconcurrency import WatchConnectivity
 import Combine
 
 final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
@@ -8,15 +8,25 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     @Published var p2Name: String = "Giocatore 2"
     @Published var p1Score: Int = 0
     @Published var p2Score: Int = 0
+    @Published var p1Sets: Int = 0
+    @Published var p2Sets: Int = 0
     @Published var currentServer: String = "player1"
+    @Published var startingServerOfMatch: String = "player1"
+    @Published var startingServerOfSet: String = "player1"
     @Published var winner: String = ""
+    @Published var targetScore: Int = 11
+    @Published var winByTwo: Bool = true
+    @Published var serveRotationInterval: Int = 2
     
     private var session: WCSession?
     
     private struct WatchSnapshot {
         let p1Score: Int
         let p2Score: Int
+        let p1Sets: Int
+        let p2Sets: Int
         let currentServer: String
+        let startingServerOfSet: String
         let winner: String
     }
     private var history: [WatchSnapshot] = []
@@ -47,6 +57,7 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     
     func sendDecrement(player: String) {
         guard winner.isEmpty else { return }
+        guard (player == "player1" ? p1Score : p2Score) > 0 else { return }
         
         saveToHistory()
         
@@ -64,7 +75,10 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
         if let previous = history.popLast() {
             p1Score = previous.p1Score
             p2Score = previous.p2Score
+            p1Sets = previous.p1Sets
+            p2Sets = previous.p2Sets
             currentServer = previous.currentServer
+            startingServerOfSet = previous.startingServerOfSet
             winner = previous.winner
         }
         send(action: "undo")
@@ -74,9 +88,11 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
         saveToHistory()
         p1Score = 0
         p2Score = 0
-        currentServer = "player1"
+        p1Sets = 0
+        p2Sets = 0
+        currentServer = startingServerOfMatch
+        startingServerOfSet = startingServerOfMatch
         winner = ""
-        history.removeAll()
         send(action: "reset")
     }
     
@@ -84,7 +100,10 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
         let snapshot = WatchSnapshot(
             p1Score: p1Score,
             p2Score: p2Score,
+            p1Sets: p1Sets,
+            p2Sets: p2Sets,
             currentServer: currentServer,
+            startingServerOfSet: startingServerOfSet,
             winner: winner
         )
         history.append(snapshot)
@@ -96,17 +115,20 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     private func updateLocalRules() {
         let total = p1Score + p2Score
         
-        // Serve rotation switches every 2 serves normally, or every 1 in deuce (10-10 or more)
-        let isDeuce = p1Score >= 10 && p2Score >= 10
-        let interval = isDeuce ? 1 : 2
+        // Mirror the iPhone rules optimistically until the authoritative state arrives.
+        let isDeuce = p1Score >= targetScore - 1 && p2Score >= targetScore - 1
+        let interval = isDeuce ? 1 : max(1, serveRotationInterval)
         let totalServes = total / interval
         
-        currentServer = (totalServes % 2 == 0) ? "player1" : "player2"
+        if startingServerOfSet == "player1" {
+            currentServer = (totalServes % 2 == 0) ? "player1" : "player2"
+        } else {
+            currentServer = (totalServes % 2 == 0) ? "player2" : "player1"
+        }
         
-        // Winner check (standard table tennis rules: first to 11 points by 2)
-        if p1Score >= 11 && (p1Score - p2Score) >= 2 {
+        if p1Score >= targetScore && (!winByTwo || (p1Score - p2Score) >= 2) {
             winner = "player1"
-        } else if p2Score >= 11 && (p2Score - p1Score) >= 2 {
+        } else if p2Score >= targetScore && (!winByTwo || (p2Score - p1Score) >= 2) {
             winner = "player2"
         } else {
             winner = ""
@@ -121,28 +143,49 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
             data["player"] = player
         }
         
-        session.sendMessage(data, replyHandler: nil, errorHandler: { error in
-            print("Watch error sending message: \(error.localizedDescription)")
-        })
+        if session.isReachable {
+            session.sendMessage(data, replyHandler: nil, errorHandler: { error in
+                print("Watch error sending message: \(error.localizedDescription)")
+            })
+        } else {
+            session.transferUserInfo(data)
+        }
     }
     
     // MARK: - WCSessionDelegate
     
-    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+        applyState(message)
+    }
+
+    nonisolated func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
+        applyState(applicationContext)
+    }
+
+    private nonisolated func applyState(_ message: [String: Any]) {
         DispatchQueue.main.async {
             // Overwrite with master iOS state when synced
             if let p1Name = message["p1Name"] as? String { self.p1Name = p1Name }
             if let p1Score = message["p1Score"] as? String { self.p1Score = Int(p1Score) ?? 0 }
             if let p1ScoreInt = message["p1Score"] as? Int { self.p1Score = p1ScoreInt }
+            if let p1Sets = message["p1Sets"] as? Int { self.p1Sets = p1Sets }
             if let p2Name = message["p2Name"] as? String { self.p2Name = p2Name }
             if let p2Score = message["p2Score"] as? String { self.p2Score = Int(p2Score) ?? 0 }
             if let p2ScoreInt = message["p2Score"] as? Int { self.p2Score = p2ScoreInt }
+            if let p2Sets = message["p2Sets"] as? Int { self.p2Sets = p2Sets }
             if let currentServer = message["currentServer"] as? String { self.currentServer = currentServer }
+            if let startingServerOfMatch = message["startingServerOfMatch"] as? String { self.startingServerOfMatch = startingServerOfMatch }
+            if let startingServerOfSet = message["startingServerOfSet"] as? String { self.startingServerOfSet = startingServerOfSet }
             if let winner = message["winner"] as? String { self.winner = winner }
+            if let targetScore = message["targetScore"] as? Int { self.targetScore = [11, 21].contains(targetScore) ? targetScore : 11 }
+            if let winByTwo = message["winByTwo"] as? Bool { self.winByTwo = winByTwo }
+            if let serveRotationInterval = message["serveRotationInterval"] as? Int {
+                self.serveRotationInterval = [2, 5].contains(serveRotationInterval) ? serveRotationInterval : 2
+            }
         }
     }
     
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+    nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
             print("WCSession activation failed on Watch: \(error.localizedDescription)")
         } else {

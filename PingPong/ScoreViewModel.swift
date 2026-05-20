@@ -18,110 +18,184 @@ struct GameSnapshot: Equatable {
 
 @MainActor
 final class ScoreViewModel: ObservableObject {
+    private enum DefaultsKey {
+        static let targetScore = "targetScore"
+        static let winByTwo = "winByTwo"
+        static let bestOfSets = "bestOfSets"
+        static let serveRotationInterval = "serveRotationInterval"
+        static let p1Name = "p1Name"
+        static let p2Name = "p2Name"
+        static let startingServerOfMatch = "startingServerOfMatch"
+        static let startingServerOfSet = "startingServerOfSet"
+        static let currentServer = "currentServer"
+        static let p1Score = "p1Score"
+        static let p2Score = "p2Score"
+        static let p1Sets = "p1Sets"
+        static let p2Sets = "p2Sets"
+        static let winner = "winner"
+        static let themeIndex = "themeIndex"
+        static let isVoiceEnabled = "isVoiceEnabled"
+    }
+
+    private static let validTargetScores = Set([11, 21])
+    private static let validBestOfSets = Set([1, 3, 5])
+    private static let validServeRotationIntervals = Set([2, 5])
+    private static let validThemeRange = 0...2
+
     // Game Rules Settings
     @Published var targetScore: Int = 11 { // 11 or 21 standard
         didSet {
-            UserDefaults.standard.set(targetScore, forKey: "targetScore")
+            guard Self.validTargetScores.contains(targetScore) else {
+                targetScore = oldValue
+                return
+            }
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(targetScore, forKey: DefaultsKey.targetScore)
             resetMatch()
         }
     }
     @Published var winByTwo: Bool = true {
         didSet {
-            UserDefaults.standard.set(winByTwo, forKey: "winByTwo")
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(winByTwo, forKey: DefaultsKey.winByTwo)
+            syncWithWatch()
         }
     }
     @Published var bestOfSets: Int = 3 { // 1, 3, or 5 sets
         didSet {
-            UserDefaults.standard.set(bestOfSets, forKey: "bestOfSets")
+            guard Self.validBestOfSets.contains(bestOfSets) else {
+                bestOfSets = oldValue
+                return
+            }
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(bestOfSets, forKey: DefaultsKey.bestOfSets)
             resetMatch()
         }
     }
     @Published var serveRotationInterval: Int = 2 { // changes to 1 in deuce or 5 for 21-point game
         didSet {
-            UserDefaults.standard.set(serveRotationInterval, forKey: "serveRotationInterval")
-            updateServer()
+            guard Self.validServeRotationIntervals.contains(serveRotationInterval) else {
+                serveRotationInterval = oldValue
+                return
+            }
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(serveRotationInterval, forKey: DefaultsKey.serveRotationInterval)
+            performStateMutation {
+                updateServer()
+            }
         }
     }
     
     // Player Details
     @Published var p1Name: String = Localized.defaultP1Name {
         didSet {
-            UserDefaults.standard.set(p1Name, forKey: "p1Name")
-            syncWithWatch()
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(p1Name, forKey: DefaultsKey.p1Name)
+            stateDidChange()
         }
     }
     @Published var p2Name: String = Localized.defaultP2Name {
         didSet {
-            UserDefaults.standard.set(p2Name, forKey: "p2Name")
-            syncWithWatch()
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(p2Name, forKey: DefaultsKey.p2Name)
+            stateDidChange()
         }
     }
     
     // Current Match Scores
-    @Published var p1Score: Int = 0 { didSet { syncWithWatch() } }
-    @Published var p2Score: Int = 0 { didSet { syncWithWatch() } }
-    @Published var p1Sets: Int = 0 { didSet { syncWithWatch() } }
-    @Published var p2Sets: Int = 0 { didSet { syncWithWatch() } }
+    @Published var p1Score: Int = 0 { didSet { stateDidChange() } }
+    @Published var p2Score: Int = 0 { didSet { stateDidChange() } }
+    @Published var p1Sets: Int = 0 { didSet { stateDidChange() } }
+    @Published var p2Sets: Int = 0 { didSet { stateDidChange() } }
     
     // Server state
     @Published var startingServerOfMatch: Player = .player1 {
         didSet {
-            UserDefaults.standard.set(startingServerOfMatch.rawValue, forKey: "startingServerOfMatch")
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(startingServerOfMatch.rawValue, forKey: DefaultsKey.startingServerOfMatch)
             if p1Score == 0 && p2Score == 0 && p1Sets == 0 && p2Sets == 0 {
-                startingServerOfSet = startingServerOfMatch
-                currentServer = startingServerOfMatch
+                if isApplyingStateBatch {
+                    startingServerOfSet = startingServerOfMatch
+                    currentServer = startingServerOfMatch
+                } else {
+                    performStateMutation {
+                        startingServerOfSet = startingServerOfMatch
+                        currentServer = startingServerOfMatch
+                    }
+                }
+            } else {
+                stateDidChange()
             }
-            syncWithWatch()
         }
     }
-    @Published var startingServerOfSet: Player = .player1 { didSet { syncWithWatch() } }
-    @Published var currentServer: Player = .player1 { didSet { syncWithWatch() } }
+    @Published var startingServerOfSet: Player = .player1 { didSet { stateDidChange() } }
+    @Published var currentServer: Player = .player1 { didSet { stateDidChange() } }
     
     // Visual theme selection
     @Published var themeIndex: Int = 0 {
         didSet {
-            UserDefaults.standard.set(themeIndex, forKey: "themeIndex")
+            guard Self.validThemeRange.contains(themeIndex) else {
+                themeIndex = oldValue
+                return
+            }
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(themeIndex, forKey: DefaultsKey.themeIndex)
             syncLiveActivity()
         }
     }
     
     // Match Winner
-    @Published var winner: Player? = nil { didSet { syncWithWatch() } }
+    @Published var winner: Player? = nil { didSet { stateDidChange() } }
     
     // State history for Undo
     private var history: [GameSnapshot] = []
+    private var isApplyingStateBatch = false
+    private var hasFinishedInitialLoad = false
     
     // Voice announcements
     @Published var isVoiceEnabled: Bool = false {
         didSet {
-            UserDefaults.standard.set(isVoiceEnabled, forKey: "isVoiceEnabled")
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(isVoiceEnabled, forKey: DefaultsKey.isVoiceEnabled)
             SpeechManager.shared.isVoiceEnabled = isVoiceEnabled
         }
     }
     
     init() {
         // Load persisted settings from UserDefaults or use native defaults
-        self.targetScore = UserDefaults.standard.object(forKey: "targetScore") as? Int ?? 11
-        self.winByTwo = UserDefaults.standard.object(forKey: "winByTwo") as? Bool ?? true
-        self.bestOfSets = UserDefaults.standard.object(forKey: "bestOfSets") as? Int ?? 3
-        self.serveRotationInterval = UserDefaults.standard.object(forKey: "serveRotationInterval") as? Int ?? 2
-        self.p1Name = UserDefaults.standard.string(forKey: "p1Name") ?? Localized.defaultP1Name
-        self.p2Name = UserDefaults.standard.string(forKey: "p2Name") ?? Localized.defaultP2Name
-        self.themeIndex = UserDefaults.standard.object(forKey: "themeIndex") as? Int ?? 0
-        self.isVoiceEnabled = UserDefaults.standard.object(forKey: "isVoiceEnabled") as? Bool ?? false
-        
-        if let rawServer = UserDefaults.standard.string(forKey: "startingServerOfMatch"),
+        let defaults = UserDefaults.standard
+        self.targetScore = Self.validTargetScores.contains(defaults.integer(forKey: DefaultsKey.targetScore)) ? defaults.integer(forKey: DefaultsKey.targetScore) : 11
+        self.winByTwo = defaults.object(forKey: DefaultsKey.winByTwo) as? Bool ?? true
+        self.bestOfSets = Self.validBestOfSets.contains(defaults.integer(forKey: DefaultsKey.bestOfSets)) ? defaults.integer(forKey: DefaultsKey.bestOfSets) : 3
+        self.serveRotationInterval = Self.validServeRotationIntervals.contains(defaults.integer(forKey: DefaultsKey.serveRotationInterval)) ? defaults.integer(forKey: DefaultsKey.serveRotationInterval) : 2
+        self.p1Name = defaults.string(forKey: DefaultsKey.p1Name) ?? Localized.defaultP1Name
+        self.p2Name = defaults.string(forKey: DefaultsKey.p2Name) ?? Localized.defaultP2Name
+        let savedThemeIndex = defaults.object(forKey: DefaultsKey.themeIndex) as? Int ?? 0
+        self.themeIndex = Self.validThemeRange.contains(savedThemeIndex) ? savedThemeIndex : 0
+        self.isVoiceEnabled = defaults.object(forKey: DefaultsKey.isVoiceEnabled) as? Bool ?? false
+
+        if let rawServer = defaults.string(forKey: DefaultsKey.startingServerOfMatch),
            let savedServer = Player(rawValue: rawServer) {
             self.startingServerOfMatch = savedServer
         } else {
             self.startingServerOfMatch = .player1
         }
+
+        self.p1Score = max(0, defaults.integer(forKey: DefaultsKey.p1Score))
+        self.p2Score = max(0, defaults.integer(forKey: DefaultsKey.p2Score))
+        self.p1Sets = min(max(0, defaults.integer(forKey: DefaultsKey.p1Sets)), bestOfSets)
+        self.p2Sets = min(max(0, defaults.integer(forKey: DefaultsKey.p2Sets)), bestOfSets)
+        self.startingServerOfSet = Player(rawValue: defaults.string(forKey: DefaultsKey.startingServerOfSet) ?? "") ?? startingServerOfMatch
+        self.currentServer = Player(rawValue: defaults.string(forKey: DefaultsKey.currentServer) ?? "") ?? startingServerOfSet
+        self.winner = Player(rawValue: defaults.string(forKey: DefaultsKey.winner) ?? "")
         
         // Push initial speech commentary status
         SpeechManager.shared.isVoiceEnabled = self.isVoiceEnabled
         
         WatchConnector.shared.configure(with: self)
-        resetMatch()
+        hasFinishedInitialLoad = true
+        persistMatchState()
+        syncWithWatch()
     }
     
     // MARK: - Core Operations
@@ -131,48 +205,55 @@ final class ScoreViewModel: ObservableObject {
         
         saveToHistory()
         
-        if player == .player1 {
-            p1Score += 1
-            HapticManager.shared.play(.scoreIncrement)
-        } else {
-            p2Score += 1
-            HapticManager.shared.play(.scoreIncrement)
+        performStateMutation {
+            if player == .player1 {
+                p1Score += 1
+                HapticManager.shared.play(.scoreIncrement)
+            } else {
+                p2Score += 1
+                HapticManager.shared.play(.scoreIncrement)
+            }
+
+            checkSetEnd()
+            updateServer()
         }
-        
-        checkSetEnd()
-        updateServer()
+
         announceState()
     }
     
     func decrementScore(for player: Player) {
         guard winner == nil else { return }
         
-        if player == .player1 {
-            guard p1Score > 0 else { return }
-            saveToHistory()
-            p1Score -= 1
-            HapticManager.shared.play(.scoreDecrement)
-        } else {
-            guard p2Score > 0 else { return }
-            saveToHistory()
-            p2Score -= 1
-            HapticManager.shared.play(.scoreDecrement)
+        guard (player == .player1 ? p1Score : p2Score) > 0 else { return }
+
+        saveToHistory()
+        performStateMutation {
+            if player == .player1 {
+                p1Score -= 1
+                HapticManager.shared.play(.scoreDecrement)
+            } else {
+                p2Score -= 1
+                HapticManager.shared.play(.scoreDecrement)
+            }
+
+            updateServer()
         }
-        
-        updateServer()
+
         announceState()
     }
     
     func undo() {
         guard let previousState = history.popLast() else { return }
         
-        p1Score = previousState.p1Score
-        p2Score = previousState.p2Score
-        p1Sets = previousState.p1Sets
-        p2Sets = previousState.p2Sets
-        currentServer = previousState.currentServer
-        startingServerOfSet = previousState.startingServerOfSet
-        winner = previousState.winner
+        performStateMutation {
+            p1Score = previousState.p1Score
+            p2Score = previousState.p2Score
+            p1Sets = previousState.p1Sets
+            p2Sets = previousState.p2Sets
+            currentServer = previousState.currentServer
+            startingServerOfSet = previousState.startingServerOfSet
+            winner = previousState.winner
+        }
         
         HapticManager.shared.play(.scoreDecrement)
         
@@ -186,51 +267,56 @@ final class ScoreViewModel: ObservableObject {
     }
     
     func resetMatch() {
-        saveToHistory() // let them undo a reset if clicked by accident!
+        if hasMeaningfulMatchState {
+            saveToHistory()
+        }
         
-        p1Score = 0
-        p2Score = 0
-        p1Sets = 0
-        p2Sets = 0
-        winner = nil
-        startingServerOfSet = startingServerOfMatch
-        currentServer = startingServerOfMatch
-        history.removeAll()
-        
+        performStateMutation {
+            p1Score = 0
+            p2Score = 0
+            p1Sets = 0
+            p2Sets = 0
+            winner = nil
+            startingServerOfSet = startingServerOfMatch
+            currentServer = startingServerOfMatch
+        }
+
         HapticManager.shared.play(.reset)
         SpeechManager.shared.speak("Incontro azzerato. Nuova partita! Batte \(startingServerOfMatch == .player1 ? p1Name : p2Name).")
     }
     
     func swapSides() {
-        // Swap player names and their active set counts and scores so players can change sides on the physical table
-        let tempName = p1Name
-        p1Name = p2Name
-        p2Name = tempName
-        
-        let tempScore = p1Score
-        p1Score = p2Score
-        p2Score = tempScore
-        
-        let tempSets = p1Sets
-        p1Sets = p2Sets
-        p2Sets = tempSets
-        
-        // Also swap server states
-        startingServerOfMatch = startingServerOfMatch == .player1 ? .player2 : .player1
-        startingServerOfSet = startingServerOfSet == .player1 ? .player2 : .player1
-        currentServer = currentServer == .player1 ? .player2 : .player1
-        
-        // Re-map history states to new swap
-        history = history.map { snapshot in
-            GameSnapshot(
-                p1Score: snapshot.p2Score,
-                p2Score: snapshot.p1Score,
-                p1Sets: snapshot.p2Sets,
-                p2Sets: snapshot.p1Sets,
-                currentServer: snapshot.currentServer == .player1 ? .player2 : .player1,
-                startingServerOfSet: snapshot.startingServerOfSet == .player1 ? .player2 : .player1,
-                winner: snapshot.winner == nil ? nil : (snapshot.winner == .player1 ? .player2 : .player1)
-            )
+        performStateMutation {
+            // Swap player names and their active set counts and scores so players can change sides on the physical table
+            let tempName = p1Name
+            p1Name = p2Name
+            p2Name = tempName
+
+            let tempScore = p1Score
+            p1Score = p2Score
+            p2Score = tempScore
+
+            let tempSets = p1Sets
+            p1Sets = p2Sets
+            p2Sets = tempSets
+
+            // Also swap server states
+            startingServerOfMatch = startingServerOfMatch == .player1 ? .player2 : .player1
+            startingServerOfSet = startingServerOfSet == .player1 ? .player2 : .player1
+            currentServer = currentServer == .player1 ? .player2 : .player1
+
+            // Re-map history states to new swap
+            history = history.map { snapshot in
+                GameSnapshot(
+                    p1Score: snapshot.p2Score,
+                    p2Score: snapshot.p1Score,
+                    p1Sets: snapshot.p2Sets,
+                    p2Sets: snapshot.p1Sets,
+                    currentServer: snapshot.currentServer == .player1 ? .player2 : .player1,
+                    startingServerOfSet: snapshot.startingServerOfSet == .player1 ? .player2 : .player1,
+                    winner: snapshot.winner == nil ? nil : (snapshot.winner == .player1 ? .player2 : .player1)
+                )
+            }
         }
         
         HapticManager.shared.play(.serveChange)
@@ -245,7 +331,7 @@ final class ScoreViewModel: ObservableObject {
         
         // Table Tennis rule: if both players reach targetScore - 1 (e.g. 10-10 deuce),
         // serve rotation interval becomes 1 serve per player instead of 2.
-        let interval = isDeuceGame ? 1 : serveRotationInterval
+        let interval = isDeuceGame ? 1 : max(1, serveRotationInterval)
         
         let servesPlayed = totalPoints / interval
         
@@ -367,6 +453,7 @@ final class ScoreViewModel: ObservableObject {
             startingServerOfSet: startingServerOfSet,
             winner: winner
         )
+        guard history.last != snapshot else { return }
         history.append(snapshot)
         
         // Cap history size to 30 steps to save memory
@@ -375,14 +462,60 @@ final class ScoreViewModel: ObservableObject {
         }
     }
     
+    private var hasMeaningfulMatchState: Bool {
+        p1Score != 0 || p2Score != 0 || p1Sets != 0 || p2Sets != 0 || winner != nil
+    }
+
+    private func performStateMutation(_ updates: () -> Void) {
+        isApplyingStateBatch = true
+        updates()
+        isApplyingStateBatch = false
+        persistMatchState()
+        syncWithWatch()
+    }
+
+    private func stateDidChange() {
+        guard hasFinishedInitialLoad else { return }
+        guard !isApplyingStateBatch else { return }
+        persistMatchState()
+        syncWithWatch()
+    }
+
+    func resyncExternalState() {
+        guard hasFinishedInitialLoad else { return }
+        syncWithWatch()
+    }
+
+    private func persistMatchState() {
+        let defaults = UserDefaults.standard
+        defaults.set(max(0, p1Score), forKey: DefaultsKey.p1Score)
+        defaults.set(max(0, p2Score), forKey: DefaultsKey.p2Score)
+        defaults.set(max(0, p1Sets), forKey: DefaultsKey.p1Sets)
+        defaults.set(max(0, p2Sets), forKey: DefaultsKey.p2Sets)
+        defaults.set(startingServerOfSet.rawValue, forKey: DefaultsKey.startingServerOfSet)
+        defaults.set(currentServer.rawValue, forKey: DefaultsKey.currentServer)
+        if let winner {
+            defaults.set(winner.rawValue, forKey: DefaultsKey.winner)
+        } else {
+            defaults.removeObject(forKey: DefaultsKey.winner)
+        }
+    }
+
     private func syncWithWatch() {
         WatchConnector.shared.sendStateToWatch(
             p1Name: p1Name,
             p1Score: p1Score,
+            p1Sets: p1Sets,
             p2Name: p2Name,
             p2Score: p2Score,
+            p2Sets: p2Sets,
             currentServer: currentServer,
-            winner: winner
+            startingServerOfMatch: startingServerOfMatch,
+            startingServerOfSet: startingServerOfSet,
+            winner: winner,
+            targetScore: targetScore,
+            winByTwo: winByTwo,
+            serveRotationInterval: serveRotationInterval
         )
         
         syncLiveActivity()
@@ -427,17 +560,47 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     }
     
     @MainActor
-    func sendStateToWatch(p1Name: String, p1Score: Int, p2Name: String, p2Score: Int, currentServer: Player, winner: Player?) {
-        guard let session = session, session.isReachable else { return }
+    func sendStateToWatch(
+        p1Name: String,
+        p1Score: Int,
+        p1Sets: Int,
+        p2Name: String,
+        p2Score: Int,
+        p2Sets: Int,
+        currentServer: Player,
+        startingServerOfMatch: Player,
+        startingServerOfSet: Player,
+        winner: Player?,
+        targetScore: Int,
+        winByTwo: Bool,
+        serveRotationInterval: Int
+    ) {
+        guard let session else { return }
+        guard session.activationState == .activated, session.isPaired, session.isWatchAppInstalled else { return }
         
         let data: [String: Any] = [
             "p1Name": p1Name,
             "p1Score": p1Score,
+            "p1Sets": p1Sets,
             "p2Name": p2Name,
             "p2Score": p2Score,
+            "p2Sets": p2Sets,
             "currentServer": currentServer.rawValue,
-            "winner": winner?.rawValue ?? ""
+            "startingServerOfMatch": startingServerOfMatch.rawValue,
+            "startingServerOfSet": startingServerOfSet.rawValue,
+            "winner": winner?.rawValue ?? "",
+            "targetScore": targetScore,
+            "winByTwo": winByTwo,
+            "serveRotationInterval": serveRotationInterval
         ]
+
+        do {
+            try session.updateApplicationContext(data)
+        } catch {
+            print("Error updating watch application context: \(error.localizedDescription)")
+        }
+
+        guard session.isReachable else { return }
         
         session.sendMessage(data, replyHandler: nil, errorHandler: { error in
             print("Error sending state to watch: \(error.localizedDescription)")
@@ -447,6 +610,14 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     // MARK: - WCSessionDelegate
     
     nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+        handleWatchAction(message)
+    }
+
+    nonisolated func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+        handleWatchAction(userInfo)
+    }
+
+    private nonisolated func handleWatchAction(_ message: [String: Any]) {
         Task { @MainActor in
             guard let viewModel = self.viewModel else { return }
             
@@ -487,6 +658,9 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
             print("WCSession activation failed: \(error.localizedDescription)")
         } else {
             print("WCSession activated successfully")
+            Task { @MainActor in
+                self.viewModel?.resyncExternalState()
+            }
         }
     }
 }

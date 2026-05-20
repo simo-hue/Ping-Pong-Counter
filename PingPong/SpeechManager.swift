@@ -21,7 +21,7 @@ final class SpeechManager: NSObject, ObservableObject {
             // duckOthers duck any background music when the score is spoken
             try session.setCategory(.playback, mode: .voicePrompt, options: [.duckOthers, .mixWithOthers])
         } catch {
-            print("Failed to set up AVAudioSession: \\(error)")
+            print("Failed to set up AVAudioSession: \(error.localizedDescription)")
         }
     }
     
