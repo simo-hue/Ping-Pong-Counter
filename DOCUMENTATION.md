@@ -254,6 +254,13 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Transporter Drag-and-Drop Workflow**: Spiegato come effettuare l'accesso, trascinare il file IPA, convalidare i metadati di build ed eseguire la consegna (delivery) sicura ad App Store Connect bypassando i timeout di Xcode.
   - **Checklist Aggiornata**: Aggiornato il file `TO_SIMO_DO.md` per includere i checkbox operativi dedicati ad entrambi i metodi di caricamento (Xcode e Transporter).
 
+### [2026-05-20 08:20 CEST]: Stabilizzazione Dynamic Island e Permesso Live Activities
+* **Dettagli**: Analizzato il caso in cui la Dynamic Island mostrava soltanto la pillola nera. La verifica su simulatore ha confermato che la Live Activity veniva avviata correttamente ma iOS richiedeva prima il consenso esplicito "Allow Live Activities"; dopo l'accettazione la visualizzazione risulta corretta. Sono state lasciate in codice anche correzioni di robustezza per rendere il rendering piu stabile su dispositivi e versioni iOS diverse.
+* **Tech Notes**:
+  - **Deployment Target Widget**: Allineato `PingPongWidgetExtension` a `IPHONEOS_DEPLOYMENT_TARGET = 17.0`, coerente con il target iOS principale, evitando che l'estensione richieda iOS 26.5 per caricare la UI ActivityKit.
+  - **Dynamic Island Layout**: Estratti componenti dedicati (`DynamicIslandCompactScore`, `DynamicIslandExpandedPlayer`, `DynamicIslandMinimalScore`) con dimensioni compatte, `ViewThatFits`, `monospacedDigit`, `lineLimit` e `minimumScaleFactor` per impedire clipping o scarto del contenuto nella presentazione compatta/minimal.
+  - **ActivityKit Lifecycle**: Aggiornato `LiveActivityManager` per riconnettersi a eventuali attivita esistenti prima di crearne una nuova e per chiudere una race in cui la dismiss asincrona di una vecchia Live Activity poteva azzerare il riferimento alla nuova.
+  - **Verifica**: Eseguiti `build_sim` e `build_run_sim` con XcodeBuildMCP su iPhone 17 Pro iOS Simulator. La build e il run sono completati con successo, senza warning o errori; la Lock Screen ha mostrato correttamente la Live Activity e il prompt di autorizzazione iOS.
 
 
 
