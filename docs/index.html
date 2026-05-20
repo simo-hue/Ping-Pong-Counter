@@ -157,40 +157,20 @@
     <section id="support" class="view-section">
       <div class="support-container">
         <h2 class="section-title">App Support & Help Center</h2>
-        <p class="section-subtitle">Have questions or found a bug? We're here to keep your scoreboard running. Fill out the contact form below and we'll get back to you within 24 hours.</p>
-        
-        <!-- Contact Form Wrapper -->
-        <div id="form-content">
-          <form id="support-form" method="POST" action="#">
-            <div class="form-group">
-              <label for="support-name">Your Name</label>
-              <input type="text" id="support-name" class="form-control" placeholder="e.g. John Doe" required>
-            </div>
-            
-            <div class="form-group">
-              <label for="support-email">Email Address</label>
-              <input type="email" id="support-email" class="form-control" placeholder="e.g. john@example.com" required>
-            </div>
-            
-            <div class="form-group">
-              <label for="support-subject">Subject</label>
-              <input type="text" id="support-subject" class="form-control" placeholder="e.g. Apple Watch Sync Issue" required>
-            </div>
-            
-            <div class="form-group">
-              <label for="support-message">How can we help?</label>
-              <textarea id="support-message" class="form-control" placeholder="Describe the issue you're experiencing in detail..." required></textarea>
-            </div>
-            
-            <button type="submit" class="form-submit-btn" id="btn-submit-support">Send Support Ticket</button>
-          </form>
+        <p class="section-subtitle">Have questions or found a bug? Use the support links below so every request reaches a real, reviewable destination.</p>
+
+        <div class="support-actions" aria-label="Support links">
+          <a class="support-link primary" href="https://github.com/simo-hue/Ping-Pong-Counter/issues/new" rel="noopener noreferrer">
+            Open a Support Request
+          </a>
+          <a class="support-link" href="https://github.com/simo-hue/Ping-Pong-Counter/issues" rel="noopener noreferrer">
+            View Existing Issues
+          </a>
         </div>
-        
-        <!-- Interactive Success Screen -->
-        <div class="success-state" id="success-state">
-          <div class="success-icon">✓</div>
-          <h3>Message Transmitted</h3>
-          <p class="section-subtitle" style="margin-top: 10px; margin-bottom: 0;">Your ticket has been logged successfully. Our support team will get in touch with you shortly.</p>
+
+        <div class="support-note">
+          <h3>What to include</h3>
+          <p>Describe your device model, iOS/watchOS version, the match state, and the exact action that caused the issue. Do not include private information in public support requests.</p>
         </div>
       </div>
     </section>
@@ -205,7 +185,7 @@
         
         <div class="privacy-content">
           <p>
-            We take your digital privacy very seriously. <strong>Ping Pong Scoreboard</strong> has been engineered from the ground up to respect your personal spaces. We adhere to an absolute data minimalism policy: we do not collect, transmit, share, or monetize any of your personal information.
+            We take your digital privacy very seriously. <strong>Ping Pong Scoreboard</strong> has been engineered from the ground up to respect your personal spaces. We adhere to an absolute data minimalism policy: we do not transmit, share, or monetize any of your personal information.
           </p>
           
           <div class="highlight-box">
@@ -216,7 +196,7 @@
           <p>When you download and use Ping Pong Scoreboard, we do not require, collect, or store any of the following:</p>
           <ul>
             <li>No registration or accounts (no email, usernames, or passwords required).</li>
-            <li>No contact info or identifiers (no names, phone numbers, or IP tracking).</li>
+            <li>No contact info or identifiers are transmitted to us (no phone numbers, IP tracking, or device identifiers).</li>
             <li>No search history, usage data, or diagnostic data.</li>
             <li>No device identifier metrics.</li>
           </ul>
@@ -231,12 +211,12 @@
           <ul>
             <li><strong>WatchConnectivity:</strong> Used to synchronize active scoring parameters in real-time between your iPhone and your paired Apple Watch.</li>
             <li><strong>AVAudioSession (Audio & Vocal Referee):</strong> Used to announce score increments vocally like a real umpire. Background audio states are managed locally and are never recorded or logged.</li>
-            <li><strong>CoreHaptics:</strong> Provides tactile vibrations to confirm tap events on iOS and watchOS devices.</li>
+            <li><strong>System Haptics:</strong> Provides tactile vibrations to confirm tap events on iOS and watchOS devices.</li>
           </ul>
 
           <h3>4. Offline-First Infrastructure</h3>
           <p>
-            All custom configurations, player names, and scoring tables are stored locally inside the application's secure sandbox. The app operates fully without an active internet connection.
+            All custom configurations, optional player names, and scoring tables are stored locally inside the application's sandbox. The app operates fully without an active internet connection.
           </p>
 
           <h3>5. Contacting Us</h3>

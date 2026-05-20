@@ -37,17 +37,13 @@ La nostra applicazione è composta da **3 Target differenti** in Xcode. Ognuno d
 
 | Target in Xcode | Nome del Target | Esempio Bundle ID consigliato | Servizi ed Entitlement da Abilitare |
 | :--- | :--- | :--- | :--- |
-| **Applicazione iOS Principale** | `PingPong` | `com.simo.pingpong` | **App Groups**, **Live Activities** |
-| **Widget Extension** (Live Activities) | `PingPongWidget` | `com.simo.pingpong.PingPongWidget` | **App Groups** |
+| **Applicazione iOS Principale** | `PingPong` | `com.simo.pingpong` | **Live Activities** |
+| **Widget Extension** (Live Activities) | `PingPongWidget` | `com.simo.pingpong.PingPongWidget` | Nessuno manuale |
 | **Watch Companion App** | `PingPongWatch` | `com.simo.pingpong.watchkitapp` | Nessuno (eredita le impostazioni o WCSession) |
 
 > [!IMPORTANT]
-> **Configurazione App Groups**:
-> 1. Sotto la voce **Identifiers**, seleziona il Bundle ID dell'app principale (`com.simo.pingpong`).
-> 2. Spunta la casella **App Groups** e clicca su **Configure**.
-> 3. Crea un nuovo gruppo chiamato esattamente **`group.com.simo.pingpong`**.
-> 4. Ripeti l'operazione per il Bundle ID del Widget Extension (`com.simo.pingpong.PingPongWidget`), associandolo allo stesso App Group `group.com.simo.pingpong`.
-> *Questo passaggio è vitale affinché l'app iOS possa condividere in tempo reale lo stato dei punteggi con la Live Activity sulla Lock Screen.*
+> **Nota sulle capabilities**:
+> La Live Activity viene aggiornata direttamente dall'app tramite ActivityKit e WidgetKit, quindi non richiede App Groups. Abilita solo le capability realmente usate: il target iOS deve supportare Live Activities, mentre il Watch usa WCSession e il Widget usa il normale extension point di WidgetKit.
 
 ---
 
@@ -111,6 +107,12 @@ Questo è un punto cruciale che velocizzerà l'approvazione al 100%. La nostra a
 2. Fai clic su **Inizia** nel questionario sulla raccolta dati.
 3. Rispondi **NO, non raccogliamo dati utente da questa app**.
 4. Salva e pubblica. Sulla pagina dell'App Store comparirà lo scudetto blu **"Dati non raccolti"** (Data Not Collected), un grandissimo punto di forza per gli utenti e per i revisori Apple.
+
+### C. Privacy Manifest nel Bundle
+Il progetto include `PingPong/PrivacyInfo.xcprivacy` nel target iOS principale. Il manifest dichiara:
+*   **Nessun dato raccolto** (`NSPrivacyCollectedDataTypes` vuoto).
+*   **Nessun tracking** (`NSPrivacyTracking = false`).
+*   **Uso di `UserDefaults`** con reason `CA92.1`, perché l'app salva punteggi, nomi opzionali e preferenze solo nel proprio sandbox locale.
 
 ---
 
@@ -204,7 +206,7 @@ All'interno della scheda di invio dell'applicazione su App Store Connect, scorri
 >    *Abbiamo incluso una companion app per Apple Watch. Questa consente al giocatore di incrementare o decrementare il punteggio in tempo reale sul proprio polso tramite connessione WCSession bidirezionale, aggiornando all'istante la schermata dell'iPhone posizionato a bordo tavolo senza dover interrompere l'azione.*
 > 
 > 3. **Live Activities & Dynamic Island (ActivityKit)**:
->    *L'applicazione supporta le Live Activities. Quando un match è attivo e l'utente blocca lo schermo o torna alla schermata Home, il punteggio della partita in corso, il turno di servizio e il set corrente rimangono visibili in tempo reale sulla Lock Screen e nella Dynamic Island, evitando che l'app venga terminata in background e consentendo un rapido monitoraggio.*
+>    *L'applicazione supporta le Live Activities. Quando un match è attivo e viene registrato almeno un punto, il punteggio della partita in corso, il turno di servizio e il set corrente rimangono visibili in tempo reale sulla Lock Screen e nella Dynamic Island. Quando l'utente azzera il match, la Live Activity viene terminata per evitare contenuti persistenti non necessari.*
 > 
 > **ISTRUZIONI PER IL TEST:**
 > - Non è richiesto alcun login o registrazione (l'app è 100% offline per tutelare la privacy dell'utente).
@@ -245,7 +247,7 @@ Ora che hai attivato Xcode Cloud e lo hai collegato al tuo repository GitHub, pu
 Xcode Cloud gestisce la firma del codice in modo sicuro utilizzando i **Cloud Managed Certificates**:
 1. Non devi esportare o caricare certificati di distribuzione (`.p12`) o provisioning profile manuali su Xcode Cloud.
 2. Quando Xcode Cloud compila l'applicazione, si collega direttamente al tuo portale Apple Developer utilizzando il tuo Apple ID di sviluppo (o la chiave API di App Store Connect) per generare certificati di distribuzione temporanei e firmare i 3 target del progetto (`PingPong`, `PingPongWidget` e `PingPongWatch Watch App`).
-3. **Requisito Chiave**: Assicurati che i tre Bundle ID descritti nella [Sezione 2](#2-configurazione-dei-bundle-id-e-provisioning-profiles) siano stati preventivamente registrati manualmente sul portale Apple Developer e che l'**App Group** sia configurato.
+3. **Requisito Chiave**: Assicurati che i tre Bundle ID descritti nella [Sezione 2](#2-configurazione-dei-bundle-id-e-provisioning-profiles) siano stati preventivamente registrati manualmente sul portale Apple Developer e che la capability **Live Activities** sia disponibile per il target iOS principale.
 
 ### B. Creazione del Workflow "App Store Release" in Xcode
 Puoi configurare il flusso di build continuo (Workflow) direttamente da Xcode:
@@ -307,4 +309,3 @@ Ora il tuo sistema è completamente automatizzato! Ecco il flusso che seguirai d
    *   Scorri fino alla sezione **Build**, clicca su **+**, seleziona la build generata da Xcode Cloud e fai clic su **Salva**.
    *   Assicurati di aver inserito i metadati e le note di revisione protettive (come descritto nella [Sezione 7](#7-strategia-blindata-anti-rejection)).
    *   Clicca su **Invia per la revisione** in alto a destra!
-

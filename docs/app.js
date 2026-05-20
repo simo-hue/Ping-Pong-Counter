@@ -1,11 +1,10 @@
 /* 
   🏓 Ping Pong Scoreboard - Web Core Logic
-  Manages Single-Page view switching, mock contact form, and interactive simulator.
+  Manages single-page view switching and the interactive scoreboard simulator.
 */
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
-  initContactForm();
   initScoreboardSimulator();
 });
 
@@ -66,33 +65,7 @@ function initNavigation() {
 }
 
 /* -------------------------------------------------------------
- * 2. Contact Form Interactive Feedback
- * ------------------------------------------------------------- */
-function initContactForm() {
-  const form = document.getElementById('support-form');
-  const formContent = document.getElementById('form-content');
-  const successState = document.getElementById('success-state');
-
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      // Simulate API submit latency
-      const submitBtn = form.querySelector('.form-submit-btn');
-      const originalText = submitBtn.innerText;
-      submitBtn.innerText = 'Sending message...';
-      submitBtn.disabled = true;
-
-      setTimeout(() => {
-        formContent.style.display = 'none';
-        successState.style.display = 'block';
-      }, 1200);
-    });
-  }
-}
-
-/* -------------------------------------------------------------
- * 3. Interactive Scoreboard Simulator (OLED Web Mockup)
+ * 2. Interactive Scoreboard Simulator (OLED Web Mockup)
  * ------------------------------------------------------------- */
 function initScoreboardSimulator() {
   // Elements

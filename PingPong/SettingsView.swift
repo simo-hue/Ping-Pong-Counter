@@ -1,10 +1,13 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: ScoreViewModel
-    @Environment(\.dismiss) var dismiss
     
-    let themesList = [
+    private let supportURL = URL(string: "https://simo-hue.github.io/Ping-Pong-Counter/#support")
+    private let privacyPolicyURL = URL(string: "https://simo-hue.github.io/Ping-Pong-Counter/#privacy")
+
+    private let themesList = [
         ("Néon Classic", "Rosso & Blu", Color(red: 1.0, green: 0.25, blue: 0.35), Color(red: 0.0, green: 0.7, blue: 1.0)),
         ("Mint & Royal", "Verde & Viola", Color(red: 0.0, green: 0.85, blue: 0.55), Color(red: 0.55, green: 0.3, blue: 0.9)),
         ("Solar Flare", "Arancione & Teal", Color(red: 1.0, green: 0.55, blue: 0.0), Color(red: 0.0, green: 0.8, blue: 0.8))
@@ -118,6 +121,24 @@ struct SettingsView: View {
                                 .frame(width: 40, height: 25)
                         }
                         .listRowBackground(Color(white: 0.15))
+                    }
+
+                    Section(header: Text(Localized.appInfoHeader).foregroundColor(.gray)) {
+                        if let supportURL {
+                            Link(destination: supportURL) {
+                                Label(Localized.supportLink, systemImage: "questionmark.circle.fill")
+                                    .foregroundColor(.white)
+                            }
+                            .listRowBackground(Color(white: 0.15))
+                        }
+
+                        if let privacyPolicyURL {
+                            Link(destination: privacyPolicyURL) {
+                                Label(Localized.privacyPolicy, systemImage: "lock.shield.fill")
+                                    .foregroundColor(.white)
+                            }
+                            .listRowBackground(Color(white: 0.15))
+                        }
                     }
                     
                     Section {

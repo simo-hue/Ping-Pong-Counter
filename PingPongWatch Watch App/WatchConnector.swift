@@ -16,6 +16,7 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     @Published var winner: String = ""
     @Published var targetScore: Int = 11
     @Published var winByTwo: Bool = true
+    @Published var bestOfSets: Int = 3
     @Published var serveRotationInterval: Int = 2
     
     private var session: WCSession?
@@ -113,6 +114,53 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     }
     
     private func updateLocalRules() {
+        if completeLocalSetIfNeeded() {
+            return
+        }
+
+        updateLocalServer()
+    }
+
+    private func completeLocalSetIfNeeded() -> Bool {
+        let setWinner: String?
+        if isSetWon(playerScore: p1Score, opponentScore: p2Score) {
+            setWinner = "player1"
+        } else if isSetWon(playerScore: p2Score, opponentScore: p1Score) {
+            setWinner = "player2"
+        } else {
+            setWinner = nil
+        }
+
+        guard let setWinner else { return false }
+
+        if setWinner == "player1" {
+            p1Sets += 1
+        } else {
+            p2Sets += 1
+        }
+
+        let setsNeededToWin = (max(1, bestOfSets) + 1) / 2
+        if p1Sets >= setsNeededToWin {
+            winner = "player1"
+        } else if p2Sets >= setsNeededToWin {
+            winner = "player2"
+        } else {
+            p1Score = 0
+            p2Score = 0
+            startingServerOfSet = toggledPlayer(startingServerOfSet)
+            currentServer = startingServerOfSet
+            winner = ""
+        }
+
+        return true
+    }
+
+    private func isSetWon(playerScore: Int, opponentScore: Int) -> Bool {
+        guard playerScore >= targetScore else { return false }
+        return !winByTwo || playerScore - opponentScore >= 2
+    }
+
+    private func updateLocalServer() {
         let total = p1Score + p2Score
         
         // Mirror the iPhone rules optimistically until the authoritative state arrives.
@@ -125,14 +173,11 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
         } else {
             currentServer = (totalServes % 2 == 0) ? "player2" : "player1"
         }
-        
-        if p1Score >= targetScore && (!winByTwo || (p1Score - p2Score) >= 2) {
-            winner = "player1"
-        } else if p2Score >= targetScore && (!winByTwo || (p2Score - p1Score) >= 2) {
-            winner = "player2"
-        } else {
-            winner = ""
-        }
+        winner = ""
+    }
+
+    private func toggledPlayer(_ player: String) -> String {
+        player == "player1" ? "player2" : "player1"
     }
     
     private func send(action: String, player: String? = nil) {
@@ -145,7 +190,7 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
         
         if session.isReachable {
             session.sendMessage(data, replyHandler: nil, errorHandler: { error in
-                print("Watch error sending message: \(error.localizedDescription)")
+                self.debugLog("Watch error sending message: \(error.localizedDescription)")
             })
         } else {
             session.transferUserInfo(data)
@@ -179,6 +224,7 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
             if let winner = message["winner"] as? String { self.winner = winner }
             if let targetScore = message["targetScore"] as? Int { self.targetScore = [11, 21].contains(targetScore) ? targetScore : 11 }
             if let winByTwo = message["winByTwo"] as? Bool { self.winByTwo = winByTwo }
+            if let bestOfSets = message["bestOfSets"] as? Int { self.bestOfSets = [1, 3, 5].contains(bestOfSets) ? bestOfSets : 3 }
             if let serveRotationInterval = message["serveRotationInterval"] as? Int {
                 self.serveRotationInterval = [2, 5].contains(serveRotationInterval) ? serveRotationInterval : 2
             }
@@ -187,9 +233,15 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     
     nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
-            print("WCSession activation failed on Watch: \(error.localizedDescription)")
+            debugLog("WCSession activation failed on Watch: \(error.localizedDescription)")
         } else {
-            print("WCSession activated successfully on Watch")
+            debugLog("WCSession activated successfully on Watch")
         }
+    }
+
+    private nonisolated func debugLog(_ message: @autoclosure () -> String) {
+        #if DEBUG
+        print(message())
+        #endif
     }
 }

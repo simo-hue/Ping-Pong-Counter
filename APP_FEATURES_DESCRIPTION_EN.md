@@ -73,5 +73,5 @@ Choose between three professionally curated high-contrast neon palettes:
 *   **Platform:** iOS 17.0+ / watchOS 10.0+
 *   **Language:** Swift 6 (SwiftUI & Combine Framework)
 *   **Graphics:** SwiftUI Vector shapes, Radial gradients, & HSL Color system
-*   **Haptics Engine:** Apple CoreHaptics (`UIImpactFeedbackGenerator` & `UINotificationFeedbackGenerator`)
+*   **Haptics Engine:** Apple system haptics (`UIImpactFeedbackGenerator`, `UINotificationFeedbackGenerator` & WatchKit haptics)
 *   **Localization:** Auto-adaptive (English by default, Italian localization for Italian language devices).

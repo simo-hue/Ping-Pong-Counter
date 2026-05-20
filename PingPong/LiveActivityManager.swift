@@ -2,8 +2,8 @@ import Foundation
 import ActivityKit
 
 @MainActor
-public final class LiveActivityManager: ObservableObject {
-    public static let shared = LiveActivityManager()
+final class LiveActivityManager {
+    static let shared = LiveActivityManager()
     
     private var currentActivity: Activity<PingPongAttributes>? = nil
     
@@ -12,14 +12,14 @@ public final class LiveActivityManager: ObservableObject {
         reconnectToExistingActivity()
     }
     
-    public func reconnectToExistingActivity() {
+    func reconnectToExistingActivity() {
         if let existing = Activity<PingPongAttributes>.activities.first {
             self.currentActivity = existing
-            print("Successfully reconnected to ongoing Live Activity: \(existing.id)")
+            debugLog("Successfully reconnected to ongoing Live Activity: \(existing.id)")
         }
     }
     
-    public func updateOrCreateActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int) {
+    func updateOrCreateActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int) {
         if currentActivity == nil {
             reconnectToExistingActivity()
         }
@@ -48,21 +48,21 @@ public final class LiveActivityManager: ObservableObject {
         }
     }
     
-    public func startLiveActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, themeIndex: Int) {
+    func startLiveActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, themeIndex: Int) {
         // Clear any old session without letting its async dismissal erase the new activity reference.
         let previousActivity = currentActivity
         currentActivity = nil
         if let previousActivity {
             Task {
                 await previousActivity.end(nil, dismissalPolicy: .immediate)
-                print("Previous Live Activity terminated successfully.")
+                self.debugLog("Previous Live Activity terminated successfully.")
             }
         }
         
         // On simulator, areActivitiesEnabled can fail due to sandbox cache issues, bypass it
         #if !targetEnvironment(simulator)
         guard ActivityAuthorizationInfo().areActivitiesEnabled else {
-            print("Live Activities are not authorized/enabled by the user.")
+            debugLog("Live Activities are not authorized/enabled by the user.")
             return
         }
         #endif
@@ -85,13 +85,13 @@ public final class LiveActivityManager: ObservableObject {
                 content: activityContent,
                 pushType: nil
             )
-            print("Live Activity started successfully: \(currentActivity?.id ?? "")")
+            debugLog("Live Activity started successfully: \(currentActivity?.id ?? "")")
         } catch {
-            print("Failed to request Live Activity: \(error.localizedDescription)")
+            debugLog("Failed to request Live Activity: \(error.localizedDescription)")
         }
     }
     
-    public func updateLiveActivity(p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int) {
+    func updateLiveActivity(p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int) {
         guard let activity = currentActivity else { return }
         
         let updatedState = PingPongAttributes.ContentState(
@@ -107,17 +107,23 @@ public final class LiveActivityManager: ObservableObject {
         Task {
             let activityContent = ActivityContent(state: updatedState, staleDate: nil)
             await activity.update(activityContent)
-            print("Live Activity updated in background: P1 \(p1Score) - P2 \(p2Score)")
+            self.debugLog("Live Activity updated in background: P1 \(p1Score) - P2 \(p2Score)")
         }
     }
     
-    public func endLiveActivity() {
+    func endLiveActivity() {
         guard let activity = currentActivity else { return }
         currentActivity = nil
         
         Task {
             await activity.end(nil, dismissalPolicy: .immediate)
-            print("Live Activity terminated successfully.")
+            self.debugLog("Live Activity terminated successfully.")
         }
+    }
+
+    private func debugLog(_ message: @autoclosure () -> String) {
+        #if DEBUG
+        print(message())
+        #endif
     }
 }

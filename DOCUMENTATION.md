@@ -274,6 +274,15 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Logging Fix**: Corretto il log di errore `AVAudioSession`, che prima stampava la stringa letterale dell'interpolazione invece del messaggio reale.
   - **Verifica**: Compilati con successo e senza warning gli scheme `PingPong`, `PingPongWatch Watch App` e `PingPongWidgetExtension` via XcodeBuildMCP. Eseguito anche `xcodebuild analyze` sullo scheme principale con esito `ANALYZE SUCCEEDED`.
 
-
+### [2026-05-20 09:02 CEST]: Hardening Pre-Pubblicazione App Store e Cleanup Superfluo
+* **Dettagli**: Eseguito un controllo pre-submit orientato alle policy Apple, rimuovendo artefatti non applicativi e rendendo esplicite le configurazioni privacy/supporto richieste. La Live Activity ora parte solo quando esiste una partita significativa e viene terminata al reset, evitando contenuti persistenti inutili.
+* **Tech Notes**:
+  - **Privacy Manifest**: Aggiunto `PingPong/PrivacyInfo.xcprivacy` al target iOS principale con `NSPrivacyTracking = false`, nessun dato raccolto e dichiarazione `NSPrivacyAccessedAPICategoryUserDefaults` con reason `CA92.1`.
+  - **Info.plist iOS**: Aggiunto `PingPong/Info.plist` minimale per materializzare correttamente `UIBackgroundModes = audio` nel bundle finale; `NSSupportsLiveActivities` resta gestito dai build settings.
+  - **Support/Privacy In-App**: Aggiunti link diretti a Support e Privacy Policy nella schermata impostazioni.
+  - **Sito Web**: Rimosso il form di supporto simulato e sostituito con link reali a GitHub Issues; corretta la privacy policy per chiarire che nomi e punteggi restano locali e non vengono trasmessi.
+  - **Cleanup Repo**: Rimossi la cartella `build/` tracciata, i dati utente `xcuserdata`, l'icona root duplicata `AppIcon_1024.png` e l'AppIcon vuota del widget; aggiunto `.gitignore` per evitare nuovi artefatti Xcode.
+  - **Watch Rules**: Il Watch riceve anche `bestOfSets` e la logica ottimistica locale ora distingue set vinto da match vinto.
+  - **Verifica**: `plutil -lint`, `jq empty`, `git diff --check`, build Debug su simulatore via XcodeBuildMCP e build Release generic iOS con `CODE_SIGNING_ALLOWED=NO` completati con successo.
 
 

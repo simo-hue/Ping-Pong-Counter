@@ -28,21 +28,17 @@ public struct Localized {
     public static var styleHeader: String { isItalian ? "Stile & Temi" : "Style & Themes" }
     public static var graphicTheme: String { isItalian ? "Tema Grafico" : "Graphic Theme" }
     public static var themePreview: String { isItalian ? "Anteprima Tema:" : "Theme Preview:" }
+    public static var appInfoHeader: String { isItalian ? "Supporto e Privacy" : "Support and Privacy" }
+    public static var supportLink: String { isItalian ? "Supporto" : "Support" }
+    public static var privacyPolicy: String { isItalian ? "Privacy Policy" : "Privacy Policy" }
     public static var resetMatch: String { isItalian ? "Resetta Partita" : "Reset Match" }
     public static var settingsTitle: String { isItalian ? "Impostazioni" : "Settings" }
     public static var closeButton: String { isItalian ? "Chiudi" : "Close" }
     
     // Main Scoreboard UI Labels
-    public static var swipeUndo: String { isItalian ? "SCORRI GIÙ PER ANNULLARE" : "SWIPE DOWN TO UNDO" }
-    public static var tapScore: String { isItalian ? "TOCCA PER FARE UN PUNTO" : "TAP TO SCORE" }
     public static var defaultP1Name: String { isItalian ? "Giocatore 1" : "Player 1" }
     public static var defaultP2Name: String { isItalian ? "Giocatore 2" : "Player 2" }
     public static var serveButton: String { isItalian ? "SERVIZIO" : "SERVE" }
-    public static var advantage: String { isItalian ? "Vantaggio" : "Advantage" }
-    public static var matchPoint: String { isItalian ? "Match Point" : "Match Point" }
-    public static var setPoint: String { isItalian ? "Set Point" : "Set Point" }
-    public static var pointsLabel: String { isItalian ? "Punti" : "Points" }
-    public static var setsLabel: String { isItalian ? "Set" : "Sets" }
     public static var winnerTitle: String { isItalian ? "VINCITORE!" : "WINNER!" }
     
     // Vocal Referee Speech Syntheses

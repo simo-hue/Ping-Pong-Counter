@@ -1,5 +1,6 @@
-import SwiftUI
+import Foundation
 import Combine
+@preconcurrency import WatchConnectivity
 
 enum Player: String, Codable {
     case player1
@@ -515,13 +516,19 @@ final class ScoreViewModel: ObservableObject {
             winner: winner,
             targetScore: targetScore,
             winByTwo: winByTwo,
+            bestOfSets: bestOfSets,
             serveRotationInterval: serveRotationInterval
         )
         
         syncLiveActivity()
     }
     
-    public func syncLiveActivity() {
+    func syncLiveActivity() {
+        guard hasMeaningfulMatchState else {
+            LiveActivityManager.shared.endLiveActivity()
+            return
+        }
+
         LiveActivityManager.shared.updateOrCreateActivity(
             p1Name: p1Name,
             p2Name: p2Name,
@@ -537,8 +544,6 @@ final class ScoreViewModel: ObservableObject {
 }
 
 // MARK: - WatchConnectivity Bridge
-@preconcurrency import WatchConnectivity
-
 final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     static let shared = WatchConnector()
     
@@ -573,6 +578,7 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
         winner: Player?,
         targetScore: Int,
         winByTwo: Bool,
+        bestOfSets: Int,
         serveRotationInterval: Int
     ) {
         guard let session else { return }
@@ -591,19 +597,20 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
             "winner": winner?.rawValue ?? "",
             "targetScore": targetScore,
             "winByTwo": winByTwo,
+            "bestOfSets": bestOfSets,
             "serveRotationInterval": serveRotationInterval
         ]
 
         do {
             try session.updateApplicationContext(data)
         } catch {
-            print("Error updating watch application context: \(error.localizedDescription)")
+            debugLog("Error updating watch application context: \(error.localizedDescription)")
         }
 
         guard session.isReachable else { return }
         
         session.sendMessage(data, replyHandler: nil, errorHandler: { error in
-            print("Error sending state to watch: \(error.localizedDescription)")
+            self.debugLog("Error sending state to watch: \(error.localizedDescription)")
         })
     }
     
@@ -655,12 +662,18 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     
     nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
-            print("WCSession activation failed: \(error.localizedDescription)")
+            debugLog("WCSession activation failed: \(error.localizedDescription)")
         } else {
-            print("WCSession activated successfully")
+            debugLog("WCSession activated successfully")
             Task { @MainActor in
                 self.viewModel?.resyncExternalState()
             }
         }
+    }
+
+    private func debugLog(_ message: @autoclosure () -> String) {
+        #if DEBUG
+        print(message())
+        #endif
     }
 }

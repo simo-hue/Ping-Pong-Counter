@@ -1,12 +1,12 @@
 import AVFoundation
 
-final class SpeechManager: NSObject, ObservableObject {
+final class SpeechManager: NSObject {
     static let shared = SpeechManager()
     
     private let synthesizer = AVSpeechSynthesizer()
     private var voice: AVSpeechSynthesisVoice?
     
-    @Published var isVoiceEnabled = false
+    var isVoiceEnabled = false
     
     private override init() {
         super.init()
@@ -21,7 +21,9 @@ final class SpeechManager: NSObject, ObservableObject {
             // duckOthers duck any background music when the score is spoken
             try session.setCategory(.playback, mode: .voicePrompt, options: [.duckOthers, .mixWithOthers])
         } catch {
+            #if DEBUG
             print("Failed to set up AVAudioSession: \(error.localizedDescription)")
+            #endif
         }
     }
     
