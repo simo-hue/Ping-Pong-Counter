@@ -292,3 +292,19 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **AVAudioSession Lifecycle**: `SpeechManager` ora implementa `AVSpeechSynthesizerDelegate` e disattiva la sessione audio con `.notifyOthersOnDeactivation` al termine o alla cancellazione degli annunci, così la sessione è temporanea e non lascia altre app audio in stato ducked.
   - **Review Notes**: Aggiornata la guida di pubblicazione per non chiedere più ai reviewer di testare background audio o allegare video di audio persistente; restano le note per Watch e Live Activities.
   - **Verifica**: `plutil -lint`, `git diff --check`, ricerca mirata di `UIBackgroundModes`, build Debug su simulatore via XcodeBuildMCP senza warning e build Release generic iOS con `CODE_SIGNING_ALLOWED=NO` completati con successo. Verificati anche gli `Info.plist` prodotti Debug/Release: nessuna chiave `UIBackgroundModes` presente. Installazione e avvio su iPhone 17 Pro Simulator confermati con `simctl launch`.
+
+### [2026-05-21 10:55 CEST]: Redesign Completo del Sito Web GitHub Pages (Premium Landing Page)
+* **Dettagli**: Riprogettata interamente la landing page del sito web nella cartella `/docs` per raggiungere uno standard visivo da sito di prodotto Apple. Il redesign mantiene intatti tutti i contenuti originali (Features, Support, Privacy Policy) ma li eleva con un design system cinematografico, animazioni scroll-driven, un carosello automatico di screenshot e micro-interazioni premium.
+* **Tech Notes**:
+  - **Design System CSS Completo**: Riprogettato `style.css` (da ~780 a ~900+ righe) con un sistema di design token completo (colori, tipografia, spaziature, glass, motion curves), reset moderno, scrollbar personalizzata, e accessibilità (`prefers-reduced-motion`, `:focus-visible`).
+  - **Hero Section Cinematografica**: Nuova sezione hero a due colonne con titolo gradient, badge animato "Available on iPhone & Apple Watch", orbs luminosi animati in background, e lo screenshot reale dell'App Store (`screenshot-01.png`) con effetto float 3D e glow pulsante.
+  - **Trust Strip**: Nuova fascia di statistiche chiave (100% Offline, 0 Trackers, ITTF Compliant, 3 Neon Themes, Watch Sync) per credibilità istantanea.
+  - **Scroll-Driven Reveal Animations**: Implementato un sistema di rivelazione basato su `IntersectionObserver` con classi `.reveal` e delay scaglionati per far apparire gli elementi progressivamente durante lo scorrimento.
+  - **Screenshot Gallery Carousel**: Nuovo carosello a scorrimento infinito automatico con tutte e 6 le screenshot dell'App Store, mascherato con gradiente ai bordi e pausa al passaggio del mouse.
+  - **Asset Screenshots**: Copiate 6 screenshot dall'archivio `app_Screen_Render/apple/English (en-US)/iPhones 6.9/` nella cartella `docs/assets/` per l'utilizzo diretto nel sito web.
+  - **Simulatore Interattivo Ridisegnato**: Il simulatore del tabellone è ora presentato in un layout a due colonne con una sezione di testo che spiega le funzionalità e una lista di check-mark, affiancato dal mockup iPhone interattivo (logica di gioco ITTF invariata).
+  - **Navigazione Mobile**: Aggiunto hamburger menu per dispositivi mobili con overlay a schermo intero glassmorphic.
+  - **Header Sticky Evoluta**: La navbar cambia aspetto allo scroll (background con blur e ombra), riducendo l'altezza da 72px a 60px.
+  - **Sezioni Support & Privacy Ridisegnate**: Contenuto identico all'originale, ripresentato con card glassmorphic premium, linea gradient di accento superiore, e tipografia migliorata.
+  - **SEO Preservato**: Mantenuti tutti i meta tag originali (title, description, keywords, OpenGraph).
+  - **Responsive Design**: Breakpoint ottimizzati a 1024px, 768px e 480px con layout adattivi per features grid, hero, gallery e simulator.

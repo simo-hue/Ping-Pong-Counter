@@ -3,31 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <!-- SEO & ASO Meta Tags -->
-  <title>Ping Pong Scoreboard - Neon Umpire & Apple Watch Sync</title>
+  <title>Ping Pong Scoreboard — Neon Umpire & Apple Watch Sync</title>
   <meta name="description" content="Keep track of your Table Tennis matches in real-time. Features adaptive neon full-screen scoreboard, Apple Watch bidirectional sync, vocal referee, and full ITTF rules compliance.">
   <meta name="keywords" content="ping pong, table tennis, scorekeeper, scoreboard, counter, apple watch, live activities, vocal referee, ittf rules, sport tracker">
-  
+
   <!-- OpenGraph Social Metadata -->
-  <meta property="og:title" content="Ping Pong Scoreboard - Neon Umpire & Apple Watch Sync">
+  <meta property="og:title" content="Ping Pong Scoreboard — Neon Umpire & Apple Watch Sync">
   <meta property="og:description" content="Gorgeous neon scorekeeper for iPhone & Apple Watch. Keep scores with gestures, custom voice ref, and zero user tracking.">
   <meta property="og:type" content="website">
-  
-  <!-- Styling and Fonts -->
+  <meta property="og:image" content="assets/app-icon.png">
+
+  <!-- Styling & Fonts -->
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="assets/app-icon.png">
 </head>
 <body>
 
-  <!-- Dynamic Header -->
-  <header>
-    <div class="container nav-wrapper">
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  HEADER & NAVIGATION                       -->
+  <!-- ═══════════════════════════════════════════ -->
+  <header id="site-header">
+    <div class="nav-wrapper">
       <div class="logo" id="app-logo">
-        <img src="assets/app-icon.png" alt="Ping Pong Scoreboard Logo" style="width: 32px; height: 32px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.1);">
+        <img src="assets/app-icon.png" alt="Ping Pong Scoreboard Logo" width="36" height="36">
         <span>Ping Pong Scoreboard</span>
       </div>
-      <nav aria-label="Main Navigation">
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="main-nav" aria-label="Main Navigation">
         <button class="nav-btn active" data-target="features" id="nav-btn-features">Features</button>
         <button class="nav-btn" data-target="support" id="nav-btn-support">Support</button>
         <button class="nav-btn" data-target="privacy" id="nav-btn-privacy">Privacy Policy</button>
@@ -35,207 +43,344 @@
     </div>
   </header>
 
-  <!-- Main Multi-View Section -->
-  <main class="container">
-    
-    <!-- SECTION 1: MARKETING LANDING PAGE (Features) -->
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  MAIN CONTENT                               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <main>
+
+    <!-- ════════════════════════════════════════ -->
+    <!--  SECTION 1: FEATURES / MARKETING        -->
+    <!-- ════════════════════════════════════════ -->
     <section id="features" class="view-section active">
+
+      <!-- HERO -->
       <div class="hero">
-        <div class="hero-content">
-          <h2>
-            The Ultimate Neon
-            <span>Scorekeeper App.</span>
-          </h2>
-          <p class="hero-description">
-            Never argue about serve turns or scores again. Ping Pong Scoreboard turns matches into a seamless, tactile experience with full-screen gestures, Apple Watch sync, and an automated voice referee.
-          </p>
-          <div class="cta-group">
-            <a href="#support" class="btn btn-primary" id="btn-download-hero">
-              <span>🏓 Contact Support</span>
-            </a>
-            <button class="btn btn-secondary nav-btn" data-target="privacy" id="btn-privacy-hero">
-              Read Privacy Policy
-            </button>
+        <div class="container hero-inner">
+          <div class="hero-content">
+            <div class="hero-badge reveal">
+              <span class="badge-dot"></span>
+              Available on iPhone & Apple Watch
+            </div>
+
+            <h1 class="hero-title reveal reveal-delay-1">
+              <span class="line-white">The Ultimate Neon</span>
+              <span class="line-gradient">Scorekeeper App.</span>
+            </h1>
+
+            <p class="hero-description reveal reveal-delay-2">
+              Never argue about serve turns or scores again. Ping Pong Scoreboard turns matches into a seamless, tactile experience with full-screen gestures, Apple Watch sync, and an automated voice referee.
+            </p>
+
+            <div class="hero-cta-group reveal reveal-delay-3">
+              <a href="#support" class="btn btn-primary nav-action" data-target="support" id="btn-download-hero">
+                <span class="btn-icon">🏓</span>
+                <span>Contact Support</span>
+              </a>
+              <button class="btn btn-secondary nav-action" data-target="privacy" id="btn-privacy-hero">
+                Read Privacy Policy
+              </button>
+            </div>
           </div>
-        </div>
-        
-        <!-- Interactive iOS App Scoreboard Simulator -->
-        <div class="hero-visual">
-          <div class="iphone-frame">
-            <div class="iphone-notch"></div>
-            <div class="simulator-screen">
-              <div class="sim-header">
-                <span>9:41</span>
-                <span>📶 🔋</span>
-              </div>
-              
-              <!-- Web Simulator Scoreboard -->
-              <div class="sim-scoreboard">
-                <div class="sim-net"></div>
-                
-                <!-- Player Pink Side -->
-                <div class="sim-side player-pink active-serve" id="sim-pink-side" title="Tap to add point for Player 1">
-                  <div class="sim-meta">
-                    <span class="sim-name">PLAYER 1</span>
-                    <div class="sim-sets" id="sim-pink-sets" aria-label="Player 1 Sets Won">
-                      <div class="sim-dot"></div>
-                      <div class="sim-dot"></div>
-                      <div class="sim-dot"></div>
-                    </div>
-                  </div>
-                  <div class="sim-score" id="sim-pink-score">0</div>
-                  <span class="sim-serve-indicator">SERVE</span>
-                </div>
-                
-                <!-- Player Cyan Side -->
-                <div class="sim-side player-cyan" id="sim-cyan-side" title="Tap to add point for Player 2">
-                  <span class="sim-serve-indicator">SERVE</span>
-                  <div class="sim-score" id="sim-cyan-score">0</div>
-                  <div class="sim-meta">
-                    <span class="sim-name">PLAYER 2</span>
-                    <div class="sim-sets" id="sim-cyan-sets" aria-label="Player 2 Sets Won">
-                      <div class="sim-dot"></div>
-                      <div class="sim-dot"></div>
-                      <div class="sim-dot"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Simulator Controls -->
-              <div class="sim-controls">
-                <button class="sim-control-btn" id="sim-btn-undo" title="Reverse last point">Undo Point</button>
-                <button class="sim-control-btn" id="sim-btn-reset" title="Full match reset">Reset Match</button>
-              </div>
-              <div class="sim-status-banner" id="sim-status-banner">TAP SIDES TO RECORD POINTS</div>
+
+          <div class="hero-visual reveal reveal-delay-2">
+            <div class="hero-phone-glow"></div>
+            <div class="hero-phone-showcase">
+              <img src="assets/screenshot-01.png" alt="Ping Pong Scoreboard — iPhone and Apple Watch in action" loading="eager" fetchpriority="high">
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Feature Grid -->
-      <div class="features-grid">
-        <article class="feature-card">
-          <div class="feature-icon">⌚</div>
-          <h3>Apple Watch Sync</h3>
-          <p>Leave your iPhone on a tripod at the net. Score matches hands-free directly from your wrist with instant bidirectional synchronization and customized tactile vibration signatures.</p>
-        </article>
-        
-        <article class="feature-card">
-          <div class="feature-icon">🔊</div>
-          <h3>Vocal Referee</h3>
-          <p>Your personal table tennis umpire. Smart voice synthesis announces scores, deuces, set points, and match points, automatically ducking Spotify or Apple Music background tracks.</p>
-        </article>
-
-        <article class="feature-card">
-          <div class="feature-icon">⚡</div>
-          <h3>Live Activities</h3>
-          <p>Track scores instantly without unlocking your phone. Real-time match configurations are cast right onto your iOS Lock Screen and Dynamic Island overlays.</p>
-        </article>
-
-        <article class="feature-card">
-          <div class="feature-icon">🛠️</div>
-          <h3>ITTF Compliance</h3>
-          <p>Officially adheres to ITTF rules. Smart support for standard 11 or 21-point matches, automatic 2 or 5 serve rotations, and interactive deuce handling rules.</p>
-        </article>
-
-        <article class="feature-card">
-          <div class="feature-icon">🎨</div>
-          <h3>Cyberpunk Neon Themes</h3>
-          <p>Stunning, high-contrast neon design systems (Classic Pink/Cyan, Mint/Royal, Solar/Teal) built to look amazing on premium OLED and Always-On screens.</p>
-        </article>
-
-        <article class="feature-card">
-          <div class="feature-icon">🔒</div>
-          <h3>Absolute Privacy</h3>
-          <p>100% offline database architecture. Zero user tracking, zero advertisements, zero registration forms, and zero third-party analytics trackers.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- SECTION 2: APP SUPPORT (Support URL) -->
-    <section id="support" class="view-section">
-      <div class="support-container">
-        <h2 class="section-title">App Support & Help Center</h2>
-        <p class="section-subtitle">Have questions or found a bug? Use the support links below so every request reaches a real, reviewable destination.</p>
-
-        <div class="support-actions" aria-label="Support links">
-          <a class="support-link primary" href="https://github.com/simo-hue/Ping-Pong-Counter/issues/new" rel="noopener noreferrer">
-            Open a Support Request
-          </a>
-          <a class="support-link" href="https://github.com/simo-hue/Ping-Pong-Counter/issues" rel="noopener noreferrer">
-            View Existing Issues
-          </a>
-        </div>
-
-        <div class="support-note">
-          <h3>What to include</h3>
-          <p>Describe your device model, iOS/watchOS version, the match state, and the exact action that caused the issue. Do not include private information in public support requests.</p>
+      <!-- TRUST STRIP -->
+      <div class="trust-strip reveal">
+        <div class="container trust-inner">
+          <div class="trust-item">
+            <span class="trust-value">100%</span>
+            <span class="trust-label">Offline</span>
+          </div>
+          <div class="trust-divider"></div>
+          <div class="trust-item">
+            <span class="trust-value">0</span>
+            <span class="trust-label">Trackers</span>
+          </div>
+          <div class="trust-divider"></div>
+          <div class="trust-item">
+            <span class="trust-value">ITTF</span>
+            <span class="trust-label">Compliant</span>
+          </div>
+          <div class="trust-divider"></div>
+          <div class="trust-item">
+            <span class="trust-value">3</span>
+            <span class="trust-label">Neon Themes</span>
+          </div>
+          <div class="trust-divider"></div>
+          <div class="trust-item">
+            <span class="trust-value">⌚</span>
+            <span class="trust-label">Watch Sync</span>
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- SECTION 3: PRIVACY POLICY (Privacy Policy URL) -->
-    <section id="privacy" class="view-section">
-      <div class="privacy-container">
-        <div class="privacy-header">
-          <h2>Privacy Policy</h2>
-          <p class="privacy-date">Last Updated: May 19, 2026</p>
-        </div>
-        
-        <div class="privacy-content">
-          <p>
-            We take your digital privacy very seriously. <strong>Ping Pong Scoreboard</strong> has been engineered from the ground up to respect your personal spaces. We adhere to an absolute data minimalism policy: we do not transmit, share, or monetize any of your personal information.
-          </p>
-          
-          <div class="highlight-box">
-            <p>🔒 Apple App Store Declaration: "Data Not Collected". The app operates 100% locally on your device.</p>
+      <!-- FEATURES GRID -->
+      <div class="features-section">
+        <div class="container">
+          <div class="features-header">
+            <span class="section-label reveal">Core Features</span>
+            <h2 class="section-title reveal reveal-delay-1">Everything You Need<br>for a Perfect Match</h2>
+            <p class="section-subtitle reveal reveal-delay-2">
+              Crafted with precision from high-end APIs, gorgeous neon aesthetics, and zero-friction interactions.
+            </p>
           </div>
 
-          <h3>1. Data We Do Not Collect</h3>
-          <p>When you download and use Ping Pong Scoreboard, we do not require, collect, or store any of the following:</p>
-          <ul>
-            <li>No registration or accounts (no email, usernames, or passwords required).</li>
-            <li>No contact info or identifiers are transmitted to us (no phone numbers, IP tracking, or device identifiers).</li>
-            <li>No search history, usage data, or diagnostic data.</li>
-            <li>No device identifier metrics.</li>
-          </ul>
+          <div class="features-grid">
+            <article class="feature-card reveal">
+              <div class="feature-icon">⌚</div>
+              <h3>Apple Watch Sync</h3>
+              <p>Leave your iPhone on a tripod at the net. Score matches hands-free directly from your wrist with instant bidirectional synchronization and customized tactile vibration signatures.</p>
+            </article>
 
-          <h3>2. Zero Third-Party Advertising & Tracking</h3>
-          <p>
-            We do not integrate any third-party advertising SDKs, marketing tags, or analytic tracking suites (such as Google Analytics or Facebook SDK). Your matches, scoring speeds, and usage histories remain entirely private.
-          </p>
+            <article class="feature-card reveal reveal-delay-1">
+              <div class="feature-icon">🔊</div>
+              <h3>Vocal Referee</h3>
+              <p>Your personal table tennis umpire. Smart voice synthesis announces scores, deuces, set points, and match points, automatically ducking Spotify or Apple Music background tracks.</p>
+            </article>
 
-          <h3>3. Device Services & Permissions</h3>
-          <p>Our app requires specific device permissions to deliver premium features, but these inputs never leave your physical device:</p>
-          <ul>
-            <li><strong>WatchConnectivity:</strong> Used to synchronize active scoring parameters in real-time between your iPhone and your paired Apple Watch.</li>
-            <li><strong>AVAudioSession (Audio & Vocal Referee):</strong> Used to announce score increments vocally like a real umpire. Background audio states are managed locally and are never recorded or logged.</li>
-            <li><strong>System Haptics:</strong> Provides tactile vibrations to confirm tap events on iOS and watchOS devices.</li>
-          </ul>
+            <article class="feature-card reveal reveal-delay-2">
+              <div class="feature-icon">⚡</div>
+              <h3>Live Activities</h3>
+              <p>Track scores instantly without unlocking your phone. Real-time match configurations are cast right onto your iOS Lock Screen and Dynamic Island overlays.</p>
+            </article>
 
-          <h3>4. Offline-First Infrastructure</h3>
-          <p>
-            All custom configurations, optional player names, and scoring tables are stored locally inside the application's sandbox. The app operates fully without an active internet connection.
-          </p>
+            <article class="feature-card reveal reveal-delay-1">
+              <div class="feature-icon">🛠️</div>
+              <h3>ITTF Compliance</h3>
+              <p>Officially adheres to ITTF rules. Smart support for standard 11 or 21-point matches, automatic 2 or 5 serve rotations, and interactive deuce handling rules.</p>
+            </article>
 
-          <h3>5. Contacting Us</h3>
-          <p>
-            If you have questions about our absolute privacy approach, you can contact us via our Support Tab on this website. Any emails you send us for support will only be used to resolve your specific support case and will never be shared with third parties.
-          </p>
+            <article class="feature-card reveal reveal-delay-2">
+              <div class="feature-icon">🎨</div>
+              <h3>Cyberpunk Neon Themes</h3>
+              <p>Stunning, high-contrast neon design systems (Classic Pink/Cyan, Mint/Royal, Solar/Teal) built to look amazing on premium OLED and Always-On screens.</p>
+            </article>
+
+            <article class="feature-card reveal reveal-delay-3">
+              <div class="feature-icon">🔒</div>
+              <h3>Absolute Privacy</h3>
+              <p>100% offline database architecture. Zero user tracking, zero advertisements, zero registration forms, and zero third-party analytics trackers.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREENSHOT GALLERY -->
+      <div class="gallery-section">
+        <div class="container">
+          <div class="gallery-header">
+            <span class="section-label reveal">Gallery</span>
+            <h2 class="section-title reveal reveal-delay-1">See It in Action</h2>
+            <p class="section-subtitle reveal reveal-delay-2">
+              Gorgeous cyberpunk neon visuals designed for OLED screens, Live Activities, Dynamic Island, and Apple Watch.
+            </p>
+          </div>
+        </div>
+
+        <div class="gallery-track-wrapper reveal">
+          <div class="gallery-track" id="gallery-track">
+            <!-- First pass -->
+            <div class="gallery-item"><img src="assets/screenshot-01.png" alt="Track every game with iPhone and Apple Watch" loading="lazy"></div>
+            <div class="gallery-item"><img src="assets/screenshot-02.png" alt="Multiple neon theme options" loading="lazy"></div>
+            <div class="gallery-item"><img src="assets/screenshot-03.png" alt="Cyberpunk style up to you" loading="lazy"></div>
+            <div class="gallery-item"><img src="assets/screenshot-04.png" alt="Live Activity for the score on Lock Screen" loading="lazy"></div>
+            <div class="gallery-item"><img src="assets/screenshot-05.png" alt="Dynamic Island integration" loading="lazy"></div>
+            <div class="gallery-item"><img src="assets/screenshot-06.png" alt="Customize everything in settings" loading="lazy"></div>
+            <!-- Duplicate for seamless loop -->
+            <div class="gallery-item"><img src="assets/screenshot-01.png" alt="Track every game with iPhone and Apple Watch" loading="lazy"></div>
+            <div class="gallery-item"><img src="assets/screenshot-02.png" alt="Multiple neon theme options" loading="lazy"></div>
+            <div class="gallery-item"><img src="assets/screenshot-03.png" alt="Cyberpunk style up to you" loading="lazy"></div>
+            <div class="gallery-item"><img src="assets/screenshot-04.png" alt="Live Activity for the score on Lock Screen" loading="lazy"></div>
+            <div class="gallery-item"><img src="assets/screenshot-05.png" alt="Dynamic Island integration" loading="lazy"></div>
+            <div class="gallery-item"><img src="assets/screenshot-06.png" alt="Customize everything in settings" loading="lazy"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE SIMULATOR -->
+      <div class="simulator-section">
+        <div class="container">
+          <div class="simulator-layout">
+            <div class="simulator-text reveal">
+              <span class="section-label">Try It Now</span>
+              <h2>Experience the Scoreboard</h2>
+              <p>
+                Tap the player sides to add points and see the ITTF-compliant serve rotation in action. This interactive demo mirrors the exact scoring logic of the real app.
+              </p>
+              <ul class="sim-features-list">
+                <li><span class="check">✓</span> Tap to score +1 with floating animation</li>
+                <li><span class="check">✓</span> Automatic serve rotation every 2 points</li>
+                <li><span class="check">✓</span> Deuce rules at 10-10 (1 serve rotation)</li>
+                <li><span class="check">✓</span> Full undo and match reset controls</li>
+                <li><span class="check">✓</span> Best-of-3 set tracking with dot indicators</li>
+              </ul>
+            </div>
+
+            <div class="simulator-visual reveal reveal-delay-1">
+              <div class="iphone-frame">
+                <div class="iphone-notch"></div>
+                <div class="simulator-screen">
+                  <div class="sim-header">
+                    <span>9:41</span>
+                    <span>📶 🔋</span>
+                  </div>
+
+                  <div class="sim-scoreboard">
+                    <div class="sim-net"></div>
+
+                    <!-- Player Pink Side -->
+                    <div class="sim-side player-pink active-serve" id="sim-pink-side" title="Tap to add point for Player 1">
+                      <div class="sim-meta">
+                        <span class="sim-name">PLAYER 1</span>
+                        <div class="sim-sets" id="sim-pink-sets" aria-label="Player 1 Sets Won">
+                          <div class="sim-dot"></div>
+                          <div class="sim-dot"></div>
+                          <div class="sim-dot"></div>
+                        </div>
+                      </div>
+                      <div class="sim-score" id="sim-pink-score">0</div>
+                      <span class="sim-serve-indicator">SERVE</span>
+                    </div>
+
+                    <!-- Player Cyan Side -->
+                    <div class="sim-side player-cyan" id="sim-cyan-side" title="Tap to add point for Player 2">
+                      <span class="sim-serve-indicator">SERVE</span>
+                      <div class="sim-score" id="sim-cyan-score">0</div>
+                      <div class="sim-meta">
+                        <span class="sim-name">PLAYER 2</span>
+                        <div class="sim-sets" id="sim-cyan-sets" aria-label="Player 2 Sets Won">
+                          <div class="sim-dot"></div>
+                          <div class="sim-dot"></div>
+                          <div class="sim-dot"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Simulator Controls -->
+                  <div class="sim-controls">
+                    <button class="sim-control-btn" id="sim-btn-undo" title="Reverse last point">Undo</button>
+                    <button class="sim-control-btn" id="sim-btn-reset" title="Full match reset">Reset</button>
+                  </div>
+                  <div class="sim-status-banner" id="sim-status-banner">TAP SIDES TO RECORD POINTS</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ════════════════════════════════════════ -->
+    <!--  SECTION 2: APP SUPPORT                 -->
+    <!-- ════════════════════════════════════════ -->
+    <section id="support" class="view-section">
+      <div class="support-section">
+        <div class="container support-container">
+          <div class="support-card reveal">
+            <span class="section-label">Help Center</span>
+            <h2 class="section-title">App Support</h2>
+            <p class="section-subtitle">Have questions or found a bug? Use the support links below so every request reaches a real, reviewable destination.</p>
+
+            <div class="support-actions">
+              <a class="support-link primary" href="https://github.com/simo-hue/Ping-Pong-Counter/issues/new" rel="noopener noreferrer" id="link-open-issue">
+                Open a Support Request
+              </a>
+              <a class="support-link" href="https://github.com/simo-hue/Ping-Pong-Counter/issues" rel="noopener noreferrer" id="link-view-issues">
+                View Existing Issues
+              </a>
+            </div>
+
+            <div class="support-note">
+              <h3>What to include</h3>
+              <p>Describe your device model, iOS/watchOS version, the match state, and the exact action that caused the issue. Do not include private information in public support requests.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
+
+    <!-- ════════════════════════════════════════ -->
+    <!--  SECTION 3: PRIVACY POLICY              -->
+    <!-- ════════════════════════════════════════ -->
+    <section id="privacy" class="view-section">
+      <div class="privacy-section">
+        <div class="container">
+          <div class="privacy-container reveal">
+            <div class="privacy-header">
+              <h2>Privacy Policy</h2>
+              <p class="privacy-date">Last Updated: May 19, 2026</p>
+            </div>
+
+            <div class="privacy-content">
+              <p>
+                We take your digital privacy very seriously. <strong>Ping Pong Scoreboard</strong> has been engineered from the ground up to respect your personal spaces. We adhere to an absolute data minimalism policy: we do not transmit, share, or monetize any of your personal information.
+              </p>
+
+              <div class="highlight-box">
+                <span class="highlight-icon">🔒</span>
+                <p>Apple App Store Declaration: "Data Not Collected". The app operates 100% locally on your device.</p>
+              </div>
+
+              <h3>1. Data We Do Not Collect</h3>
+              <p>When you download and use Ping Pong Scoreboard, we do not require, collect, or store any of the following:</p>
+              <ul>
+                <li>No registration or accounts (no email, usernames, or passwords required).</li>
+                <li>No contact info or identifiers are transmitted to us (no phone numbers, IP tracking, or device identifiers).</li>
+                <li>No search history, usage data, or diagnostic data.</li>
+                <li>No device identifier metrics.</li>
+              </ul>
+
+              <h3>2. Zero Third-Party Advertising & Tracking</h3>
+              <p>
+                We do not integrate any third-party advertising SDKs, marketing tags, or analytic tracking suites (such as Google Analytics or Facebook SDK). Your matches, scoring speeds, and usage histories remain entirely private.
+              </p>
+
+              <h3>3. Device Services & Permissions</h3>
+              <p>Our app requires specific device permissions to deliver premium features, but these inputs never leave your physical device:</p>
+              <ul>
+                <li><strong>WatchConnectivity:</strong> Used to synchronize active scoring parameters in real-time between your iPhone and your paired Apple Watch.</li>
+                <li><strong>AVAudioSession (Audio & Vocal Referee):</strong> Used to announce score increments vocally like a real umpire. Background audio states are managed locally and are never recorded or logged.</li>
+                <li><strong>System Haptics:</strong> Provides tactile vibrations to confirm tap events on iOS and watchOS devices.</li>
+              </ul>
+
+              <h3>4. Offline-First Infrastructure</h3>
+              <p>
+                All custom configurations, optional player names, and scoring tables are stored locally inside the application's sandbox. The app operates fully without an active internet connection.
+              </p>
+
+              <h3>5. Contacting Us</h3>
+              <p>
+                If you have questions about our absolute privacy approach, you can contact us via our Support Tab on this website. Any emails you send us for support will only be used to resolve your specific support case and will never be shared with third parties.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
-  <!-- Footer -->
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  FOOTER                                     -->
+  <!-- ═══════════════════════════════════════════ -->
   <footer>
     <div class="container footer-content">
-      <p>&copy; 2026 Ping Pong Scoreboard. Crafted by Simo. All Rights Reserved.</p>
+      <div class="footer-left">
+        <p>&copy; 2026 Ping Pong Scoreboard. Crafted by Simo. All Rights Reserved.</p>
+      </div>
       <div class="footer-links">
-        <a href="#features" class="footer-nav-btn" data-target="features">Home</a>
-        <a href="#support" class="footer-nav-btn" data-target="support">Support</a>
-        <a href="#privacy" class="footer-nav-btn" data-target="privacy">Privacy</a>
+        <button class="footer-nav-btn" data-target="features">Home</button>
+        <button class="footer-nav-btn" data-target="support">Support</button>
+        <button class="footer-nav-btn" data-target="privacy">Privacy</button>
       </div>
     </div>
   </footer>
