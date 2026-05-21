@@ -285,4 +285,10 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Watch Rules**: Il Watch riceve anche `bestOfSets` e la logica ottimistica locale ora distingue set vinto da match vinto.
   - **Verifica**: `plutil -lint`, `jq empty`, `git diff --check`, build Debug su simulatore via XcodeBuildMCP e build Release generic iOS con `CODE_SIGNING_ALLOWED=NO` completati con successo.
 
-
+### [2026-05-21 09:50 CEST]: Correzione Review Apple Guideline 2.5.4 Background Audio
+* **Dettagli**: Rimossa la dichiarazione `UIBackgroundModes = audio` dal bundle iOS per allineare l'app alla Guideline 2.5.4: l'assistente vocale resta una funzione di annuncio in-app e non viene più presentato come riproduzione audio persistente in background.
+* **Tech Notes**:
+  - **Info.plist iOS**: `PingPong/Info.plist` non dichiara più `UIBackgroundModes`, eliminando la capability audio contestata da App Review.
+  - **AVAudioSession Lifecycle**: `SpeechManager` ora implementa `AVSpeechSynthesizerDelegate` e disattiva la sessione audio con `.notifyOthersOnDeactivation` al termine o alla cancellazione degli annunci, così la sessione è temporanea e non lascia altre app audio in stato ducked.
+  - **Review Notes**: Aggiornata la guida di pubblicazione per non chiedere più ai reviewer di testare background audio o allegare video di audio persistente; restano le note per Watch e Live Activities.
+  - **Verifica**: `plutil -lint`, `git diff --check`, ricerca mirata di `UIBackgroundModes`, build Debug su simulatore via XcodeBuildMCP senza warning e build Release generic iOS con `CODE_SIGNING_ALLOWED=NO` completati con successo. Verificati anche gli `Info.plist` prodotti Debug/Release: nessuna chiave `UIBackgroundModes` presente. Installazione e avvio su iPhone 17 Pro Simulator confermati con `simctl launch`.

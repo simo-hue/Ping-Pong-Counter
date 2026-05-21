@@ -185,7 +185,7 @@ Invece di caricare direttamente l'app sui server Apple, la compileremo ed esport
 
 ---
 
-## 7. Strategia Blindata Anti-Rejection (Live Activities, Audio & Watch)
+## 7. Strategia Blindata Anti-Rejection (Live Activities, Voce & Watch)
 
 > [!WARNING]
 > Qui si decide l'esito della revisione. Apple ritiene sistematicamente le applicazioni che dichiarano funzionalità avanzate senza fornire ai revisori i mezzi per testarle o senza spiegarne dettagliatamente l'utilità.
@@ -197,10 +197,10 @@ All'interno della scheda di invio dell'applicazione su App Store Connect, scorri
 > **NOTE DI REVISIONE PER IL REVISORE APPLE (IT/EN):**
 > 
 > *Gentile team di revisione Apple,*
-> *Questa applicazione è un tabellone segnapunti interattivo ad alto contrasto neon per partite reali di Ping Pong (Tennis da tavolo). Per garantire un'esperienza di gioco senza interruzioni e a mani libere, l'app include 3 funzionalità premium integrate:*
+> *Questa applicazione è un tabellone segnapunti interattivo ad alto contrasto neon per partite reali di Ping Pong (Tennis da tavolo). Per garantire un'esperienza di gioco fluida e a mani libere, l'app include 3 funzionalità premium integrate:*
 > 
-> 1. **Background Audio (AVSpeechSynthesizer - Guideline 2.5.4)**:
->    *L'applicazione richiede la modalità di riproduzione audio in background (`UIBackgroundModes = audio`). Durante un vero incontro fisico di Ping Pong, i giocatori posizionano l'iPhone a bordo tavolo o lo tengono in tasca per evitare distrazioni visive. L'arbitro vocale integrato pronuncia ad alta voce il punteggio corrente ("10 a 8") e indica il cambio di servizio ("Servizio a Giocatore 1") ad ogni variazione del punteggio. Questa funzione consente ai giocatori di rimanere concentrati sull'azione atletica reale senza dover guardare o toccare continuamente lo schermo del telefono. Se l'app non potesse riprodurre l'audio in background, l'arbitro vocale smetterebbe di funzionare non appena lo schermo del telefono entra in standby, compromettendo l'utilità principale dell'app durante il gioco.*
+> 1. **Assistente vocale in-app (AVSpeechSynthesizer)**:
+>    *L'applicazione include un arbitro vocale opzionale che pronuncia ad alta voce il punteggio corrente ("10 a 8") e indica il cambio di servizio ("Servizio a Giocatore 1") quando l'utente modifica il punteggio con l'app aperta. La funzione usa una sessione audio temporanea solo durante l'annuncio e non dichiara modalità audio in background.*
 > 
 > 2. **Companion App per Apple Watch (watchOS Integration)**:
 >    *Abbiamo incluso una companion app per Apple Watch. Questa consente al giocatore di incrementare o decrementare il punteggio in tempo reale sul proprio polso tramite connessione WCSession bidirezionale, aggiornando all'istante la schermata dell'iPhone posizionato a bordo tavolo senza dover interrompere l'azione.*
@@ -212,7 +212,7 @@ All'interno della scheda di invio dell'applicazione su App Store Connect, scorri
 > - Non è richiesto alcun login o registrazione (l'app è 100% offline per tutelare la privacy dell'utente).
 > - All'avvio dell'app, tocca lo schermo a sinistra o a destra per assegnare un punto.
 > - Trascina il dito verso il basso (swipe down) su uno dei due campi per decrementare il punteggio (-1) in caso di errore.
-> - Clicca sull'icona dell'ingranaggio in alto per accedere alle impostazioni e attivare la sintesi vocale ("Voice Announce Scores") per testare l'arbitro vocale e verificare che annunci correttamente i punteggi anche a schermo spento/in background.
+> - Clicca sull'icona dell'ingranaggio in alto per accedere alle impostazioni e attivare la sintesi vocale ("Voice Announce Scores") per testare l'arbitro vocale mentre l'app è aperta.
 > - Per simulare la sincronizzazione con Apple Watch e l'attivazione della Live Activity, vi invito a prendere visione del video dimostrativo allegato a questa sottomissione.
 
 ### B. Allegato Video Dimostrativo (Fondamentale!)

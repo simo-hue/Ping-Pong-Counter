@@ -1,6 +1,7 @@
 import AVFoundation
 
-final class SpeechManager: NSObject {
+@MainActor
+final class SpeechManager: NSObject, @preconcurrency AVSpeechSynthesizerDelegate {
     static let shared = SpeechManager()
     
     private let synthesizer = AVSpeechSynthesizer()
@@ -10,6 +11,7 @@ final class SpeechManager: NSObject {
     
     private override init() {
         super.init()
+        synthesizer.delegate = self
         setupAudioSession()
         configureVoice()
     }
@@ -61,6 +63,26 @@ final class SpeechManager: NSObject {
         // Activate session dynamically before speaking
         try? AVAudioSession.sharedInstance().setActive(true)
         synthesizer.speak(utterance)
+    }
+
+    private func deactivateAudioSession() {
+        guard !synthesizer.isSpeaking else { return }
+
+        do {
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        } catch {
+            #if DEBUG
+            print("Failed to deactivate AVAudioSession: \(error.localizedDescription)")
+            #endif
+        }
+    }
+
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        deactivateAudioSession()
+    }
+
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        deactivateAudioSession()
     }
     
     func announceScore(
