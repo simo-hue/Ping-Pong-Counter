@@ -96,7 +96,7 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
         winner = ""
         send(action: "reset")
     }
-    
+
     private func saveToHistory() {
         let snapshot = WatchSnapshot(
             p1Score: p1Score,

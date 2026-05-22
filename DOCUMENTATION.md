@@ -338,3 +338,17 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Watch UI**: Sostituito lo stroke perimetrale del pannello con un divider centrale neon colorato in base al giocatore al servizio.
   - **Visual Stability**: Rimossa la `cornerRadius` dai pannelli a piena altezza per evitare maschere e stroke parziali ai lati dello schermo.
   - **Verifica**: Build Debug dello scheme Watch rilanciata dopo la modifica.
+
+### [2026-05-22 16:13 CEST]: Menu Flottante Controlli su Apple Watch
+* **Dettagli**: Aggiunta una pillola flottante centrale anche nell'app Apple Watch, coerente con il control center dell'iPhone e adatta al display compatto del Watch.
+* **Tech Notes**:
+  - **Watch Controls**: La pillola include annulla, scambia lati e reset partita; il reset usa una conferma nativa watchOS per evitare tocchi accidentali.
+  - **WatchConnectivity**: Aggiunto `sendSwapSides()` a `WatchConnector`; reset e swap continuano a passare dall'iPhone come sorgente autorevole e vengono risincronizzati allo stato principale.
+  - **Verifica**: Build Debug dello scheme Watch rilanciata dopo la modifica.
+
+### [2026-05-22 16:26 CEST]: Rifinitura Verticale Menu Watch
+* **Dettagli**: Rifinito il menu flottante su Apple Watch trasformandolo in una pillola verticale centrata, con i pulsanti uno sopra l'altro.
+* **Tech Notes**:
+  - **Watch Controls**: Rimossi i controlli superflui dal Watch; restano solo undo e reset partita con conferma.
+  - **Cleanup**: Rimosso `sendSwapSides()` da `WatchConnector` perché non è più esposto dalla UI Watch.
+  - **Verifica**: Build Debug dello scheme Watch rilanciata dopo la modifica.

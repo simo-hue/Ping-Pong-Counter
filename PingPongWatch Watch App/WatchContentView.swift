@@ -6,6 +6,7 @@ struct WatchContentView: View {
     
     // Animation states for neon glowing pulse
     @State private var animatePulse = false
+    @State private var isShowingResetConfirmation = false
     
     // Check if the current locale is Italian
     private var isItalian: Bool {
@@ -46,28 +47,15 @@ struct WatchContentView: View {
                 
                 centralServeDivider
                 
-                // Small Center Floating Glassmorphic Undo Button
-                VStack {
-                    Spacer()
-                    Button {
-                        WKInterfaceDevice.current().play(.directionUp)
-                        connector.sendUndo()
-                    } label: {
-                        Image(systemName: "arrow.uturn.backward")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundColor(.white.opacity(0.9))
-                            .frame(width: 32, height: 32)
-                            .background(
-                                Circle()
-                                    .fill(Color.black.opacity(0.65))
-                                    .overlay(Circle().stroke(Color.white.opacity(0.25), lineWidth: 1))
-                            )
-                            .shadow(color: .black.opacity(0.5), radius: 3)
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.bottom, 2)
-                }
+                watchFloatingControls
             }
+        }
+        .alert(isItalian ? "Azzerare la partita?" : "Reset match?", isPresented: $isShowingResetConfirmation) {
+            Button(isItalian ? "Azzera" : "Reset", role: .destructive) {
+                WKInterfaceDevice.current().play(.success)
+                connector.sendReset()
+            }
+            Button(isItalian ? "Annulla" : "Cancel", role: .cancel) {}
         }
         .onAppear {
             // Trigger loop animation for breathing pulse glows
@@ -173,6 +161,56 @@ struct WatchContentView: View {
                     }
                 }
         )
+    }
+
+    private var watchFloatingControls: some View {
+        VStack(spacing: 8) {
+            watchControlButton(
+                systemName: "arrow.uturn.backward",
+                accessibilityLabel: isItalian ? "Annulla" : "Undo"
+            ) {
+                WKInterfaceDevice.current().play(.directionUp)
+                connector.sendUndo()
+            }
+
+            watchControlButton(
+                systemName: "arrow.counterclockwise",
+                color: .red.opacity(0.92),
+                accessibilityLabel: isItalian ? "Reset partita" : "Reset match"
+            ) {
+                WKInterfaceDevice.current().play(.click)
+                isShowingResetConfirmation = true
+            }
+        }
+        .padding(.horizontal, 7)
+        .padding(.vertical, 10)
+        .background(
+            Capsule()
+                .fill(Color.black.opacity(0.72))
+                .overlay(
+                    Capsule().stroke(Color.white.opacity(0.22), lineWidth: 1)
+                )
+        )
+        .shadow(color: .black.opacity(0.55), radius: 8, y: 3)
+    }
+
+    private func watchControlButton(
+        systemName: String,
+        color: Color = .white.opacity(0.9),
+        accessibilityLabel: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 13, weight: .black))
+                .foregroundColor(color)
+                .frame(width: 26, height: 26)
+                .background(
+                    Circle().fill(Color.white.opacity(0.09))
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(accessibilityLabel)
     }
 
     private var centralServeDivider: some View {
