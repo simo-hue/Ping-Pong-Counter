@@ -1,8 +1,10 @@
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     @StateObject private var viewModel = ScoreViewModel()
     @State private var isShowingSettings = false
+    @State private var isShowingMatchHistory = false
     @State private var animateP1 = false
     @State private var animateP2 = false
     
@@ -115,6 +117,9 @@ struct ContentView: View {
             }
             .sheet(isPresented: $isShowingSettings) {
                 SettingsView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $isShowingMatchHistory) {
+                MatchHistoryView(viewModel: viewModel)
             }
             .overlay {
                 // Game Over Overlay Celebration
@@ -377,6 +382,18 @@ struct ContentView: View {
                     .font(.system(size: 26))
                     .foregroundColor(.white)
             }
+            .accessibilityLabel(Localized.settingsTitle)
+
+            // Saved results button
+            Button {
+                isShowingMatchHistory = true
+            } label: {
+                Image(systemName: "chart.bar.fill")
+                    .font(.system(size: 24))
+                    .foregroundColor(.white)
+                    .frame(width: 26, height: 26)
+            }
+            .accessibilityLabel(Localized.matchHistoryTitle)
             
             // Reset button with safety confirmation sheet
             Button {
@@ -492,5 +509,347 @@ struct ContentView: View {
             )
             .padding(20)
         }
+    }
+}
+
+struct MatchHistoryView: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var viewModel: ScoreViewModel
+    @State private var isShowingDeleteConfirmation = false
+    @State private var didCopyResults = false
+
+    private var records: [MatchRecord] {
+        viewModel.matchRecords
+    }
+
+    private var completedCount: Int {
+        records.filter { $0.winner != nil }.count
+    }
+
+    private var interruptedCount: Int {
+        records.count - completedCount
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                LinearGradient(
+                    colors: [Color(white: 0.05), Color(white: 0.12)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+
+                Form {
+                    if records.isEmpty {
+                        Section {
+                            emptyState
+                                .listRowBackground(Color(white: 0.15))
+                        }
+                    } else {
+                        Section {
+                            statsOverview
+                                .listRowBackground(Color.clear)
+                        }
+
+                        Section {
+                            actionsRow
+                                .listRowBackground(Color(white: 0.15))
+                        }
+
+                        Section(header: Text(Localized.savedResultsHeader).foregroundColor(.gray)) {
+                            ForEach(records) { record in
+                                MatchRecordRow(record: record)
+                                    .listRowBackground(Color(white: 0.15))
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                        Button(role: .destructive) {
+                                            viewModel.deleteMatchRecord(id: record.id)
+                                        } label: {
+                                            Label(Localized.deleteRecord, systemImage: "trash.fill")
+                                        }
+                                    }
+                            }
+                        }
+                    }
+                }
+                .scrollContentBackground(.hidden)
+            }
+            .navigationTitle(Localized.matchHistoryTitle)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(Localized.closeButton) {
+                        dismiss()
+                    }
+                    .foregroundColor(.white)
+                    .fontWeight(.semibold)
+                }
+            }
+            .confirmationDialog(
+                Localized.deleteRecordsConfirmTitle,
+                isPresented: $isShowingDeleteConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button(Localized.deleteAll, role: .destructive) {
+                    viewModel.deleteMatchRecords()
+                }
+                Button(Localized.isItalian ? "Annulla" : "Cancel", role: .cancel) {}
+            } message: {
+                Text(Localized.deleteRecordsConfirmMessage)
+            }
+            .preferredColorScheme(.dark)
+        }
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "chart.bar.doc.horizontal")
+                .font(.system(size: 44, weight: .semibold))
+                .foregroundColor(.white.opacity(0.45))
+
+            Text(Localized.noSavedResults)
+                .font(.system(.headline, design: .rounded))
+                .fontWeight(.bold)
+                .foregroundColor(.white.opacity(0.82))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 34)
+    }
+
+    private var statsOverview: some View {
+        HStack(spacing: 10) {
+            MatchHistoryStat(
+                title: Localized.totalMatches,
+                value: "\(records.count)",
+                color: .cyan,
+                systemImage: "number.circle.fill"
+            )
+
+            MatchHistoryStat(
+                title: Localized.completedMatches,
+                value: "\(completedCount)",
+                color: .yellow,
+                systemImage: "checkmark.circle.fill"
+            )
+
+            MatchHistoryStat(
+                title: Localized.interruptedMatches,
+                value: "\(interruptedCount)",
+                color: .white.opacity(0.62),
+                systemImage: "pause.circle.fill"
+            )
+        }
+        .padding(.vertical, 4)
+    }
+
+    private var actionsRow: some View {
+        HStack(spacing: 12) {
+            Button {
+                copyMatchHistory()
+            } label: {
+                Label(didCopyResults ? Localized.copiedResults : Localized.copyResults, systemImage: "doc.on.doc.fill")
+                    .frame(maxWidth: .infinity)
+            }
+            .disabled(records.isEmpty)
+
+            Button(role: .destructive) {
+                isShowingDeleteConfirmation = true
+            } label: {
+                Label(Localized.deleteRecords, systemImage: "trash.fill")
+                    .frame(maxWidth: .infinity)
+            }
+            .disabled(records.isEmpty)
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.regular)
+    }
+
+    private func copyMatchHistory() {
+        UIPasteboard.general.string = matchHistoryExportText
+        didCopyResults = true
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
+            didCopyResults = false
+        }
+    }
+
+    private var matchHistoryExportText: String {
+        let header = [
+            "Data",
+            "Giocatore 1",
+            "Giocatore 2",
+            "Set",
+            "Punti",
+            "Vincitore",
+            "Stato",
+            "Regole"
+        ].joined(separator: ";")
+
+        let rows = records.map { record in
+            [
+                escaped(record.date.formatted(date: .abbreviated, time: .shortened)),
+                escaped(record.p1Name),
+                escaped(record.p2Name),
+                escaped("\(record.p1Sets)-\(record.p2Sets)"),
+                escaped("\(record.p1Score)-\(record.p2Score)"),
+                escaped(winnerName(for: record) ?? "-"),
+                escaped(record.winner == nil ? Localized.interruptedMatch : Localized.completedMatches),
+                escaped("\(record.targetScore) pt, \(record.bestOfSets) set, \(record.winByTwo ? "deuce" : "no deuce")")
+            ].joined(separator: ";")
+        }
+
+        return ([header] + rows).joined(separator: "\n")
+    }
+
+    private func escaped(_ value: String) -> String {
+        "\"\(value.replacingOccurrences(of: "\"", with: "\"\""))\""
+    }
+
+    private func winnerName(for record: MatchRecord) -> String? {
+        switch record.winner {
+        case .player1:
+            return record.p1Name
+        case .player2:
+            return record.p2Name
+        case nil:
+            return nil
+        }
+    }
+}
+
+private struct MatchHistoryStat: View {
+    let title: String
+    let value: String
+    let color: Color
+    let systemImage: String
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: systemImage)
+                .font(.system(size: 17, weight: .bold))
+                .foregroundColor(color)
+
+            Text(value)
+                .font(.system(.title3, design: .rounded))
+                .fontWeight(.black)
+                .foregroundColor(.white)
+                .monospacedDigit()
+
+            Text(title)
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundColor(.white.opacity(0.58))
+                .lineLimit(1)
+                .minimumScaleFactor(0.65)
+        }
+        .frame(maxWidth: .infinity, minHeight: 92)
+        .padding(.horizontal, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(Color.white.opacity(0.06))
+        )
+    }
+}
+
+private struct MatchRecordRow: View {
+    let record: MatchRecord
+
+    private var winnerName: String? {
+        switch record.winner {
+        case .player1:
+            return record.p1Name
+        case .player2:
+            return record.p2Name
+        case nil:
+            return nil
+        }
+    }
+
+    private var statusText: String {
+        if let winnerName {
+            return "\(Localized.winnerLabel): \(winnerName)"
+        }
+
+        return Localized.interruptedMatch
+    }
+
+    private var statusColor: Color {
+        record.winner == nil ? .white.opacity(0.55) : .yellow
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Label(record.date.formatted(date: .abbreviated, time: .shortened), systemImage: "calendar")
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundColor(.white.opacity(0.55))
+                    .lineLimit(1)
+
+                Spacer(minLength: 8)
+
+                Text(statusText)
+                    .font(.system(.caption, design: .rounded))
+                    .fontWeight(.bold)
+                    .foregroundColor(statusColor)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+            }
+
+            HStack(spacing: 10) {
+                playerName(record.p1Name, isLeading: true)
+
+                Spacer(minLength: 4)
+
+                VStack(spacing: 2) {
+                    Text("\(record.p1Sets) - \(record.p2Sets)")
+                        .font(.system(.title2, design: .rounded))
+                        .fontWeight(.black)
+                        .foregroundColor(.white)
+                        .monospacedDigit()
+
+                    Text(Localized.setsLabel.uppercased())
+                        .font(.system(size: 9, weight: .black, design: .rounded))
+                        .foregroundColor(.white.opacity(0.42))
+                        .tracking(1.2)
+                }
+                .frame(minWidth: 76)
+
+                Spacer(minLength: 4)
+
+                playerName(record.p2Name, isLeading: false)
+            }
+
+            HStack(spacing: 8) {
+                resultTag("\(Localized.pointsLabel): \(record.p1Score)-\(record.p2Score)", systemImage: "circle.grid.cross.fill")
+                resultTag("\(record.targetScore) pt", systemImage: "flag.checkered")
+                resultTag(record.winByTwo ? Localized.deuceOn : Localized.deuceOff, systemImage: "arrow.left.and.right")
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+        }
+        .padding(.vertical, 8)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func playerName(_ name: String, isLeading: Bool) -> some View {
+        Text(name)
+            .font(.system(.subheadline, design: .rounded))
+            .fontWeight(.bold)
+            .foregroundColor(.white.opacity(0.82))
+            .lineLimit(2)
+            .minimumScaleFactor(0.72)
+            .multilineTextAlignment(isLeading ? .leading : .trailing)
+            .frame(maxWidth: 100, alignment: isLeading ? .leading : .trailing)
+    }
+
+    private func resultTag(_ text: String, systemImage: String) -> some View {
+        Label(text, systemImage: systemImage)
+            .font(.system(size: 10, weight: .bold, design: .rounded))
+            .foregroundColor(.white.opacity(0.66))
+            .lineLimit(1)
+            .minimumScaleFactor(0.68)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .background(
+                Capsule().fill(Color.white.opacity(0.07))
+            )
     }
 }

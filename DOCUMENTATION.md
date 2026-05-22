@@ -308,3 +308,12 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Sezioni Support & Privacy Ridisegnate**: Contenuto identico all'originale, ripresentato con card glassmorphic premium, linea gradient di accento superiore, e tipografia migliorata.
   - **SEO Preservato**: Mantenuti tutti i meta tag originali (title, description, keywords, OpenGraph).
   - **Responsive Design**: Breakpoint ottimizzati a 1024px, 768px e 480px con layout adattivi per features grid, hero, gallery e simulator.
+
+### [2026-05-22 15:42 CEST]: Storico Partite Locale e Menu Risultati
+* **Dettagli**: Aggiunto lo storico delle partite salvato sul dispositivo e accessibile dalla barra flottante centrale tramite una nuova icona grafico posizionata tra impostazioni e reset. Ogni reset di una partita con punteggio, set o vincitore significativo crea un record consultabile nel menu Risultati.
+* **Tech Notes**:
+  - **Persistenza Locale**: Introdotto `MatchRecord` `Codable` in `ScoreViewModel`, salvato e ricaricato da `UserDefaults` con la nuova chiave `matchRecords`.
+  - **Trigger Salvataggio**: `resetMatch()` registra nome giocatori, data, punti correnti, set, vincitore eventuale e regole della partita prima dell'azzeramento. I reset generati da cambio `targetScore` o `bestOfSets` conservano nel record il valore precedente della regola modificata.
+  - **Menu Risultati**: Aggiunta `MatchHistoryView` con statistiche rapide, lista dei record, stato completata/interrotta, swipe-to-delete per record singolo, copia dello storico in formato CSV negli appunti e pulsante distruttivo con conferma per eliminare tutti i record.
+  - **Localizzazione**: Estese le stringhe centralizzate in `Localized.swift` per italiano e inglese.
+  - **Verifica**: `git diff --check`, build Debug su simulatore via XcodeBuildMCP e run su iPhone 17 Simulator completati con successo. Verificati apertura del menu Risultati, creazione di un record dopo reset e cancellazione totale dei record.

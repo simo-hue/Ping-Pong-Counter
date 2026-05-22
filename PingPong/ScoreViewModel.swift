@@ -17,6 +17,21 @@ struct GameSnapshot: Equatable {
     let winner: Player?
 }
 
+struct MatchRecord: Identifiable, Codable, Equatable {
+    let id: UUID
+    let date: Date
+    let p1Name: String
+    let p2Name: String
+    let p1Score: Int
+    let p2Score: Int
+    let p1Sets: Int
+    let p2Sets: Int
+    let winner: Player?
+    let targetScore: Int
+    let bestOfSets: Int
+    let winByTwo: Bool
+}
+
 @MainActor
 final class ScoreViewModel: ObservableObject {
     private enum DefaultsKey {
@@ -36,6 +51,7 @@ final class ScoreViewModel: ObservableObject {
         static let winner = "winner"
         static let themeIndex = "themeIndex"
         static let isVoiceEnabled = "isVoiceEnabled"
+        static let matchRecords = "matchRecords"
     }
 
     private static let validTargetScores = Set([11, 21])
@@ -52,7 +68,7 @@ final class ScoreViewModel: ObservableObject {
             }
             guard hasFinishedInitialLoad else { return }
             UserDefaults.standard.set(targetScore, forKey: DefaultsKey.targetScore)
-            resetMatch()
+            resetMatch(recordedTargetScore: oldValue)
         }
     }
     @Published var winByTwo: Bool = true {
@@ -70,7 +86,7 @@ final class ScoreViewModel: ObservableObject {
             }
             guard hasFinishedInitialLoad else { return }
             UserDefaults.standard.set(bestOfSets, forKey: DefaultsKey.bestOfSets)
-            resetMatch()
+            resetMatch(recordedBestOfSets: oldValue)
         }
     }
     @Published var serveRotationInterval: Int = 2 { // changes to 1 in deuce or 5 for 21-point game
@@ -152,6 +168,8 @@ final class ScoreViewModel: ObservableObject {
     private var history: [GameSnapshot] = []
     private var isApplyingStateBatch = false
     private var hasFinishedInitialLoad = false
+
+    @Published private(set) var matchRecords: [MatchRecord] = []
     
     // Voice announcements
     @Published var isVoiceEnabled: Bool = false {
@@ -174,6 +192,7 @@ final class ScoreViewModel: ObservableObject {
         let savedThemeIndex = defaults.object(forKey: DefaultsKey.themeIndex) as? Int ?? 0
         self.themeIndex = Self.validThemeRange.contains(savedThemeIndex) ? savedThemeIndex : 0
         self.isVoiceEnabled = defaults.object(forKey: DefaultsKey.isVoiceEnabled) as? Bool ?? false
+        self.matchRecords = Self.loadMatchRecords(from: defaults)
 
         if let rawServer = defaults.string(forKey: DefaultsKey.startingServerOfMatch),
            let savedServer = Player(rawValue: rawServer) {
@@ -267,8 +286,17 @@ final class ScoreViewModel: ObservableObject {
         return !history.isEmpty
     }
     
-    func resetMatch() {
+    func resetMatch(
+        recordedTargetScore: Int? = nil,
+        recordedBestOfSets: Int? = nil,
+        recordedWinByTwo: Bool? = nil
+    ) {
         if hasMeaningfulMatchState {
+            saveMatchRecord(
+                recordedTargetScore: recordedTargetScore,
+                recordedBestOfSets: recordedBestOfSets,
+                recordedWinByTwo: recordedWinByTwo
+            )
             saveToHistory()
         }
         
@@ -322,6 +350,21 @@ final class ScoreViewModel: ObservableObject {
         
         HapticManager.shared.play(.serveChange)
         SpeechManager.shared.speak("Cambio campo! Adesso \(p1Name) a sinistra e \(p2Name) a destra.")
+    }
+
+    func deleteMatchRecords() {
+        guard !matchRecords.isEmpty else { return }
+        matchRecords.removeAll()
+        persistMatchRecords()
+        HapticManager.shared.play(.reset)
+    }
+
+    func deleteMatchRecord(id: UUID) {
+        let originalCount = matchRecords.count
+        matchRecords.removeAll { $0.id == id }
+        guard matchRecords.count != originalCount else { return }
+        persistMatchRecords()
+        HapticManager.shared.play(.scoreDecrement)
     }
     
     // MARK: - Server Logic
@@ -465,6 +508,44 @@ final class ScoreViewModel: ObservableObject {
     
     private var hasMeaningfulMatchState: Bool {
         p1Score != 0 || p2Score != 0 || p1Sets != 0 || p2Sets != 0 || winner != nil
+    }
+
+    private static func loadMatchRecords(from defaults: UserDefaults) -> [MatchRecord] {
+        guard let data = defaults.data(forKey: DefaultsKey.matchRecords),
+              let records = try? JSONDecoder().decode([MatchRecord].self, from: data) else {
+            return []
+        }
+
+        return records.sorted { $0.date > $1.date }
+    }
+
+    private func saveMatchRecord(
+        recordedTargetScore: Int? = nil,
+        recordedBestOfSets: Int? = nil,
+        recordedWinByTwo: Bool? = nil
+    ) {
+        let record = MatchRecord(
+            id: UUID(),
+            date: Date(),
+            p1Name: p1Name,
+            p2Name: p2Name,
+            p1Score: max(0, p1Score),
+            p2Score: max(0, p2Score),
+            p1Sets: max(0, p1Sets),
+            p2Sets: max(0, p2Sets),
+            winner: winner,
+            targetScore: recordedTargetScore ?? targetScore,
+            bestOfSets: recordedBestOfSets ?? bestOfSets,
+            winByTwo: recordedWinByTwo ?? winByTwo
+        )
+
+        matchRecords.insert(record, at: 0)
+        persistMatchRecords()
+    }
+
+    private func persistMatchRecords() {
+        guard let data = try? JSONEncoder().encode(matchRecords) else { return }
+        UserDefaults.standard.set(data, forKey: DefaultsKey.matchRecords)
     }
 
     private func performStateMutation(_ updates: () -> Void) {

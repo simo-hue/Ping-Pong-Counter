@@ -34,6 +34,25 @@ public struct Localized {
     public static var resetMatch: String { isItalian ? "Resetta Partita" : "Reset Match" }
     public static var settingsTitle: String { isItalian ? "Impostazioni" : "Settings" }
     public static var closeButton: String { isItalian ? "Chiudi" : "Close" }
+    public static var matchHistoryTitle: String { isItalian ? "Risultati" : "Results" }
+    public static var savedResultsHeader: String { isItalian ? "Storico partite" : "Match History" }
+    public static var totalMatches: String { isItalian ? "Totali" : "Total" }
+    public static var completedMatches: String { isItalian ? "Completate" : "Completed" }
+    public static var interruptedMatches: String { isItalian ? "Interrotte" : "Interrupted" }
+    public static var copyResults: String { isItalian ? "Copia" : "Copy" }
+    public static var copiedResults: String { isItalian ? "Copiato" : "Copied" }
+    public static var deleteRecords: String { isItalian ? "Elimina record" : "Delete" }
+    public static var deleteRecord: String { isItalian ? "Elimina" : "Delete" }
+    public static var deleteAll: String { isItalian ? "Elimina tutto" : "Delete All" }
+    public static var deleteRecordsConfirmTitle: String { isItalian ? "Eliminare tutti i record?" : "Delete all records?" }
+    public static var deleteRecordsConfirmMessage: String { isItalian ? "Questa azione rimuove definitivamente lo storico salvato sul dispositivo." : "This permanently removes the history saved on this device." }
+    public static var noSavedResults: String { isItalian ? "Nessun risultato salvato" : "No saved results" }
+    public static var setsLabel: String { isItalian ? "Set" : "Sets" }
+    public static var pointsLabel: String { isItalian ? "Punti" : "Points" }
+    public static var winnerLabel: String { isItalian ? "Vince" : "Winner" }
+    public static var interruptedMatch: String { isItalian ? "Interrotta" : "Interrupted" }
+    public static var deuceOn: String { isItalian ? "Vantaggi" : "Deuce" }
+    public static var deuceOff: String { isItalian ? "Secco" : "No Deuce" }
     
     // Main Scoreboard UI Labels
     public static var defaultP1Name: String { isItalian ? "Giocatore 1" : "Player 1" }
