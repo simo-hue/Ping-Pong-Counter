@@ -352,3 +352,9 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Watch Controls**: Rimossi i controlli superflui dal Watch; restano solo undo e reset partita con conferma.
   - **Cleanup**: Rimosso `sendSwapSides()` da `WatchConnector` perché non è più esposto dalla UI Watch.
   - **Verifica**: Build Debug dello scheme Watch rilanciata dopo la modifica.
+
+### [2026-05-22 17:02 CEST]: Aggiornamento Versione App Store
+* **Dettagli**: Aggiornata la versione del progetto per preparare un nuovo upload su App Store Connect.
+* **Tech Notes**:
+  - **Versioning**: `MARKETING_VERSION` aggiornata da `1.0.0` a `1.0.1` e `CURRENT_PROJECT_VERSION` aggiornata da `1` a `2` in tutte le configurazioni/target del progetto Xcode.
+  - **Verifica**: Controllati i build settings del progetto e rilanciata una build Debug iOS Simulator.
