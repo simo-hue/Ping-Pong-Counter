@@ -139,7 +139,7 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
             p2Sets += 1
         }
 
-        let setsNeededToWin = (max(1, bestOfSets) + 1) / 2
+        let setsNeededToWin = max(1, bestOfSets)
         if p1Sets >= setsNeededToWin {
             winner = "player1"
         } else if p2Sets >= setsNeededToWin {

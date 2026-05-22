@@ -819,9 +819,11 @@ private struct MatchRecordRow: View {
             }
 
             HStack(spacing: 8) {
+                Spacer(minLength: 0)
                 resultTag("\(Localized.pointsLabel): \(record.p1Score)-\(record.p2Score)", systemImage: "circle.grid.cross.fill")
                 resultTag("\(record.targetScore) pt", systemImage: "flag.checkered")
                 resultTag(record.winByTwo ? Localized.deuceOn : Localized.deuceOff, systemImage: "arrow.left.and.right")
+                Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }

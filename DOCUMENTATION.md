@@ -317,3 +317,24 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Menu Risultati**: Aggiunta `MatchHistoryView` con statistiche rapide, lista dei record, stato completata/interrotta, swipe-to-delete per record singolo, copia dello storico in formato CSV negli appunti e pulsante distruttivo con conferma per eliminare tutti i record.
   - **Localizzazione**: Estese le stringhe centralizzate in `Localized.swift` per italiano e inglese.
   - **Verifica**: `git diff --check`, build Debug su simulatore via XcodeBuildMCP e run su iPhone 17 Simulator completati con successo. Verificati apertura del menu Risultati, creazione di un record dopo reset e cancellazione totale dei record.
+
+### [2026-05-22 15:56 CEST]: Centratura Badge Informativi Storico
+* **Dettagli**: Centrata la riga delle tre informazioni inferiori nelle card dello storico partite, allineando visivamente i badge "Punti", regola punti e "Vantaggi/Deuce" al centro della card.
+* **Tech Notes**:
+  - **UI Layout**: Aggiunti spacer simmetrici e `frame(maxWidth: .infinity, alignment: .center)` all'`HStack` dei badge in `MatchRecordRow`.
+  - **Verifica**: Build Debug iOS Simulator rilanciata dopo la modifica.
+
+### [2026-05-22 16:06 CEST]: Correzione Termine Match per Numero Set Selezionato
+* **Dettagli**: Corretto il comportamento di chiusura partita: quando l'utente seleziona 3 o 5 set, la partita ora termina solo quando un giocatore vince rispettivamente 3 o 5 set, non più alla maggioranza matematica dei set.
+* **Tech Notes**:
+  - **Rules Engine iOS**: `ScoreViewModel` usa ora `setsRequiredToWin = bestOfSets` sia per determinare il vincitore del match sia per il match point.
+  - **Rules Engine Watch**: Allineata la logica ottimistica locale di `WatchConnector` allo stesso criterio, evitando disallineamenti temporanei tra Apple Watch e iPhone.
+  - **Copy UI**: Aggiornate le etichette della durata match da "Al meglio di 3/5 set" a "Primo a 3/5 set" anche in inglese, per riflettere il comportamento richiesto.
+  - **Verifica**: `git diff --check`, build Debug iOS Simulator via XcodeBuildMCP e build Debug dello scheme `PingPongWatch Watch App` su watchOS Simulator completate con successo.
+
+### [2026-05-22 16:10 CEST]: Rimozione Bordo Tagliato su Apple Watch
+* **Dettagli**: Eliminato il bordo neon arrotondato applicato ai pannelli giocatore su Apple Watch, che veniva tagliato in modo irregolare sui bordi curvi del display.
+* **Tech Notes**:
+  - **Watch UI**: Sostituito lo stroke perimetrale del pannello con un divider centrale neon colorato in base al giocatore al servizio.
+  - **Visual Stability**: Rimossa la `cornerRadius` dai pannelli a piena altezza per evitare maschere e stroke parziali ai lati dello schermo.
+  - **Verifica**: Build Debug dello scheme Watch rilanciata dopo la modifica.

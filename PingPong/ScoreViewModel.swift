@@ -78,7 +78,7 @@ final class ScoreViewModel: ObservableObject {
             syncWithWatch()
         }
     }
-    @Published var bestOfSets: Int = 3 { // 1, 3, or 5 sets
+    @Published var bestOfSets: Int = 3 { // 1, 3, or 5 sets to win
         didSet {
             guard Self.validBestOfSets.contains(bestOfSets) else {
                 bestOfSets = oldValue
@@ -390,7 +390,7 @@ final class ScoreViewModel: ObservableObject {
     // MARK: - Match Rules Engine
     
     private func checkSetEnd() {
-        let setsNeededToWin = Int(ceil(Double(bestOfSets) / 2.0))
+        let setsNeededToWin = setsRequiredToWin
         
         if isSetWon(pScore: p1Score, oScore: p2Score) {
             p1Sets += 1
@@ -441,7 +441,7 @@ final class ScoreViewModel: ObservableObject {
     }
     
     private func isMatchPoint() -> Bool {
-        let setsNeededToWin = Int(ceil(Double(bestOfSets) / 2.0))
+        let setsNeededToWin = setsRequiredToWin
         
         // P1 is 1 point away from winning match
         let p1IsSetPoint = p1Score >= (targetScore - 1) && p1Score > p2Score && (p1Score - p2Score >= 1 || !winByTwo)
@@ -508,6 +508,10 @@ final class ScoreViewModel: ObservableObject {
     
     private var hasMeaningfulMatchState: Bool {
         p1Score != 0 || p2Score != 0 || p1Sets != 0 || p2Sets != 0 || winner != nil
+    }
+
+    private var setsRequiredToWin: Int {
+        max(1, bestOfSets)
     }
 
     private static func loadMatchRecords(from defaults: UserDefaults) -> [MatchRecord] {

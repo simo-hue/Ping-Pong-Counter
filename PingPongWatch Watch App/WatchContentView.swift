@@ -44,17 +44,7 @@ struct WatchContentView: View {
                 }
                 .ignoresSafeArea()
                 
-                // Central Table Net Divider
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.clear, .white.opacity(0.15), .clear],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(width: 1.5)
-                    .ignoresSafeArea()
+                centralServeDivider
                 
                 // Small Center Floating Glassmorphic Undo Button
                 VStack {
@@ -164,13 +154,6 @@ struct WatchContentView: View {
                 endPoint: .bottom
             )
         )
-        .overlay(
-            // Glowing borders on active serve
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(isServing ? color.opacity(animatePulse ? 0.6 : 0.25) : Color.clear, lineWidth: 1.5)
-                .padding(1)
-        )
-        .cornerRadius(16)
         .contentShape(Rectangle())
         // Unified high-performance gesture controller: Tap for +1, Swipe Down for -1
         .gesture(
@@ -190,6 +173,37 @@ struct WatchContentView: View {
                     }
                 }
         )
+    }
+
+    private var centralServeDivider: some View {
+        let activeColor = connector.currentServer == "player1"
+            ? Color(red: 1.0, green: 0.25, blue: 0.35)
+            : Color(red: 0.0, green: 0.7, blue: 1.0)
+
+        return ZStack {
+            Rectangle()
+                .fill(
+                    LinearGradient(
+                        colors: [.clear, .white.opacity(0.14), .clear],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .frame(width: 1.5)
+
+            Rectangle()
+                .fill(
+                    LinearGradient(
+                        colors: [.clear, activeColor.opacity(0.8), .clear],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .frame(width: 2)
+                .blur(radius: animatePulse ? 3 : 1)
+                .opacity(animatePulse ? 0.9 : 0.55)
+        }
+        .ignoresSafeArea()
     }
     
     // MARK: - Premium Celebration Screen

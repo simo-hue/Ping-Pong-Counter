@@ -17,8 +17,8 @@ public struct Localized {
     public static var points21: String { isItalian ? "21 Punti (Classico)" : "21 Points (Classic)" }
     public static var matchDuration: String { isItalian ? "Durata Match (Set)" : "Match Duration (Sets)" }
     public static var singleSet: String { isItalian ? "Set Singolo" : "Single Set" }
-    public static var bestOf3: String { isItalian ? "Al meglio di 3 set" : "Best of 3 sets" }
-    public static var bestOf5: String { isItalian ? "Al meglio di 5 set" : "Best of 5 sets" }
+    public static var bestOf3: String { isItalian ? "Primo a 3 set" : "First to 3 sets" }
+    public static var bestOf5: String { isItalian ? "Primo a 5 set" : "First to 5 sets" }
     public static var winByTwo: String { isItalian ? "Vantaggi (Vinci con 2 punti di scarto)" : "Deuce (Win by 2 points)" }
     public static var serviceRotation: String { isItalian ? "Rotazione Servizio" : "Service Rotation" }
     public static var every2Serves: String { isItalian ? "Ogni 2 servizi" : "Every 2 serves" }
