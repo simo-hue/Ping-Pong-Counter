@@ -94,47 +94,122 @@ private struct DynamicIslandCompactScore: View {
     }
 }
 
-private struct DynamicIslandExpandedPlayer: View {
+private struct DynamicIslandExpandedScoreboard: View {
+    let p1Name: String
+    let p2Name: String
+    let p1Score: Int
+    let p2Score: Int
+    let p1Sets: Int
+    let p2Sets: Int
+    let p1Tint: Color
+    let p2Tint: Color
+    let currentServer: String
+    let winner: String?
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            DynamicIslandExpandedScoreboardPlayer(
+                name: p1Name,
+                score: p1Score,
+                tint: p1Tint,
+                isServing: currentServer == "player1"
+            )
+
+            Spacer(minLength: 6)
+
+            centerSummary
+                .frame(minWidth: 82, alignment: .center)
+
+            Spacer(minLength: 6)
+
+            DynamicIslandExpandedScoreboardPlayer(
+                name: p2Name,
+                score: p2Score,
+                tint: p2Tint,
+                isServing: currentServer == "player2"
+            )
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, minHeight: 86, alignment: .center)
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private var centerSummary: some View {
+        VStack(alignment: .center, spacing: 7) {
+            VStack(spacing: 1) {
+                Text("SET")
+                    .font(.system(size: 8, weight: .black, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.42))
+
+                Text("\(p1Sets)-\(p2Sets)")
+                    .font(.system(size: 16, weight: .black, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(.yellow)
+            }
+
+            if let winner {
+                let winnerName = winner == "player1" ? p1Name : p2Name
+                HStack(spacing: 5) {
+                    Image(systemName: "trophy.fill")
+                        .foregroundStyle(.yellow)
+                    Text("Vince \(winnerName)!")
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
+                .font(.system(size: 10, weight: .black, design: .rounded))
+                .foregroundStyle(.yellow)
+            } else {
+                HStack(spacing: 8) {
+                    Text("\(p1Score)")
+                        .foregroundStyle(p1Tint)
+                    Text("MATCH")
+                        .foregroundStyle(.white.opacity(0.45))
+                    Text("\(p2Score)")
+                        .foregroundStyle(p2Tint)
+                }
+                .font(.system(size: 10, weight: .black, design: .rounded))
+                .monospacedDigit()
+            }
+        }
+        .multilineTextAlignment(.center)
+    }
+}
+
+private struct DynamicIslandExpandedScoreboardPlayer: View {
     let name: String
     let score: Int
     let tint: Color
     let isServing: Bool
-    let alignment: HorizontalAlignment
 
     var body: some View {
-        VStack(alignment: alignment, spacing: 3) {
+        VStack(alignment: .center, spacing: 5) {
             HStack(spacing: 4) {
-                if alignment == .leading {
-                    serveIndicator
-                    playerName
-                } else {
-                    playerName
-                    serveIndicator
-                }
+                serveIndicator
+
+                Text(String(name.prefix(7)).uppercased())
+                    .font(.system(size: 9.5, weight: .black, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.76))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.65)
             }
 
             Text("\(score)")
-                .font(.system(size: 28, weight: .black, design: .rounded))
+                .font(.system(size: 27, weight: .black, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(.white)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
                 .shadow(color: tint.opacity(0.85), radius: 5)
         }
-    }
-
-    private var playerName: some View {
-        Text(String(name.prefix(7)).uppercased())
-            .font(.system(size: 10, weight: .black, design: .rounded))
-            .foregroundStyle(.white.opacity(0.72))
-            .lineLimit(1)
-            .minimumScaleFactor(0.65)
+        .frame(width: 78, alignment: .center)
     }
 
     private var serveIndicator: some View {
         Circle()
             .fill(isServing ? Color.yellow : tint.opacity(0.65))
-            .frame(width: 6, height: 6)
+            .frame(width: 5.5, height: 5.5)
     }
 }
 
@@ -286,64 +361,19 @@ public struct PingPongWidgetLiveActivity: Widget {
             let theme = WidgetTheme.theme(for: context.state.themeIndex)
             
             return DynamicIsland {
-                DynamicIslandExpandedRegion(.leading) {
-                    DynamicIslandExpandedPlayer(
-                        name: context.attributes.p1Name,
-                        score: context.state.p1Score,
-                        tint: theme.p1Color,
-                        isServing: context.state.currentServer == "player1",
-                        alignment: .leading
-                    )
-                }
-                
-                DynamicIslandExpandedRegion(.trailing) {
-                    DynamicIslandExpandedPlayer(
-                        name: context.attributes.p2Name,
-                        score: context.state.p2Score,
-                        tint: theme.p2Color,
-                        isServing: context.state.currentServer == "player2",
-                        alignment: .trailing
-                    )
-                }
-                
-                DynamicIslandExpandedRegion(.center) {
-                    VStack(spacing: 2) {
-                        Text("SET")
-                            .font(.system(size: 8, weight: .black, design: .rounded))
-                            .foregroundColor(.white.opacity(0.42))
-
-                        Text("\(context.state.p1Sets)-\(context.state.p2Sets)")
-                            .font(.system(size: 16, weight: .black, design: .rounded))
-                            .fontWeight(.black)
-                            .monospacedDigit()
-                            .foregroundColor(.yellow)
-                    }
-                }
-                
                 DynamicIslandExpandedRegion(.bottom) {
-                    if let winner = context.state.winner {
-                        let winnerName = winner == "player1" ? context.attributes.p1Name : context.attributes.p2Name
-                        HStack(spacing: 5) {
-                            Image(systemName: "trophy.fill")
-                                .foregroundStyle(.yellow)
-                            Text("Vince \(winnerName)!")
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.75)
-                        }
-                        .font(.system(size: 11, weight: .black, design: .rounded))
-                        .foregroundColor(.yellow)
-                    } else {
-                        HStack(spacing: 8) {
-                            Text("\(context.state.p1Score)")
-                                .foregroundStyle(theme.p1Color)
-                            Text("MATCH")
-                                .foregroundStyle(.white.opacity(0.45))
-                            Text("\(context.state.p2Score)")
-                                .foregroundStyle(theme.p2Color)
-                        }
-                        .font(.system(size: 11, weight: .black, design: .rounded))
-                        .monospacedDigit()
-                    }
+                    DynamicIslandExpandedScoreboard(
+                        p1Name: context.attributes.p1Name,
+                        p2Name: context.attributes.p2Name,
+                        p1Score: context.state.p1Score,
+                        p2Score: context.state.p2Score,
+                        p1Sets: context.state.p1Sets,
+                        p2Sets: context.state.p2Sets,
+                        p1Tint: theme.p1Color,
+                        p2Tint: theme.p2Color,
+                        currentServer: context.state.currentServer,
+                        winner: context.state.winner
+                    )
                 }
                 
             } compactLeading: {
@@ -371,7 +401,7 @@ public struct PingPongWidgetLiveActivity: Widget {
             .keylineTint(theme.p1Color.opacity(0.7))
             .contentMargins(.all, 0, for: .compactLeading)
             .contentMargins(.all, 0, for: .compactTrailing)
-            .contentMargins(.bottom, 8, for: .expanded)
+            .contentMargins(.all, 8, for: .expanded)
         }
         .contentMarginsDisabled()
     }

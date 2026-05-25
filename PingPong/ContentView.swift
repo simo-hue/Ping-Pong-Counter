@@ -56,59 +56,62 @@ struct ContentView: View {
     var body: some View {
         GeometryReader { geometry in
             let isLandscape = geometry.size.width > geometry.size.height
+            let fullBleedSize = CGSize(
+                width: geometry.size.width + geometry.safeAreaInsets.leading + geometry.safeAreaInsets.trailing,
+                height: geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom
+            )
+            let playerAreaSize = CGSize(
+                width: isLandscape ? fullBleedSize.width / 2 : fullBleedSize.width,
+                height: isLandscape ? fullBleedSize.height : fullBleedSize.height / 2
+            )
+            let physicalCenterOffset = CGSize(
+                width: (geometry.safeAreaInsets.trailing - geometry.safeAreaInsets.leading) / 2,
+                height: (geometry.safeAreaInsets.bottom - geometry.safeAreaInsets.top) / 2
+            )
             
             ZStack {
-                // Background dark atmospheric gradient
-                LinearGradient(
-                    colors: [currentTheme.bgStart, currentTheme.bgEnd],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
+                splitBackground(isLandscape: isLandscape, size: fullBleedSize)
+                    .offset(x: physicalCenterOffset.width, y: physicalCenterOffset.height)
                 
                 // Adaptive dashed net line dividing the physical scoreboard fields
-                if isLandscape {
-                    HStack {
-                        Spacer()
-                        Rectangle()
-                            .stroke(style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round, dash: [6, 6]))
-                            .fill(Color.white.opacity(0.12))
-                            .frame(width: 1.5)
-                        Spacer()
-                    }
-                    .ignoresSafeArea()
+                centerNetLine(isLandscape: isLandscape, size: fullBleedSize)
+                    .offset(x: physicalCenterOffset.width, y: physicalCenterOffset.height)
                     .allowsHitTesting(false)
-                } else {
-                    VStack {
-                        Spacer()
-                        Rectangle()
-                            .stroke(style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round, dash: [6, 6]))
-                            .fill(Color.white.opacity(0.12))
-                            .frame(height: 1.5)
-                        Spacer()
-                    }
-                    .ignoresSafeArea()
-                    .allowsHitTesting(false)
-                }
                 
                 // Adaptive split scoreboard
                 if isLandscape {
                     HStack(spacing: 0) {
-                        playerHalfView(for: .player1, size: geometry.size)
-                        playerHalfView(for: .player2, size: geometry.size)
+                        playerHalfView(for: .player1, size: playerAreaSize)
+                            .frame(width: playerAreaSize.width, height: playerAreaSize.height)
+                            .clipped()
+                        playerHalfView(for: .player2, size: playerAreaSize)
+                            .frame(width: playerAreaSize.width, height: playerAreaSize.height)
+                            .clipped()
                     }
-                    .ignoresSafeArea()
+                    .frame(width: fullBleedSize.width, height: fullBleedSize.height)
+                    .offset(x: physicalCenterOffset.width, y: physicalCenterOffset.height)
                 } else {
                     VStack(spacing: 0) {
-                        playerHalfView(for: .player1, size: geometry.size)
-                        playerHalfView(for: .player2, size: geometry.size)
+                        playerHalfView(for: .player1, size: playerAreaSize)
+                            .frame(width: playerAreaSize.width, height: playerAreaSize.height)
+                            .clipped()
+                        playerHalfView(for: .player2, size: playerAreaSize)
+                            .frame(width: playerAreaSize.width, height: playerAreaSize.height)
+                            .clipped()
                     }
-                    .ignoresSafeArea()
+                    .frame(width: fullBleedSize.width, height: fullBleedSize.height)
+                    .offset(x: physicalCenterOffset.width, y: physicalCenterOffset.height)
                 }
                 
+                matchPointBorder(isLandscape: isLandscape, size: fullBleedSize)
+                    .offset(x: physicalCenterOffset.width, y: physicalCenterOffset.height)
+                    .allowsHitTesting(false)
+                
                 // Frosted Glass Net & Floating Control Center
-                floatingControlCenter(isLandscape: isLandscape)
+                floatingControlCenter(isLandscape: isLandscape, size: fullBleedSize, centerOffset: physicalCenterOffset)
             }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .ignoresSafeArea()
             .onAppear {
                 withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
                     serverPulseScale = 1.3
@@ -146,6 +149,96 @@ struct ContentView: View {
                 Text(Localized.isItalian ? "Inserisci il nome per il \(editingPlayer == .player1 ? "primo" : "secondo") giocatore." : "Enter the name for \(editingPlayer == .player1 ? "first" : "second") player.")
             }
         }
+        .ignoresSafeArea()
+    }
+
+    @ViewBuilder
+    private func splitBackground(isLandscape: Bool, size: CGSize) -> some View {
+        if isLandscape {
+            HStack(spacing: 0) {
+                Rectangle()
+                    .fill(currentTheme.bgStart)
+                    .frame(width: size.width / 2, height: size.height)
+                Rectangle()
+                    .fill(currentTheme.bgEnd)
+                    .frame(width: size.width / 2, height: size.height)
+            }
+            .frame(width: size.width, height: size.height)
+        } else {
+            VStack(spacing: 0) {
+                Rectangle()
+                    .fill(currentTheme.bgStart)
+                    .frame(width: size.width, height: size.height / 2)
+                Rectangle()
+                    .fill(currentTheme.bgEnd)
+                    .frame(width: size.width, height: size.height / 2)
+            }
+            .frame(width: size.width, height: size.height)
+        }
+    }
+
+    @ViewBuilder
+    private func centerNetLine(isLandscape: Bool, size: CGSize) -> some View {
+        if isLandscape {
+            HStack {
+                Spacer()
+                Rectangle()
+                    .stroke(style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round, dash: [6, 6]))
+                    .fill(Color.white.opacity(0.12))
+                    .frame(width: 1.5, height: size.height)
+                Spacer()
+            }
+            .frame(width: size.width, height: size.height)
+        } else {
+            VStack {
+                Spacer()
+                Rectangle()
+                    .stroke(style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round, dash: [6, 6]))
+                    .fill(Color.white.opacity(0.12))
+                    .frame(width: size.width, height: 1.5)
+                Spacer()
+            }
+            .frame(width: size.width, height: size.height)
+        }
+    }
+
+    @ViewBuilder
+    private func matchPointBorder(isLandscape: Bool, size: CGSize) -> some View {
+        if let player = matchPointPlayer {
+            let isP1 = player == .player1
+            let color = isP1 ? currentTheme.p1Color : currentTheme.p2Color
+            let fieldSize = CGSize(
+                width: isLandscape ? size.width / 2 : size.width,
+                height: isLandscape ? size.height : size.height / 2
+            )
+            let fieldCenter = CGPoint(
+                x: isLandscape ? (isP1 ? size.width * 0.25 : size.width * 0.75) : size.width / 2,
+                y: isLandscape ? size.height / 2 : (isP1 ? size.height * 0.25 : size.height * 0.75)
+            )
+
+            ZStack {
+                Rectangle()
+                    .strokeBorder(color.opacity(0.42), lineWidth: 2)
+                Rectangle()
+                    .strokeBorder(color.opacity(0.26), lineWidth: 8)
+                    .blur(radius: 3)
+            }
+            .frame(width: fieldSize.width, height: fieldSize.height)
+            .clipped()
+            .position(fieldCenter)
+            .frame(width: size.width, height: size.height)
+        }
+    }
+
+    private var matchPointPlayer: Player? {
+        guard viewModel.winner == nil else { return nil }
+        if viewModel.p1Score >= viewModel.targetScore - 1 && viewModel.p1Score > viewModel.p2Score {
+            return .player1
+        }
+        if viewModel.p2Score >= viewModel.targetScore - 1 && viewModel.p2Score > viewModel.p1Score {
+            return .player2
+        }
+        return nil
     }
     
     // MARK: - Player Half Screen Component
@@ -159,7 +252,6 @@ struct ContentView: View {
         let sets = isP1 ? viewModel.p1Sets : viewModel.p2Sets
         let isServing = viewModel.currentServer == player
         let themeColor = isP1 ? currentTheme.p1Color : currentTheme.p2Color
-        let isMatchedOrSetPoint = isP1 ? (viewModel.p1Score >= viewModel.targetScore - 1 && viewModel.p1Score > viewModel.p2Score) : (viewModel.p2Score >= viewModel.targetScore - 1 && viewModel.p2Score > viewModel.p1Score)
         
         ZStack {
             // Subtle glowing background for the active server or player at Set/Match Point
@@ -170,15 +262,7 @@ struct ContentView: View {
                     startRadius: 20,
                     endRadius: 300
                 )
-                .ignoresSafeArea()
-            }
-            
-            // Soft pulsating warning border during Match/Set point
-            if isMatchedOrSetPoint && viewModel.winner == nil {
-                RoundedRectangle(cornerRadius: 0)
-                    .stroke(themeColor.opacity(0.4), lineWidth: 4)
-                    .blur(radius: 2)
-                    .ignoresSafeArea()
+                .frame(width: size.width, height: size.height)
             }
             
             VStack(spacing: 16) {
@@ -303,6 +387,7 @@ struct ContentView: View {
             .safeAreaPadding(.vertical, isLandscape ? 12 : 24)
             .safeAreaPadding(.horizontal, isLandscape ? 24 : 12)
         }
+        .frame(width: size.width, height: size.height)
         .contentShape(Rectangle())
         .onTapGesture {
             // Tap registered -> scale up & increment score
@@ -353,65 +438,22 @@ struct ContentView: View {
     // MARK: - Central Floating Control Bar
     
     @ViewBuilder
-    private func floatingControlCenter(isLandscape: Bool) -> some View {
-        let controlBar = HStack(spacing: 20) {
-            // Undo button
-            Button {
-                viewModel.undo()
-            } label: {
-                Image(systemName: "arrow.uturn.backward.circle.fill")
-                    .font(.system(size: 26))
-                    .foregroundColor(viewModel.canUndo() ? .white : .white.opacity(0.25))
-            }
-            .disabled(!viewModel.canUndo())
-            
-            // Swap sides button
-            Button {
-                viewModel.swapSides()
-            } label: {
-                Image(systemName: "arrow.left.and.right.circle.fill")
-                    .font(.system(size: 26))
-                    .foregroundColor(.white)
-            }
-            
-            // Settings button
-            Button {
-                isShowingSettings = true
-            } label: {
-                Image(systemName: "gearshape.circle.fill")
-                    .font(.system(size: 26))
-                    .foregroundColor(.white)
-            }
-            .accessibilityLabel(Localized.settingsTitle)
-
-            // Saved results button
-            Button {
-                isShowingMatchHistory = true
-            } label: {
-                Image(systemName: "chart.bar.fill")
-                    .font(.system(size: 24))
-                    .foregroundColor(.white)
-                    .frame(width: 26, height: 26)
-            }
-            .accessibilityLabel(Localized.matchHistoryTitle)
-            
-            // Reset button with safety confirmation sheet
-            Button {
-                isShowingResetConfirm = true
-            } label: {
-                Image(systemName: "arrow.counterclockwise.circle.fill")
-                    .font(.system(size: 26))
-                    .foregroundColor(.white)
-            }
-            .confirmationDialog(Localized.isItalian ? "Sei sicuro di voler azzerare l'incontro?" : "Are you sure you want to reset the match?", isPresented: $isShowingResetConfirm, titleVisibility: .visible) {
-                Button(Localized.isItalian ? "Sì, azzera tutto" : "Yes, reset all", role: .destructive) {
-                    viewModel.resetMatch()
+    private func floatingControlCenter(isLandscape: Bool, size: CGSize, centerOffset: CGSize) -> some View {
+        Group {
+            if isLandscape {
+                VStack(spacing: 16) {
+                    controlCenterButtons
                 }
-                Button(Localized.isItalian ? "Annulla" : "Cancel", role: .cancel) {}
+                .padding(.horizontal, 14)
+                .padding(.vertical, 20)
+            } else {
+                HStack(spacing: 20) {
+                    controlCenterButtons
+                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 14)
             }
         }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 14)
         .background(
             Capsule()
                 .fill(.ultraThinMaterial)
@@ -420,22 +462,60 @@ struct ContentView: View {
                 )
         )
         .shadow(color: Color.black.opacity(0.3), radius: 10, y: 5)
-        
-        // Positioning based on orientation (acts like a partition net)
-        if isLandscape {
-            // Centered vertically, runs down the middle line
-            VStack {
-                Spacer()
-                controlBar
-                Spacer()
+        .frame(width: size.width, height: size.height, alignment: .center)
+        .offset(x: centerOffset.width, y: centerOffset.height)
+    }
+
+    @ViewBuilder
+    private var controlCenterButtons: some View {
+        Button {
+            viewModel.undo()
+        } label: {
+            Image(systemName: "arrow.uturn.backward.circle.fill")
+                .font(.system(size: 26))
+                .foregroundColor(viewModel.canUndo() ? .white : .white.opacity(0.25))
+        }
+        .disabled(!viewModel.canUndo())
+
+        Button {
+            viewModel.swapSides()
+        } label: {
+            Image(systemName: "arrow.left.and.right.circle.fill")
+                .font(.system(size: 26))
+                .foregroundColor(.white)
+        }
+
+        Button {
+            isShowingSettings = true
+        } label: {
+            Image(systemName: "gearshape.circle.fill")
+                .font(.system(size: 26))
+                .foregroundColor(.white)
+        }
+        .accessibilityLabel(Localized.settingsTitle)
+
+        Button {
+            isShowingMatchHistory = true
+        } label: {
+            Image(systemName: "chart.bar.fill")
+                .font(.system(size: 24))
+                .foregroundColor(.white)
+                .frame(width: 26, height: 26)
+        }
+        .accessibilityLabel(Localized.matchHistoryTitle)
+
+        Button {
+            isShowingResetConfirm = true
+        } label: {
+            Image(systemName: "arrow.counterclockwise.circle.fill")
+                .font(.system(size: 26))
+                .foregroundColor(.white)
+        }
+        .confirmationDialog(Localized.isItalian ? "Sei sicuro di voler azzerare l'incontro?" : "Are you sure you want to reset the match?", isPresented: $isShowingResetConfirm, titleVisibility: .visible) {
+            Button(Localized.isItalian ? "Sì, azzera tutto" : "Yes, reset all", role: .destructive) {
+                viewModel.resetMatch()
             }
-        } else {
-            // Centered horizontally, runs across the middle line
-            HStack {
-                Spacer()
-                controlBar
-                Spacer()
-            }
+            Button(Localized.isItalian ? "Annulla" : "Cancel", role: .cancel) {}
         }
     }
     

@@ -358,3 +358,45 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
 * **Tech Notes**:
   - **Versioning**: `MARKETING_VERSION` aggiornata da `1.0.0` a `1.0.1` e `CURRENT_PROJECT_VERSION` aggiornata da `1` a `2` in tutte le configurazioni/target del progetto Xcode.
   - **Verifica**: Controllati i build settings del progetto e rilanciata una build Debug iOS Simulator.
+
+### [2026-05-25 14:51 CEST]: Correzione Layout iPhone Landscape
+* **Dettagli**: Corretto il disallineamento del tabellone quando l'iPhone viene ruotato in orizzontale, facendo occupare a ogni giocatore una metà esplicita dello schermo e centrando la barra controlli sulla geometria completa.
+* **Tech Notes**:
+  - **SwiftUI Layout**: In `ContentView.swift` introdotta una `playerAreaSize` derivata dall'orientamento e applicata come frame esplicita alle due metà del tabellone, evitando che il contenuto determini dimensioni implicite non simmetriche.
+  - **Control Center**: La floating control bar ora riceve la `CGSize` del container principale e viene centrata con una frame esplicita, riducendo offset legati a stack/spacer impliciti.
+  - **Verifica**: Build e run Debug su iPhone 17 Pro Simulator via XcodeBuildMCP completati con successo.
+
+### [2026-05-25 14:51 CEST]: Altezza Dynamic Island Expanded
+* **Dettagli**: Aumentato lo spazio verticale della Dynamic Island in stato expanded per evitare il taglio delle informazioni nella riga inferiore del riepilogo match.
+* **Tech Notes**:
+  - **WidgetKit Dynamic Island**: In `PingPongWidgetLiveActivity.swift` la regione `.bottom` ora usa una cornice minima e padding verticale dedicato per dare al contenuto "MATCH" spazio reale dentro la capsula expanded.
+  - **Expanded Margins**: Aumentati i margini top/bottom dell'expanded region per mantenere i testi lontani dai bordi della Dynamic Island.
+  - **Verifica**: Build Debug iOS Simulator completata senza warning/errori; run su iPhone 17 Pro Simulator e long press sulla Live Activity hanno confermato che la riga "MATCH" è visibile e non tagliata.
+
+### [2026-05-25 14:55 CEST]: Centratura Control Center in Portrait
+* **Dettagli**: Corretto il posizionamento verticale della barra flottante in orientamento verticale, allineandola al centro fisico della rete tratteggiata tra i due giocatori.
+* **Tech Notes**:
+  - **Safe Area Compensation**: In `ContentView.swift` introdotto un offset calcolato da `geometry.safeAreaInsets` per compensare la differenza tra centro della safe area e centro fisico dello schermo.
+  - **Floating Controls**: `floatingControlCenter` ora riceve un `centerOffset` e lo applica alla frame centrata della pillola, mantenendo l'allineamento anche su dispositivi con Dynamic Island/notch e home indicator.
+  - **Verifica**: Build e run Debug su iPhone 17 Pro Simulator completati con successo; screenshot portrait verificato con la linea tratteggiata passante al centro della barra flottante.
+
+### [2026-05-25 14:59 CEST]: Control Center Verticale in Landscape
+* **Dettagli**: Risolto il problema in orientamento orizzontale in cui la barra flottante orizzontale attraversava il campo e copriva il punteggio del giocatore destro.
+* **Tech Notes**:
+  - **Adaptive Controls Axis**: In `ContentView.swift` il control center ora usa un `HStack` in portrait e un `VStack` in landscape, trasformandosi in una pillola verticale stretta sulla rete centrale.
+  - **Code Reuse**: Estratti i cinque pulsanti in `controlCenterButtons` per evitare duplicazione tra layout orizzontale e verticale, mantenendo invariati azioni, disabilitazione undo, accessibilità e conferma reset.
+  - **Verifica**: Build e run Debug su iPhone 17 Pro Simulator completati con successo senza warning/errori. La rotazione automatica del Simulator via AppleScript è stata bloccata dai permessi macOS, quindi la verifica visuale landscape va confermata su device reale o ruotando manualmente il simulatore.
+
+### [2026-05-25 15:04 CEST]: Centratura Completa Dynamic Island Expanded
+* **Dettagli**: Ricentrato tutto il contenuto della Dynamic Island expanded sia in orizzontale sia in verticale, evitando che i nomi giocatore vengano tagliati nella parte alta della capsula.
+* **Tech Notes**:
+  - **WidgetKit Layout**: In `PingPongWidgetLiveActivity.swift` sostituita la composizione expanded basata sulle regioni native `leading`, `trailing` e `center` con un unico scoreboard custom nella regione `.bottom`, così tutti gli elementi condividono lo stesso container centrato.
+  - **Scoreboard Components**: Aggiunti `DynamicIslandExpandedScoreboard` e `DynamicIslandExpandedScoreboardPlayer` per gestire nomi, indicatori servizio, punteggi, set e riga match/winner con padding interno stabile e `frame(maxWidth: .infinity, minHeight: 86, alignment: .center)`.
+  - **Verifica**: Build e run Debug su iPhone 17 Pro Simulator completati senza warning/errori; screenshot expanded dopo long press sulla Live Activity conferma che le etichette non sono più tagliate e il contenuto è centrato.
+
+### [2026-05-25 15:07 CEST]: Split Background 50/50
+* **Dettagli**: Corretto il background del tabellone principale per garantire che ogni colore occupi esattamente il 50% dello schermo e parta dalla linea di mezzo.
+* **Tech Notes**:
+  - **Background Layout**: In `ContentView.swift` sostituito il gradiente globale full-screen con `splitBackground(isLandscape:)`, che usa due `Rectangle` a spacing zero in `HStack` o `VStack` a seconda dell'orientamento.
+  - **Glow Containment**: Applicato `.clipped()` alle due metà giocatore dopo la frame esplicita, così il glow del giocatore al servizio resta confinato al proprio 50% e non oltrepassa la rete centrale.
+  - **Verifica**: Build e run Debug su iPhone 17 Pro Simulator completati senza warning/errori; screenshot portrait verificato con cambio colore allineato alla linea tratteggiata centrale.
