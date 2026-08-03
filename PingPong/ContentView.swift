@@ -789,6 +789,22 @@ struct MatchHistoryView: View {
             }
             .disabled(records.isEmpty)
 
+            // Sharing a file rather than a string: a raw String only offers "copy", which the
+            // button beside this one already does.
+            Menu {
+                ForEach(MatchExport.Format.allCases) { format in
+                    if let url = MatchExport.writeTemporaryFile(format: format, records: records) {
+                        ShareLink(item: url) {
+                            Label(Localized.exportFormatLabel(format.displayName), systemImage: "square.and.arrow.up")
+                        }
+                    }
+                }
+            } label: {
+                Label(Localized.exportLabel, systemImage: "square.and.arrow.up")
+                    .frame(maxWidth: .infinity)
+            }
+            .disabled(records.isEmpty)
+
             Button(role: .destructive) {
                 isShowingDeleteConfirmation = true
             } label: {
@@ -811,44 +827,9 @@ struct MatchHistoryView: View {
     }
 
     private var matchHistoryExportText: String {
-        let header = Localized.exportHeaders.map(escaped).joined(separator: ";")
-
-        let rows = records.map { record in
-            [
-                escaped(record.date.formatted(date: .abbreviated, time: .shortened)),
-                escaped(record.p1Name),
-                escaped(record.p2Name),
-                escaped("\(record.p1Sets)-\(record.p2Sets)"),
-                escaped("\(record.p1Score)-\(record.p2Score)"),
-                escaped(record.setScoreLine ?? "-"),
-                escaped(winnerName(for: record) ?? "-"),
-                escaped(record.winner == nil ? Localized.interruptedMatch : Localized.completedMatch),
-                escaped(record.formattedDuration ?? "-"),
-                escaped(Localized.exportRulesSummary(
-                    targetScore: record.targetScore,
-                    bestOfSets: record.bestOfSets,
-                    winByTwo: record.winByTwo
-                ))
-            ].joined(separator: ";")
-        }
-
-        return ([header] + rows).joined(separator: "\n")
+        MatchExport.csv(from: records)
     }
 
-    private func escaped(_ value: String) -> String {
-        "\"\(value.replacingOccurrences(of: "\"", with: "\"\""))\""
-    }
-
-    private func winnerName(for record: MatchRecord) -> String? {
-        switch record.winner {
-        case .player1:
-            return record.p1Name
-        case .player2:
-            return record.p2Name
-        case nil:
-            return nil
-        }
-    }
 }
 
 private struct MatchHistoryStat: View {

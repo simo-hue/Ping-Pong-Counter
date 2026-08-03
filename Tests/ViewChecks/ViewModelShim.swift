@@ -26,6 +26,9 @@ final class ScoreViewModel: ObservableObject {
     @Published var showMatchTimer = true
     @Published var hapticIntensity: HapticIntensity = .full
     @Published var isDoubles = false
+    @Published var isCloudSyncEnabled = false
+    @Published private(set) var isCloudSyncAvailable = false
+    func refreshCloudAvailability() {}
     @Published private(set) var doublesLineup = DoublesLineup.makeDefault()
 
     var currentSetLineup: DoublesLineup { doublesLineup }

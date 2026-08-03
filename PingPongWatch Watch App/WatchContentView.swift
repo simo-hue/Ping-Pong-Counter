@@ -7,6 +7,12 @@ struct WatchContentView: View {
     // Animation states for neon glowing pulse
     @State private var animatePulse = false
     @State private var isShowingResetConfirmation = false
+
+    /// Digital Crown position. Mapped to score *deltas* rather than to an absolute score: the
+    /// crown has no notion of where the match currently stands, and binding it to the score
+    /// itself would let a stray nudge rewrite a whole set.
+    @State private var crownPosition: Double = 0
+    @State private var lastCrownDetent: Int = 0
     
     // Check if the current locale is Italian
     private var isItalian: Bool { WatchLocalized.isItalian }
@@ -58,6 +64,19 @@ struct WatchContentView: View {
             }
             Button(isItalian ? "Annulla" : "Cancel", role: .cancel) {}
         }
+        .focusable(true)
+        .digitalCrownRotation(
+            $crownPosition,
+            from: -1000,
+            through: 1000,
+            by: 1,
+            sensitivity: .low,
+            isContinuous: false,
+            isHapticFeedbackEnabled: true
+        )
+        .onChange(of: crownPosition) { _, newValue in
+            applyCrownDetent(newValue)
+        }
         .onAppear {
             // Trigger loop animation for breathing pulse glows
             withAnimation(Animation.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
@@ -66,6 +85,10 @@ struct WatchContentView: View {
         }
     }
     
+    private func setsWon(for player: String) -> Int {
+        player == "player1" ? connector.p1Sets : connector.p2Sets
+    }
+
     // MARK: - Player Score Panel
     @ViewBuilder
     private func playerPanel(player: String, name: String, score: Int, isServing: Bool, color: Color) -> some View {
@@ -116,7 +139,21 @@ struct WatchContentView: View {
             
             Spacer(minLength: 2)
             
-            // 3. Premium Neon Score
+            // 3. Sets won so far — a score alone does not say how the match stands.
+            if connector.bestOfSets > 1 {
+                HStack(spacing: 3) {
+                    ForEach(0..<max(1, connector.bestOfSets), id: \.self) { index in
+                        Circle()
+                            .fill(index < setsWon(for: player) ? color : Color.white.opacity(0.18))
+                            .frame(width: 4, height: 4)
+                    }
+                }
+                .padding(.bottom, 1)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("\(setsWon(for: player)) \(isItalian ? "set" : "sets")")
+            }
+
+            // 4. Premium Neon Score
             Text("\(score)")
                 .font(.system(size: score >= 100 ? 36 : 48, weight: .black, design: .rounded))
                 .foregroundColor(color)
@@ -188,6 +225,29 @@ struct WatchContentView: View {
             Spacer()
         }
         .padding(.top, 2)
+    }
+
+    /// One detent forward is a point for whichever side is serving — the common case at the table,
+    /// and it needs no aiming.
+    ///
+    /// Backwards is an UNDO, not a decrement of the serving side. Scoring a point usually hands the
+    /// serve over, so by the time the crown comes back the "serving side" is the other player, and
+    /// decrementing them would move the point across the net instead of taking it back — or hit the
+    /// zero guard and do nothing at all. Undo restores score, sets and serve together.
+    private func applyCrownDetent(_ position: Double) {
+        let detent = Int(position.rounded())
+        guard detent != lastCrownDetent else { return }
+
+        let delta = detent - lastCrownDetent
+        lastCrownDetent = detent
+
+        guard connector.winner.isEmpty else { return }
+
+        if delta > 0 {
+            connector.sendIncrement(player: connector.currentServer)
+        } else {
+            connector.sendUndo()
+        }
     }
 
     private var watchFloatingControls: some View {

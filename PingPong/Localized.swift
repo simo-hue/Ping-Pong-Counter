@@ -147,6 +147,22 @@ public struct Localized {
         isItalian ? "\(server) serve a \(receiver)" : "\(server) serves to \(receiver)"
     }
 
+    // iCloud & export
+    public static var cloudSyncHeader: String { isItalian ? "iCloud" : "iCloud" }
+    public static var cloudSyncLabel: String { isItalian ? "Sincronizza Storico" : "Sync History" }
+    public static var cloudSyncFooter: String {
+        isItalian
+            ? "Storico e giocatori salvati vengono condivisi fra i tuoi dispositivi. Il punteggio della partita in corso resta sul dispositivo."
+            : "History and saved players are shared across your devices. The match in progress stays on this device."
+    }
+    public static var cloudSyncUnavailable: String {
+        isItalian ? "iCloud non disponibile su questo dispositivo" : "iCloud is not available on this device"
+    }
+    public static var exportLabel: String { isItalian ? "Esporta" : "Export" }
+    public static func exportFormatLabel(_ name: String) -> String {
+        isItalian ? "Esporta \(name)" : "Export \(name)"
+    }
+
     // Statistics dashboard
     public static var statsTitle: String { isItalian ? "Statistiche" : "Statistics" }
     public static var totalRalliesLabel: String { isItalian ? "Scambi totali" : "Total rallies" }

@@ -39,235 +39,16 @@ struct SettingsView: View {
                 .ignoresSafeArea()
                 
                 Form {
-                    Section {
-                        Picker(selection: $viewModel.isDoubles) {
-                            Text(Localized.singlesMode).tag(false)
-                            Text(Localized.doublesMode).tag(true)
-                        } label: {
-                            Text(Localized.matchFormatHeader).foregroundColor(.white)
-                        }
-                        .pickerStyle(.segmented)
-                        .listRowBackground(Color(white: 0.15))
-
-                        if viewModel.isDoubles {
-                            NavigationLink {
-                                DoublesSetupView(viewModel: viewModel)
-                            } label: {
-                                Label(Localized.openingRotationHeader, systemImage: "person.2.circle.fill")
-                                    .foregroundColor(.white)
-                            }
-                            .listRowBackground(Color(white: 0.15))
-                        }
-                    } header: {
-                        Text(Localized.matchFormatHeader).foregroundColor(.gray)
-                    } footer: {
-                        if viewModel.isDoubles {
-                            Text(Localized.doublesFooter).foregroundColor(.gray)
-                        }
-                    }
-
-                    Section(header: Text(Localized.playersHeader).foregroundColor(.gray)) {
-                        playerRow(
-                            side: .player1,
-                            color: selectedTheme.p1Color,
-                            placeholder: Localized.p1Placeholder,
-                            name: $viewModel.p1Name
-                        )
-
-                        playerRow(
-                            side: .player2,
-                            color: selectedTheme.p2Color,
-                            placeholder: Localized.p2Placeholder,
-                            name: $viewModel.p2Name
-                        )
-
-                        NavigationLink {
-                            RosterView(viewModel: viewModel)
-                        } label: {
-                            Label(Localized.rosterLink, systemImage: "person.2.fill")
-                                .foregroundColor(.white)
-                        }
-                        .listRowBackground(Color(white: 0.15))
-                    }
-                    
-                    Section {
-                        Stepper(value: $draftTargetScore, in: ScoreViewModel.validTargetScoreRange) {
-                            HStack {
-                                Text(Localized.pointsPerSet)
-                                    .foregroundColor(.white)
-                                Spacer()
-                                Text("\(draftTargetScore)")
-                                    .font(.system(.body, design: .rounded))
-                                    .fontWeight(.bold)
-                                    .monospacedDigit()
-                                    .foregroundColor(selectedTheme.p1Color)
-                            }
-                        }
-                        .listRowBackground(Color(white: 0.15))
-
-                        HStack(spacing: 10) {
-                            quickTargetButton(11, label: Localized.points11)
-                            quickTargetButton(21, label: Localized.points21)
-                        }
-                        .listRowBackground(Color(white: 0.15))
-
-                        Picker(selection: $draftBestOfSets) {
-                            Text(Localized.singleSet).tag(1)
-                            Text(Localized.bestOf3).tag(3)
-                            Text(Localized.bestOf5).tag(5)
-                        } label: {
-                            Text(Localized.matchDuration)
-                                .foregroundColor(.white)
-                        }
-                        .pickerStyle(.menu)
-                        .tint(.white)
-                        .listRowBackground(Color(white: 0.15))
-
-                        if hasPendingRuleChanges {
-                            Button {
-                                if viewModel.hasMeaningfulMatchState {
-                                    isShowingApplyConfirmation = true
-                                } else {
-                                    commitRuleChanges()
-                                }
-                            } label: {
-                                HStack {
-                                    Spacer()
-                                    Image(systemName: "checkmark.circle.fill")
-                                    Text(Localized.applyNewRules)
-                                        .fontWeight(.semibold)
-                                    Spacer()
-                                }
-                                .foregroundColor(selectedTheme.p1Color)
-                            }
-                            .listRowBackground(Color(white: 0.15))
-                        }
-                    } header: {
-                        Text(Localized.rulesHeader).foregroundColor(.gray)
-                    } footer: {
-                        Text(Localized.pendingRulesFooter)
-                            .foregroundColor(.gray)
-                    }
-
-                    Section(header: Text(Localized.serveRulesHeader).foregroundColor(.gray)) {
-                        Toggle(Localized.winByTwo, isOn: $viewModel.winByTwo)
-                            .tint(selectedTheme.p1Color)
-                            .foregroundColor(.white)
-                            .listRowBackground(Color(white: 0.15))
-
-                        Picker(selection: $viewModel.serveRotationInterval) {
-                            Text(Localized.every2Serves).tag(2)
-                            Text(Localized.every5Serves).tag(5)
-                        } label: {
-                            Text(Localized.serviceRotation)
-                                .foregroundColor(.white)
-                        }
-                        .pickerStyle(.menu)
-                        .tint(.white)
-                        .listRowBackground(Color(white: 0.15))
-                    }
-                    
-                    Section(header: Text(Localized.audioHeader).foregroundColor(.gray)) {
-                        Toggle(Localized.voiceAssistant, isOn: $viewModel.isVoiceEnabled)
-                            .tint(selectedTheme.p1Color)
-                            .foregroundColor(.white)
-                            .listRowBackground(Color(white: 0.15))
-
-                        Toggle(Localized.soundEffects, isOn: $viewModel.isSoundEnabled)
-                            .tint(selectedTheme.p1Color)
-                            .foregroundColor(.white)
-                            .listRowBackground(Color(white: 0.15))
-
-                        Picker(selection: $viewModel.hapticIntensity) {
-                            Text(Localized.hapticsOff).tag(HapticIntensity.off)
-                            Text(Localized.hapticsLight).tag(HapticIntensity.light)
-                            Text(Localized.hapticsFull).tag(HapticIntensity.full)
-                        } label: {
-                            Text(Localized.hapticsLabel)
-                                .foregroundColor(.white)
-                        }
-                        .pickerStyle(.menu)
-                        .tint(.white)
-                        .listRowBackground(Color(white: 0.15))
-                    }
-
-                    Section {
-                        Toggle(Localized.keepScreenAwake, isOn: $viewModel.keepScreenAwake)
-                            .tint(selectedTheme.p1Color)
-                            .foregroundColor(.white)
-                            .listRowBackground(Color(white: 0.15))
-
-                        Toggle(Localized.showMatchTimer, isOn: $viewModel.showMatchTimer)
-                            .tint(selectedTheme.p1Color)
-                            .foregroundColor(.white)
-                            .listRowBackground(Color(white: 0.15))
-                    } header: {
-                        Text(Localized.displayHeader).foregroundColor(.gray)
-                    } footer: {
-                        Text(Localized.keepScreenAwakeFooter).foregroundColor(.gray)
-                    }
-
-
-                    Section(header: Text(Localized.styleHeader).foregroundColor(.gray)) {
-                        Picker(selection: $viewModel.themeIndex) {
-                            ForEach(AppTheme.all) { theme in
-                                Text("\(theme.name) — \(theme.subtitle)").tag(theme.id)
-                            }
-                        } label: {
-                            Text(Localized.graphicTheme)
-                                .foregroundColor(.white)
-                        }
-                        .pickerStyle(.menu)
-                        .tint(.white)
-                        .listRowBackground(Color(white: 0.15))
-                        
-                        // Theme Preview Box
-                        HStack(spacing: 20) {
-                            Text(Localized.themePreview)
-                                .foregroundColor(.white)
-                            Spacer()
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(selectedTheme.p1Color)
-                                .frame(width: 40, height: 25)
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(selectedTheme.p2Color)
-                                .frame(width: 40, height: 25)
-                        }
-                        .listRowBackground(Color(white: 0.15))
-                    }
-
-                    Section(header: Text(Localized.appInfoHeader).foregroundColor(.gray)) {
-                        if let supportURL {
-                            Link(destination: supportURL) {
-                                Label(Localized.supportLink, systemImage: "questionmark.circle.fill")
-                                    .foregroundColor(.white)
-                            }
-                            .listRowBackground(Color(white: 0.15))
-                        }
-
-                        if let privacyPolicyURL {
-                            Link(destination: privacyPolicyURL) {
-                                Label(Localized.privacyPolicy, systemImage: "lock.shield.fill")
-                                    .foregroundColor(.white)
-                            }
-                            .listRowBackground(Color(white: 0.15))
-                        }
-                    }
-                    
-                    Section {
-                        Button(role: .destructive) {
-                            viewModel.resetMatch()
-                            dismiss()
-                        } label: {
-                            HStack {
-                                Spacer()
-                                Image(systemName: "arrow.counterclockwise.circle.fill")
-                                Text(Localized.resetMatch)
-                                Spacer()
-                            }
-                        }
-                        .listRowBackground(Color(white: 0.15))
-                    }
+                    matchFormatSection
+                    playersSection
+                    rulesSection
+                    serveRulesSection
+                    audioSection
+                    displaySection
+                    styleSection
+                    cloudSection
+                    aboutSection
+                    resetSection
                 }
                 .scrollContentBackground(.hidden)
             }
@@ -302,7 +83,308 @@ struct SettingsView: View {
                 draftBestOfSets = newValue
             }
             .preferredColorScheme(.dark)
+            .onAppear {
+                // Probed here rather than from `body`: the availability check performs a real
+                // iCloud synchronize().
+                viewModel.refreshCloudAvailability()
+            }
         }
+    }
+
+    // MARK: - matchFormatSection
+
+    @ViewBuilder
+    private var matchFormatSection: some View {
+            Section {
+                Picker(selection: $viewModel.isDoubles) {
+                    Text(Localized.singlesMode).tag(false)
+                    Text(Localized.doublesMode).tag(true)
+                } label: {
+                    Text(Localized.matchFormatHeader).foregroundColor(.white)
+                }
+                .pickerStyle(.segmented)
+                .listRowBackground(Color(white: 0.15))
+
+                if viewModel.isDoubles {
+                    NavigationLink {
+                        DoublesSetupView(viewModel: viewModel)
+                    } label: {
+                        Label(Localized.openingRotationHeader, systemImage: "person.2.circle.fill")
+                            .foregroundColor(.white)
+                    }
+                    .listRowBackground(Color(white: 0.15))
+                }
+            } header: {
+                Text(Localized.matchFormatHeader).foregroundColor(.gray)
+            } footer: {
+                if viewModel.isDoubles {
+                    Text(Localized.doublesFooter).foregroundColor(.gray)
+                }
+            }
+    }
+
+    // MARK: - playersSection
+
+    @ViewBuilder
+    private var playersSection: some View {
+            Section(header: Text(Localized.playersHeader).foregroundColor(.gray)) {
+                playerRow(
+                    side: .player1,
+                    color: selectedTheme.p1Color,
+                    placeholder: Localized.p1Placeholder,
+                    name: $viewModel.p1Name
+                )
+
+                playerRow(
+                    side: .player2,
+                    color: selectedTheme.p2Color,
+                    placeholder: Localized.p2Placeholder,
+                    name: $viewModel.p2Name
+                )
+
+                NavigationLink {
+                    RosterView(viewModel: viewModel)
+                } label: {
+                    Label(Localized.rosterLink, systemImage: "person.2.fill")
+                        .foregroundColor(.white)
+                }
+                .listRowBackground(Color(white: 0.15))
+            }
+    }
+
+    // MARK: - rulesSection
+
+    @ViewBuilder
+    private var rulesSection: some View {
+            Section {
+                Stepper(value: $draftTargetScore, in: ScoreViewModel.validTargetScoreRange) {
+                    HStack {
+                        Text(Localized.pointsPerSet)
+                            .foregroundColor(.white)
+                        Spacer()
+                        Text("\(draftTargetScore)")
+                            .font(.system(.body, design: .rounded))
+                            .fontWeight(.bold)
+                            .monospacedDigit()
+                            .foregroundColor(selectedTheme.p1Color)
+                    }
+                }
+                .listRowBackground(Color(white: 0.15))
+
+                HStack(spacing: 10) {
+                    quickTargetButton(11, label: Localized.points11)
+                    quickTargetButton(21, label: Localized.points21)
+                }
+                .listRowBackground(Color(white: 0.15))
+
+                Picker(selection: $draftBestOfSets) {
+                    Text(Localized.singleSet).tag(1)
+                    Text(Localized.bestOf3).tag(3)
+                    Text(Localized.bestOf5).tag(5)
+                } label: {
+                    Text(Localized.matchDuration)
+                        .foregroundColor(.white)
+                }
+                .pickerStyle(.menu)
+                .tint(.white)
+                .listRowBackground(Color(white: 0.15))
+
+                if hasPendingRuleChanges {
+                    Button {
+                        if viewModel.hasMeaningfulMatchState {
+                            isShowingApplyConfirmation = true
+                        } else {
+                            commitRuleChanges()
+                        }
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Image(systemName: "checkmark.circle.fill")
+                            Text(Localized.applyNewRules)
+                                .fontWeight(.semibold)
+                            Spacer()
+                        }
+                        .foregroundColor(selectedTheme.p1Color)
+                    }
+                    .listRowBackground(Color(white: 0.15))
+                }
+            } header: {
+                Text(Localized.rulesHeader).foregroundColor(.gray)
+            } footer: {
+                Text(Localized.pendingRulesFooter)
+                    .foregroundColor(.gray)
+            }
+    }
+
+    // MARK: - serveRulesSection
+
+    @ViewBuilder
+    private var serveRulesSection: some View {
+            Section(header: Text(Localized.serveRulesHeader).foregroundColor(.gray)) {
+                Toggle(Localized.winByTwo, isOn: $viewModel.winByTwo)
+                    .tint(selectedTheme.p1Color)
+                    .foregroundColor(.white)
+                    .listRowBackground(Color(white: 0.15))
+
+                Picker(selection: $viewModel.serveRotationInterval) {
+                    Text(Localized.every2Serves).tag(2)
+                    Text(Localized.every5Serves).tag(5)
+                } label: {
+                    Text(Localized.serviceRotation)
+                        .foregroundColor(.white)
+                }
+                .pickerStyle(.menu)
+                .tint(.white)
+                .listRowBackground(Color(white: 0.15))
+            }
+    }
+
+    // MARK: - audioSection
+
+    @ViewBuilder
+    private var audioSection: some View {
+            Section(header: Text(Localized.audioHeader).foregroundColor(.gray)) {
+                Toggle(Localized.voiceAssistant, isOn: $viewModel.isVoiceEnabled)
+                    .tint(selectedTheme.p1Color)
+                    .foregroundColor(.white)
+                    .listRowBackground(Color(white: 0.15))
+
+                Toggle(Localized.soundEffects, isOn: $viewModel.isSoundEnabled)
+                    .tint(selectedTheme.p1Color)
+                    .foregroundColor(.white)
+                    .listRowBackground(Color(white: 0.15))
+
+                Picker(selection: $viewModel.hapticIntensity) {
+                    Text(Localized.hapticsOff).tag(HapticIntensity.off)
+                    Text(Localized.hapticsLight).tag(HapticIntensity.light)
+                    Text(Localized.hapticsFull).tag(HapticIntensity.full)
+                } label: {
+                    Text(Localized.hapticsLabel)
+                        .foregroundColor(.white)
+                }
+                .pickerStyle(.menu)
+                .tint(.white)
+                .listRowBackground(Color(white: 0.15))
+            }
+    }
+
+    // MARK: - displaySection
+
+    @ViewBuilder
+    private var displaySection: some View {
+            Section {
+                Toggle(Localized.keepScreenAwake, isOn: $viewModel.keepScreenAwake)
+                    .tint(selectedTheme.p1Color)
+                    .foregroundColor(.white)
+                    .listRowBackground(Color(white: 0.15))
+
+                Toggle(Localized.showMatchTimer, isOn: $viewModel.showMatchTimer)
+                    .tint(selectedTheme.p1Color)
+                    .foregroundColor(.white)
+                    .listRowBackground(Color(white: 0.15))
+            } header: {
+                Text(Localized.displayHeader).foregroundColor(.gray)
+            } footer: {
+                Text(Localized.keepScreenAwakeFooter).foregroundColor(.gray)
+            }
+    }
+
+    // MARK: - styleSection
+
+    @ViewBuilder
+    private var styleSection: some View {
+            Section(header: Text(Localized.styleHeader).foregroundColor(.gray)) {
+                Picker(selection: $viewModel.themeIndex) {
+                    ForEach(AppTheme.all) { theme in
+                        Text("\(theme.name) — \(theme.subtitle)").tag(theme.id)
+                    }
+                } label: {
+                    Text(Localized.graphicTheme)
+                        .foregroundColor(.white)
+                }
+                .pickerStyle(.menu)
+                .tint(.white)
+                .listRowBackground(Color(white: 0.15))
+                
+                // Theme Preview Box
+                HStack(spacing: 20) {
+                    Text(Localized.themePreview)
+                        .foregroundColor(.white)
+                    Spacer()
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(selectedTheme.p1Color)
+                        .frame(width: 40, height: 25)
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(selectedTheme.p2Color)
+                        .frame(width: 40, height: 25)
+                }
+                .listRowBackground(Color(white: 0.15))
+            }
+    }
+
+    // MARK: - cloudSection
+
+    @ViewBuilder
+    private var cloudSection: some View {
+            Section {
+                if viewModel.isCloudSyncAvailable {
+                    Toggle(Localized.cloudSyncLabel, isOn: $viewModel.isCloudSyncEnabled)
+                        .tint(selectedTheme.p1Color)
+                        .foregroundColor(.white)
+                        .listRowBackground(Color(white: 0.15))
+                } else {
+                    Label(Localized.cloudSyncUnavailable, systemImage: "icloud.slash")
+                        .foregroundColor(.white.opacity(0.5))
+                        .listRowBackground(Color(white: 0.15))
+                }
+            } header: {
+                Text(Localized.cloudSyncHeader).foregroundColor(.gray)
+            } footer: {
+                Text(Localized.cloudSyncFooter).foregroundColor(.gray)
+            }
+    }
+
+    // MARK: - aboutSection
+
+    @ViewBuilder
+    private var aboutSection: some View {
+            Section(header: Text(Localized.appInfoHeader).foregroundColor(.gray)) {
+                if let supportURL {
+                    Link(destination: supportURL) {
+                        Label(Localized.supportLink, systemImage: "questionmark.circle.fill")
+                            .foregroundColor(.white)
+                    }
+                    .listRowBackground(Color(white: 0.15))
+                }
+
+                if let privacyPolicyURL {
+                    Link(destination: privacyPolicyURL) {
+                        Label(Localized.privacyPolicy, systemImage: "lock.shield.fill")
+                            .foregroundColor(.white)
+                    }
+                    .listRowBackground(Color(white: 0.15))
+                }
+            }
+    }
+
+    // MARK: - resetSection
+
+    @ViewBuilder
+    private var resetSection: some View {
+            Section {
+                Button(role: .destructive) {
+                    viewModel.resetMatch()
+                    dismiss()
+                } label: {
+                    HStack {
+                        Spacer()
+                        Image(systemName: "arrow.counterclockwise.circle.fill")
+                        Text(Localized.resetMatch)
+                        Spacer()
+                    }
+                }
+                .listRowBackground(Color(white: 0.15))
+            }
     }
 
     /// Free-text name field with a shortcut for dropping in a saved player. Assigning from the

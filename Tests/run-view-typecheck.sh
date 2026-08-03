@@ -47,6 +47,7 @@ MODELS=(
     RosterPlayer
     MatchClock
     Localized
+    MatchExport
     DoublesLineup
     StatsAggregates
 )

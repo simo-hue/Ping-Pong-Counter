@@ -35,6 +35,7 @@ enum PersistenceKeys {
     static let roster = "roster"
     static let p1RosterId = "p1RosterId"
     static let p2RosterId = "p2RosterId"
+    static let isCloudSyncEnabled = "isCloudSyncEnabled"
 
     /// Keep in step with the declarations above — the migration copies exactly this set.
     static let all: [String] = [
@@ -47,6 +48,7 @@ enum PersistenceKeys {
         matchClock, showMatchTimer,
         completedSets, currentSetRallies,
         isDoubles, doublesLineup,
-        roster, p1RosterId, p2RosterId
+        roster, p1RosterId, p2RosterId,
+        isCloudSyncEnabled
     ]
 }

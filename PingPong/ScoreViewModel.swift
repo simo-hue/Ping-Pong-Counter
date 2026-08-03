@@ -236,6 +236,51 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
         SharedStore.defaults.set(data, forKey: DefaultsKey.doublesLineup)
     }
 
+    /// Mirrors history and the roster through iCloud. Stays off unless iCloud actually accepts a
+    /// sync request — see CloudSync for why the API cannot be trusted to report that at init.
+    @Published var isCloudSyncEnabled: Bool = false {
+        didSet {
+            guard hasFinishedInitialLoad else { return }
+            guard isCloudSyncEnabled != oldValue else { return }
+
+            if isCloudSyncEnabled {
+                let started = CloudSync.shared.start { [weak self] in
+                    self?.reloadFromStore()
+                }
+                if started {
+                    CloudSync.shared.push()
+                } else {
+                    // iCloud refused; do not leave a switch on that does nothing.
+                    isCloudSyncEnabled = false
+                    return
+                }
+            } else {
+                CloudSync.shared.stop()
+            }
+
+            SharedStore.defaults.set(isCloudSyncEnabled, forKey: PersistenceKeys.isCloudSyncEnabled)
+        }
+    }
+
+    /// Cached rather than probed on read: `refreshAvailability()` calls `synchronize()`, which
+    /// schedules real network work, and SettingsView would otherwise fire it on every body pass.
+    @Published private(set) var isCloudSyncAvailable = false
+
+    func refreshCloudAvailability() {
+        isCloudSyncAvailable = CloudSync.shared.refreshAvailability()
+    }
+
+    /// Re-reads the values iCloud may have changed underneath us.
+    private func reloadFromStore() {
+        let defaults = SharedStore.defaults
+        matchRecords = Self.loadMatchRecords(from: defaults)
+
+        if let data = defaults.data(forKey: DefaultsKey.roster),
+           let savedRoster = try? JSONDecoder().decode([RosterPlayer].self, from: data) {
+            roster = savedRoster
+        }
+    }
+
     /// Saved competitors, most recently created first.
     @Published private(set) var roster: [RosterPlayer] = []
 
@@ -330,6 +375,7 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
         self.winner = Player(rawValue: defaults.string(forKey: DefaultsKey.winner) ?? "")
 
         self.isDoubles = defaults.object(forKey: DefaultsKey.isDoubles) as? Bool ?? false
+        self.isCloudSyncEnabled = defaults.object(forKey: PersistenceKeys.isCloudSyncEnabled) as? Bool ?? false
         if let data = defaults.data(forKey: DefaultsKey.doublesLineup),
            let savedLineup = try? JSONDecoder().decode(DoublesLineup.self, from: data) {
             self.doublesLineup = savedLineup
@@ -357,7 +403,15 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
         HapticManager.shared.intensity = self.hapticIntensity
 
         WatchConnector.shared.configure(with: self)
+        if isCloudSyncEnabled {
+            let started = CloudSync.shared.start { [weak self] in
+                self?.reloadFromStore()
+            }
+            if !started { isCloudSyncEnabled = false }
+        }
+
         ScoreActionRouter.handler = self
+        ScoreActionRouter.spokenSummary = { [weak self] in self?.spokenScoreSummary ?? "" }
         hasFinishedInitialLoad = true
         persistMatchState()
         syncWithWatch()
@@ -648,6 +702,7 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
         guard !matchRecords.isEmpty else { return }
         matchRecords.removeAll()
         persistMatchRecords()
+        CloudSync.shared.push()
         HapticManager.shared.play(.reset)
     }
 
@@ -656,6 +711,7 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
         matchRecords.removeAll { $0.id == id }
         guard matchRecords.count != originalCount else { return }
         persistMatchRecords()
+        CloudSync.shared.push()
         HapticManager.shared.play(.scoreDecrement)
     }
     
@@ -917,6 +973,7 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
 
         matchRecords.insert(record, at: 0)
         persistMatchRecords()
+        CloudSync.shared.push()
     }
 
     /// Finished sets plus the set still on the table, so an abandoned match keeps its partial
@@ -987,7 +1044,16 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
         case .pointPlayer1: incrementScore(for: .player1)
         case .pointPlayer2: incrementScore(for: .player2)
         case .undo: undo()
+        case .newMatch: resetMatch()
         }
+    }
+
+    /// One sentence describing the state of play, for Siri.
+    var spokenScoreSummary: String {
+        if let winner {
+            return Localized.speechWinner(name: winner == .player1 ? p1Name : p2Name)
+        }
+        return Localized.speechStandard(p1Score: p1Score, p2Score: p2Score, server: servingDisplayName)
     }
 
     // MARK: - Roster
@@ -1093,6 +1159,10 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
     private func persistRoster() {
         guard let data = try? JSONEncoder().encode(roster) else { return }
         SharedStore.defaults.set(data, forKey: DefaultsKey.roster)
+
+        // Roster edits are part of what syncs, so a rename or deletion must go up as well —
+        // otherwise the next pull restores the old entry.
+        CloudSync.shared.push()
     }
 
     private func persistRosterAssignments() {
