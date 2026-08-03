@@ -43,7 +43,11 @@ struct WatchContentView: View {
                 .ignoresSafeArea()
                 
                 centralServeDivider
-                
+
+                if connector.isDoubles && !connector.servingName.isEmpty {
+                    doublesServerBadge
+                }
+
                 watchFloatingControls
             }
         }
@@ -158,6 +162,32 @@ struct WatchContentView: View {
                     }
                 }
         )
+    }
+
+    /// In doubles the glowing half only says which pair is up; on a screen this small the name of
+    /// the player actually serving is the whole point, so it gets its own badge at the top.
+    private var doublesServerBadge: some View {
+        VStack {
+            HStack(spacing: 4) {
+                Circle()
+                    .fill(Color.yellow)
+                    .frame(width: 5, height: 5)
+
+                Text(connector.servingName)
+                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .foregroundColor(.yellow)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(Capsule().fill(Color.black.opacity(0.72)))
+            .overlay(Capsule().stroke(Color.yellow.opacity(0.35), lineWidth: 1))
+            .accessibilityLabel("\(connector.servingName) \(isItalian ? "serve" : "serving")")
+
+            Spacer()
+        }
+        .padding(.top, 2)
     }
 
     private var watchFloatingControls: some View {

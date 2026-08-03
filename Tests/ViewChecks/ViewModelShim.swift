@@ -25,6 +25,14 @@ final class ScoreViewModel: ObservableObject {
     @Published var keepScreenAwake = true
     @Published var showMatchTimer = true
     @Published var hapticIntensity: HapticIntensity = .full
+    @Published var isDoubles = false
+    @Published private(set) var doublesLineup = DoublesLineup.makeDefault()
+
+    var currentSetLineup: DoublesLineup { doublesLineup }
+    var currentServingSeat: DoublesSeat? { nil }
+    var currentReceivingSeat: DoublesSeat? { nil }
+    func updateDoublesLineup(_ lineup: DoublesLineup) {}
+    func swapDoublesPartners(on team: Player) {}
 
     static let validTargetScoreRange = 1...99
 

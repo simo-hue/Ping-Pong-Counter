@@ -328,6 +328,23 @@ public struct PingPongWidgetLiveActivity: Widget {
                 }
                 .padding(.horizontal, 20)
                 
+                // In doubles the serving side is not enough — name the player at the table.
+                if let servingName = context.state.servingName, !servingName.isEmpty, context.state.winner == nil {
+                    HStack(spacing: 5) {
+                        Circle()
+                            .fill(Color.yellow)
+                            .frame(width: 6, height: 6)
+                        Text(servingName)
+                            .font(.system(.caption2, design: .rounded))
+                            .fontWeight(.bold)
+                            .foregroundColor(.yellow)
+                            .lineLimit(1)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 3)
+                    .background(Capsule().fill(Color.yellow.opacity(0.12)))
+                }
+
                 // Championship Winner Overlay Banner
                 if let winner = context.state.winner {
                     let winnerName = winner == "player1" ? context.attributes.p1Name : context.attributes.p2Name

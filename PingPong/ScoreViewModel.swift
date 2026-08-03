@@ -486,7 +486,7 @@ final class ScoreViewModel: ObservableObject {
         SoundManager.shared.play(.undo)
 
         // Announce score again after undoing
-        let serverName = currentServer == .player1 ? p1Name : p2Name
+        let serverName = servingDisplayName
         SpeechManager.shared.speak(Localized.speechUndo(p1Score: p1Score, p2Score: p2Score, server: serverName))
     }
     
@@ -523,7 +523,7 @@ final class ScoreViewModel: ObservableObject {
         }
 
         HapticManager.shared.play(.reset)
-        SpeechManager.shared.speak(Localized.speechReset(server: startingServerOfMatch == .player1 ? p1Name : p2Name))
+        SpeechManager.shared.speak(Localized.speechReset(server: servingDisplayName))
     }
 
     /// Commits a staged rule change as one operation. Applying the two properties separately
@@ -648,7 +648,17 @@ final class ScoreViewModel: ObservableObject {
                     startingServerOfSet: snapshot.startingServerOfSet.opponent,
                     winner: snapshot.winner?.opponent,
                     completedSets: snapshot.completedSets.map { $0.swapped() },
-                    currentSetRallies: snapshot.currentSetRallies.swapped()
+                    currentSetRallies: snapshot.currentSetRallies.swapped(),
+                    // Mirror the seats too: undoing a point after a change of ends must not
+                    // restore an opening that points at the team now on the other side.
+                    doublesOpeningServer: DoublesSeat(
+                        team: snapshot.doublesOpeningServer.team.opponent,
+                        slot: snapshot.doublesOpeningServer.slot
+                    ),
+                    doublesOpeningReceiver: DoublesSeat(
+                        team: snapshot.doublesOpeningReceiver.team.opponent,
+                        slot: snapshot.doublesOpeningReceiver.slot
+                    )
                 )
             }
         }
@@ -688,7 +698,15 @@ final class ScoreViewModel: ObservableObject {
         // In doubles the serve rotates through four seats rather than alternating between two
         // sides, so the serving team is whichever team the current seat belongs to.
         if isDoubles {
-            currentServer = currentSetLineup
+            let setLineup = currentSetLineup
+
+            // Keep the singles-shaped baseline in step with the lineup. The Watch mirrors the
+            // serve optimistically from `startingServerOfSet` alone, and the doubles cycle
+            // alternates teams exactly like singles — so a stale baseline would put the serve
+            // indicator on the wrong half for the whole match, not just at a rotation boundary.
+            startingServerOfSet = setLineup.setStartingServer.team
+
+            currentServer = setLineup
                 .server(
                     totalPoints: p1Score + p2Score,
                     interval: baseServeInterval,
@@ -774,7 +792,7 @@ final class ScoreViewModel: ObservableObject {
         currentServer = startingServerOfSet
 
         let setWinnerName = setWinner == .player1 ? p1Name : p2Name
-        let serverName = currentServer == .player1 ? p1Name : p2Name
+        let serverName = servingDisplayName
         SpeechManager.shared.speak(Localized.speechSetEnd(setWinner: setWinnerName, server: serverName))
     }
     
@@ -809,8 +827,22 @@ final class ScoreViewModel: ObservableObject {
     
     // MARK: - State Callouts
     
+    /// Who the umpire should name as serving. In doubles that is the individual at the table, not
+    /// the team — naming the team would leave the pair guessing which of them is up.
+    var servingDisplayName: String {
+        if let seat = currentServingSeat {
+            return currentSetLineup.name(for: seat)
+        }
+        return currentServer == .player1 ? p1Name : p2Name
+    }
+
+    var receivingDisplayName: String? {
+        guard let seat = currentReceivingSeat else { return nil }
+        return currentSetLineup.name(for: seat)
+    }
+
     private func announceState() {
-        let serverName = currentServer == .player1 ? p1Name : p2Name
+        let serverName = servingDisplayName
         let winnerName = winner == nil ? nil : (winner == .player1 ? p1Name : p2Name)
 
         SpeechManager.shared.announceScore(
@@ -1170,9 +1202,12 @@ final class ScoreViewModel: ObservableObject {
             targetScore: targetScore,
             winByTwo: winByTwo,
             bestOfSets: bestOfSets,
-            serveRotationInterval: serveRotationInterval
+            serveRotationInterval: serveRotationInterval,
+            isDoubles: isDoubles,
+            servingName: servingDisplayName,
+            receivingName: receivingDisplayName
         )
-        
+
         syncLiveActivity()
     }
     
@@ -1191,7 +1226,8 @@ final class ScoreViewModel: ObservableObject {
             p2Sets: p2Sets,
             currentServer: currentServer == .player1 ? "player1" : "player2",
             winner: winner == nil ? nil : (winner == .player1 ? "player1" : "player2"),
-            themeIndex: themeIndex
+            themeIndex: themeIndex,
+            servingName: isDoubles ? servingDisplayName : nil
         )
     }
 }
@@ -1232,7 +1268,10 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
         targetScore: Int,
         winByTwo: Bool,
         bestOfSets: Int,
-        serveRotationInterval: Int
+        serveRotationInterval: Int,
+        isDoubles: Bool,
+        servingName: String,
+        receivingName: String?
     ) {
         guard let session else { return }
         guard session.activationState == .activated, session.isPaired, session.isWatchAppInstalled else { return }
@@ -1251,7 +1290,10 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
             "targetScore": targetScore,
             "winByTwo": winByTwo,
             "bestOfSets": bestOfSets,
-            "serveRotationInterval": serveRotationInterval
+            "serveRotationInterval": serveRotationInterval,
+            "isDoubles": isDoubles,
+            "servingName": servingName,
+            "receivingName": receivingName ?? ""
         ]
 
         do {

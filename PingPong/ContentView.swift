@@ -302,7 +302,20 @@ struct ContentView: View {
                     )
                 }
                 .buttonStyle(.plain)
-                
+
+                // In doubles the half belongs to a pair, so the two names sit under the team name
+                // with the current server and receiver called out — the rotation is the thing
+                // players lose track of, and a team-level indicator would not resolve it.
+                if viewModel.isDoubles {
+                    DoublesRosterStrip(
+                        lineup: viewModel.currentSetLineup,
+                        team: player,
+                        servingSeat: viewModel.currentServingSeat,
+                        receivingSeat: viewModel.currentReceivingSeat,
+                        themeColor: themeColor
+                    )
+                }
+
                 // Subtle Onboarding Guide (Fades out immediately when a point is scored)
                 if viewModel.p1Score == 0 && viewModel.p2Score == 0 && viewModel.p1Sets == 0 && viewModel.p2Sets == 0 {
                     Text(Localized.isItalian ? "Tocca per +1 • Scorri giù per -1" : "Tap for +1 • Swipe down for -1")

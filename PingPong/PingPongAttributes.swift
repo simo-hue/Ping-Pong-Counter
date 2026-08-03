@@ -10,8 +10,11 @@ public struct PingPongAttributes: ActivityAttributes {
         public var currentServer: String // "player1" or "player2"
         public var winner: String? // "player1", "player2" or nil
         public var themeIndex: Int // 0, 1, or 2
-        
-        public init(p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int = 0) {
+        /// In doubles, the individual currently serving. Optional so a Live Activity started by an
+        /// older build keeps decoding, and nil in singles where the side already identifies them.
+        public var servingName: String?
+
+        public init(p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int = 0, servingName: String? = nil) {
             self.p1Score = p1Score
             self.p2Score = p2Score
             self.p1Sets = p1Sets
@@ -19,6 +22,7 @@ public struct PingPongAttributes: ActivityAttributes {
             self.currentServer = currentServer
             self.winner = winner
             self.themeIndex = themeIndex
+            self.servingName = servingName
         }
     }
 

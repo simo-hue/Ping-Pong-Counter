@@ -39,6 +39,33 @@ struct SettingsView: View {
                 .ignoresSafeArea()
                 
                 Form {
+                    Section {
+                        Picker(selection: $viewModel.isDoubles) {
+                            Text(Localized.singlesMode).tag(false)
+                            Text(Localized.doublesMode).tag(true)
+                        } label: {
+                            Text(Localized.matchFormatHeader).foregroundColor(.white)
+                        }
+                        .pickerStyle(.segmented)
+                        .listRowBackground(Color(white: 0.15))
+
+                        if viewModel.isDoubles {
+                            NavigationLink {
+                                DoublesSetupView(viewModel: viewModel)
+                            } label: {
+                                Label(Localized.openingRotationHeader, systemImage: "person.2.circle.fill")
+                                    .foregroundColor(.white)
+                            }
+                            .listRowBackground(Color(white: 0.15))
+                        }
+                    } header: {
+                        Text(Localized.matchFormatHeader).foregroundColor(.gray)
+                    } footer: {
+                        if viewModel.isDoubles {
+                            Text(Localized.doublesFooter).foregroundColor(.gray)
+                        }
+                    }
+
                     Section(header: Text(Localized.playersHeader).foregroundColor(.gray)) {
                         playerRow(
                             side: .player1,

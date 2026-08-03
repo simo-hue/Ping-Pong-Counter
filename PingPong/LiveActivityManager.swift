@@ -19,7 +19,7 @@ final class LiveActivityManager {
         }
     }
     
-    func updateOrCreateActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int) {
+    func updateOrCreateActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int, servingName: String? = nil) {
         if currentActivity == nil {
             reconnectToExistingActivity()
         }
@@ -33,7 +33,8 @@ final class LiveActivityManager {
                 p1Sets: p1Sets,
                 p2Sets: p2Sets,
                 currentServer: currentServer,
-                themeIndex: themeIndex
+                themeIndex: themeIndex,
+                servingName: servingName
             )
         } else {
             updateLiveActivity(
@@ -43,12 +44,13 @@ final class LiveActivityManager {
                 p2Sets: p2Sets,
                 currentServer: currentServer,
                 winner: winner,
-                themeIndex: themeIndex
+                themeIndex: themeIndex,
+                servingName: servingName
             )
         }
     }
     
-    func startLiveActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, themeIndex: Int) {
+    func startLiveActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, themeIndex: Int, servingName: String? = nil) {
         // Clear any old session without letting its async dismissal erase the new activity reference.
         let previousActivity = currentActivity
         currentActivity = nil
@@ -75,7 +77,8 @@ final class LiveActivityManager {
             p2Sets: p2Sets,
             currentServer: currentServer,
             winner: nil,
-            themeIndex: themeIndex
+            themeIndex: themeIndex,
+            servingName: servingName
         )
         
         do {
@@ -91,7 +94,7 @@ final class LiveActivityManager {
         }
     }
     
-    func updateLiveActivity(p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int) {
+    func updateLiveActivity(p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int, servingName: String? = nil) {
         guard let activity = currentActivity else { return }
         
         let updatedState = PingPongAttributes.ContentState(
@@ -101,7 +104,8 @@ final class LiveActivityManager {
             p2Sets: p2Sets,
             currentServer: currentServer,
             winner: winner,
-            themeIndex: themeIndex
+            themeIndex: themeIndex,
+            servingName: servingName
         )
         
         Task {

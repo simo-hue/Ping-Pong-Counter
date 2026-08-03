@@ -35,6 +35,8 @@
 		6ED93C59FEA449DBD2852724 /* StatsAggregates.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5AA09F01976064B09B9010A /* StatsAggregates.swift */; };
 		FD35F9CD2171078F3395964C /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D77C6C89BAE11AF0E6E0ED /* StatsView.swift */; };
 		D0F34EE11A2C4BFB1E5109D1 /* DoublesLineup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6323836537294B73BD08F7F9 /* DoublesLineup.swift */; };
+		AA6457626CF077CE4319CB69 /* DoublesSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0547B03605021680A9441055 /* DoublesSetupView.swift */; };
+		CA3A79B8DA6C3917A475AF2F /* DoublesRosterStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDAB47C7AA23C5E7FE4FF43 /* DoublesRosterStrip.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,6 +111,8 @@
 		A5AA09F01976064B09B9010A /* StatsAggregates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsAggregates.swift; sourceTree = "<group>"; };
 		31D77C6C89BAE11AF0E6E0ED /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		6323836537294B73BD08F7F9 /* DoublesLineup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublesLineup.swift; sourceTree = "<group>"; };
+		0547B03605021680A9441055 /* DoublesSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublesSetupView.swift; sourceTree = "<group>"; };
+		4FDAB47C7AA23C5E7FE4FF43 /* DoublesRosterStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublesRosterStrip.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -186,6 +190,8 @@
 		D60000132C1E000200000001 /* PingPong */ = {
 			isa = PBXGroup;
 			children = (
+				4FDAB47C7AA23C5E7FE4FF43 /* DoublesRosterStrip.swift */,
+				0547B03605021680A9441055 /* DoublesSetupView.swift */,
 				6323836537294B73BD08F7F9 /* DoublesLineup.swift */,
 				31D77C6C89BAE11AF0E6E0ED /* StatsView.swift */,
 				A5AA09F01976064B09B9010A /* StatsAggregates.swift */,
@@ -370,6 +376,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA3A79B8DA6C3917A475AF2F /* DoublesRosterStrip.swift in Sources */,
+				AA6457626CF077CE4319CB69 /* DoublesSetupView.swift in Sources */,
 				D0F34EE11A2C4BFB1E5109D1 /* DoublesLineup.swift in Sources */,
 				FD35F9CD2171078F3395964C /* StatsView.swift in Sources */,
 				6ED93C59FEA449DBD2852724 /* StatsAggregates.swift in Sources */,

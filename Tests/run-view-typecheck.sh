@@ -32,10 +32,12 @@ rewrite_ios_only() {
 VIEWS=(
     AppTheme
     StatsView
-    StatsAggregates
     MatchDetailView
     PlayerStatsView
     RosterView
+    DoublesSetupView
+    DoublesRosterStrip
+    SettingsView
 )
 
 MODELS=(
@@ -44,6 +46,8 @@ MODELS=(
     RosterPlayer
     MatchClock
     Localized
+    DoublesLineup
+    StatsAggregates
 )
 
 SOURCES=("$ROOT/Tests/ViewChecks/ViewModelShim.swift")
