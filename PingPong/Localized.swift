@@ -123,6 +123,30 @@ public struct Localized {
             ? "Nessuno scontro diretto: entrambi i giocatori devono essere salvati nei giocatori."
             : "No head-to-head yet — both players must be saved in the roster."
     }
+    // Doubles
+    public static var doublesMode: String { isItalian ? "Doppio" : "Doubles" }
+    public static var singlesMode: String { isItalian ? "Singolo" : "Singles" }
+    public static var matchFormatHeader: String { isItalian ? "Formato Partita" : "Match Format" }
+    public static var doublesFooter: String {
+        isItalian
+            ? "Nel doppio il servizio ruota fra i quattro giocatori: chi riceve serve nel turno successivo."
+            : "In doubles the serve rotates through all four players: whoever receives serves next."
+    }
+    public static var teamOneLabel: String { isItalian ? "Squadra 1" : "Team 1" }
+    public static var teamTwoLabel: String { isItalian ? "Squadra 2" : "Team 2" }
+    public static var servingLabel: String { isItalian ? "SERVE" : "SERVING" }
+    public static var receivingLabel: String { isItalian ? "RICEVE" : "RECEIVING" }
+    public static var swapPartnersLabel: String { isItalian ? "Inverti compagni" : "Swap partners" }
+    public static var openingRotationHeader: String { isItalian ? "Rotazione Iniziale" : "Opening Rotation" }
+    public static var firstServerLabel: String { isItalian ? "Serve per primo" : "Serves first" }
+    public static var firstReceiverLabel: String { isItalian ? "Riceve per primo" : "Receives first" }
+    public static func defaultDoublesName(team: Int, slot: Int) -> String {
+        isItalian ? "Giocatore \(team)\(slot)" : "Player \(team)\(slot)"
+    }
+    public static func servesToDescription(server: String, receiver: String) -> String {
+        isItalian ? "\(server) serve a \(receiver)" : "\(server) serves to \(receiver)"
+    }
+
     // Statistics dashboard
     public static var statsTitle: String { isItalian ? "Statistiche" : "Statistics" }
     public static var totalRalliesLabel: String { isItalian ? "Scambi totali" : "Total rallies" }

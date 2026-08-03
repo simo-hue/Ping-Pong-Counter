@@ -12,6 +12,11 @@ struct GameSnapshot: Equatable {
     let winner: Player?
     let completedSets: [SetRecord]
     let currentSetRallies: RallyLog
+    /// Doubles serve baseline. `setServer(to:)` corrects the rotation by rewriting the lineup's
+    /// opening rather than `startingServerOfSet`, so without these an undone correction would
+    /// silently reapply itself on the next point — and persist for the rest of the match.
+    let doublesOpeningServer: DoublesSeat
+    let doublesOpeningReceiver: DoublesSeat
 }
 
 @MainActor
@@ -41,6 +46,8 @@ final class ScoreViewModel: ObservableObject {
         static let showMatchTimer = "showMatchTimer"
         static let completedSets = "completedSets"
         static let currentSetRallies = "currentSetRallies"
+        static let isDoubles = "isDoubles"
+        static let doublesLineup = "doublesLineup"
         static let roster = "roster"
         static let p1RosterId = "p1RosterId"
         static let p2RosterId = "p2RosterId"
@@ -180,6 +187,79 @@ final class ScoreViewModel: ObservableObject {
 
     @Published private(set) var matchRecords: [MatchRecord] = []
 
+    // MARK: - Doubles
+
+    @Published var isDoubles: Bool = false {
+        didSet {
+            guard isDoubles != oldValue else { return }
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(isDoubles, forKey: DefaultsKey.isDoubles)
+            performStateMutation {
+                updateServer()
+            }
+        }
+    }
+
+    /// The *match's* opening rotation. The current set's rotation is derived from it rather than
+    /// stored, because `advancedToNextSet()` is its own inverse — two sets return to the start.
+    /// Deriving means undo, set corrections and a cold launch can never leave the rotation out of
+    /// step with the score.
+    @Published private(set) var doublesLineup = DoublesLineup.makeDefault() {
+        didSet {
+            guard hasFinishedInitialLoad else { return }
+            persistDoublesLineup()
+        }
+    }
+
+    var currentSetLineup: DoublesLineup {
+        (p1Sets + p2Sets) % 2 == 0 ? doublesLineup : doublesLineup.advancedToNextSet()
+    }
+
+    /// Seat serving right now, or nil in singles.
+    var currentServingSeat: DoublesSeat? {
+        guard isDoubles else { return nil }
+        return currentSetLineup.server(
+            totalPoints: p1Score + p2Score,
+            interval: baseServeInterval,
+            deuceAfter: deucePointTotal
+        )
+    }
+
+    var currentReceivingSeat: DoublesSeat? {
+        guard isDoubles else { return nil }
+        return currentSetLineup.receiver(
+            totalPoints: p1Score + p2Score,
+            interval: baseServeInterval,
+            deuceAfter: deucePointTotal
+        )
+    }
+
+    /// Points per serve turn before deuce.
+    var baseServeInterval: Int { max(1, serveRotationInterval) }
+
+    /// Total points scored when both sides reach `targetScore - 1` — the moment turns shorten to
+    /// one point each. Always exactly twice `targetScore - 1`, since deuce needs both sides there.
+    var deucePointTotal: Int { 2 * max(0, targetScore - 1) }
+
+    func updateDoublesLineup(_ lineup: DoublesLineup) {
+        doublesLineup = lineup
+        performStateMutation {
+            updateServer()
+        }
+    }
+
+    func swapDoublesPartners(on team: Player) {
+        var lineup = doublesLineup
+        lineup.swapPartners(on: team)
+        updateDoublesLineup(lineup)
+        HapticManager.shared.play(.serveChange)
+    }
+
+    private func persistDoublesLineup() {
+        guard let data = try? JSONEncoder().encode(doublesLineup) else { return }
+        UserDefaults.standard.set(data, forKey: DefaultsKey.doublesLineup)
+    }
+
     /// Saved competitors, most recently created first.
     @Published private(set) var roster: [RosterPlayer] = []
 
@@ -272,6 +352,12 @@ final class ScoreViewModel: ObservableObject {
         self.startingServerOfSet = Player(rawValue: defaults.string(forKey: DefaultsKey.startingServerOfSet) ?? "") ?? startingServerOfMatch
         self.currentServer = Player(rawValue: defaults.string(forKey: DefaultsKey.currentServer) ?? "") ?? startingServerOfSet
         self.winner = Player(rawValue: defaults.string(forKey: DefaultsKey.winner) ?? "")
+
+        self.isDoubles = defaults.object(forKey: DefaultsKey.isDoubles) as? Bool ?? false
+        if let data = defaults.data(forKey: DefaultsKey.doublesLineup),
+           let savedLineup = try? JSONDecoder().decode(DoublesLineup.self, from: data) {
+            self.doublesLineup = savedLineup
+        }
 
         if let data = defaults.data(forKey: DefaultsKey.roster),
            let savedRoster = try? JSONDecoder().decode([RosterPlayer].self, from: data) {
@@ -387,6 +473,13 @@ final class ScoreViewModel: ObservableObject {
             winner = previousState.winner
             completedSets = previousState.completedSets
             currentSetRallies = previousState.currentSetRallies
+
+            var restoredLineup = doublesLineup
+            restoredLineup.setOpening(
+                server: previousState.doublesOpeningServer,
+                receiver: previousState.doublesOpeningReceiver
+            )
+            doublesLineup = restoredLineup
         }
         
         HapticManager.shared.play(.scoreDecrement)
@@ -467,11 +560,30 @@ final class ScoreViewModel: ObservableObject {
 
         saveToHistory()
 
-        performStateMutation {
-            let interval = isDeuce() ? 1 : max(1, serveRotationInterval)
-            let servesPlayed = (p1Score + p2Score) / interval
-            startingServerOfSet = (servesPlayed % 2 == 0) ? player : player.opponent
-            currentServer = player
+        if isDoubles {
+            // Nudge the opening rotation one seat at a time until the requested team is the one
+            // serving at the current score. At most three steps around a four-seat cycle.
+            var lineup = doublesLineup
+            for _ in 0..<3 {
+                lineup = lineup.rotatedOpening()
+                let setLineup = (p1Sets + p2Sets) % 2 == 0 ? lineup : lineup.advancedToNextSet()
+                let seat = setLineup.server(
+                    totalPoints: p1Score + p2Score,
+                    interval: baseServeInterval,
+                    deuceAfter: deucePointTotal
+                )
+                if seat.team == player { break }
+            }
+            doublesLineup = lineup
+            performStateMutation {
+                updateServer()
+            }
+        } else {
+            performStateMutation {
+                let servesPlayed = completedServeTurns
+                startingServerOfSet = (servesPlayed % 2 == 0) ? player : player.opponent
+                currentServer = player
+            }
         }
 
         HapticManager.shared.play(.serveChange)
@@ -492,6 +604,7 @@ final class ScoreViewModel: ObservableObject {
         let swappedCompletedSets = completedSets.map { $0.swapped() }
         let swappedCurrentSetRallies = currentSetRallies.swapped()
         let swappedRosterIds = (p1: p2RosterId, p2: p1RosterId)
+        let swappedLineup = doublesLineup.swappedTeams()
 
         // The names move with their roster identities here, so this is not a freehand edit.
         isAssigningRosterIdentity = true
@@ -506,6 +619,7 @@ final class ScoreViewModel: ObservableObject {
             p2Name = swappedNames.p2
             p1RosterId = swappedRosterIds.p1
             p2RosterId = swappedRosterIds.p2
+            doublesLineup = swappedLineup
 
             p1Score = swappedScores.p1
             p2Score = swappedScores.p2
@@ -560,15 +674,31 @@ final class ScoreViewModel: ObservableObject {
     
     // MARK: - Server Logic
     
+    /// Serve turns completed at the current score. Shared by singles and doubles so the deuce
+    /// rule is applied in exactly one place.
+    private var completedServeTurns: Int {
+        DoublesLineup.serveTurns(
+            totalPoints: p1Score + p2Score,
+            interval: baseServeInterval,
+            deuceAfter: deucePointTotal
+        )
+    }
+
     private func updateServer() {
-        let totalPoints = p1Score + p2Score
-        let isDeuceGame = isDeuce()
-        
-        // Table Tennis rule: if both players reach targetScore - 1 (e.g. 10-10 deuce),
-        // serve rotation interval becomes 1 serve per player instead of 2.
-        let interval = isDeuceGame ? 1 : max(1, serveRotationInterval)
-        
-        let servesPlayed = totalPoints / interval
+        // In doubles the serve rotates through four seats rather than alternating between two
+        // sides, so the serving team is whichever team the current seat belongs to.
+        if isDoubles {
+            currentServer = currentSetLineup
+                .server(
+                    totalPoints: p1Score + p2Score,
+                    interval: baseServeInterval,
+                    deuceAfter: deucePointTotal
+                )
+                .team
+            return
+        }
+
+        let servesPlayed = completedServeTurns
         
         // Determine player serving
         if startingServerOfSet == .player1 {
@@ -722,7 +852,9 @@ final class ScoreViewModel: ObservableObject {
             startingServerOfSet: startingServerOfSet,
             winner: winner,
             completedSets: completedSets,
-            currentSetRallies: currentSetRallies
+            currentSetRallies: currentSetRallies,
+            doublesOpeningServer: doublesLineup.setStartingServer,
+            doublesOpeningReceiver: doublesLineup.setStartingReceiver
         )
         guard history.last != snapshot else { return }
         history.append(snapshot)

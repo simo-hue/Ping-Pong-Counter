@@ -326,6 +326,207 @@ check("rallies are summed across sets", "\(totals.rallies)", "\(dated.reduce(0) 
 check("untimed matches do not drag the average down",
       "\(totals.timedMatches) \(totals.averageSeconds)", "0 0")
 
+// MARK: - Doubles rotation
+
+print("\n── Doubles rotation ──")
+
+// A1/A2 on team 1, B1/B2 on team 2. A1 opens serving to B1.
+var lineup = DoublesLineup(
+    teamOneFirstName: "A1", teamOneSecondName: "A2",
+    teamTwoFirstName: "B1", teamTwoSecondName: "B2"
+)
+
+func cycleNames(_ lineup: DoublesLineup) -> String {
+    lineup.serveCycle.map(lineup.name(for:)).joined(separator: "→")
+}
+
+/// The server→receiver pairing across `turns` consecutive serve turns.
+func rotation(_ lineup: DoublesLineup, turns: Int) -> String {
+    (0..<turns).map { turn in
+        "\(lineup.name(for: lineup.server(afterServeTurns: turn)))>\(lineup.name(for: lineup.receiver(afterServeTurns: turn)))"
+    }.joined(separator: " ")
+}
+
+check("the cycle is server, receiver, then their partners", cycleNames(lineup), "A1→B1→A2→B2")
+check("each receiver serves the next turn", rotation(lineup, turns: 4), "A1>B1 B1>A2 A2>B2 B2>A1")
+check("the cycle repeats after four turns", rotation(lineup, turns: 6),
+      "A1>B1 B1>A2 A2>B2 B2>A1 A1>B1 B1>A2")
+
+// Serve turns advance every `interval` points, and every point once at deuce.
+check("two-point rotation hands over on the third point",
+      (0..<6).map { lineup.name(for: lineup.server(totalPoints: $0, interval: 2, deuceAfter: 20)) }.joined(separator: ","),
+      "A1,A1,B1,B1,A2,A2")
+check("five-point rotation holds the serve longer",
+      (0..<12).map { lineup.name(for: lineup.server(totalPoints: $0, interval: 5, deuceAfter: 20)) }.joined(separator: ","),
+      "A1,A1,A1,A1,A1,B1,B1,B1,B1,B1,A2,A2")
+// Deuce shortens each remaining turn to one point; it does NOT restart the sequence. The old
+// check passed `interval: 1` directly, which assumed the very thing under test — so walk a real
+// game through the interval change instead and compare against a rally-by-rally simulation.
+func legalServerSequence(target: Int, interval: Int, points: Int, _ lineup: DoublesLineup) -> [String] {
+    var turn = 0, servedThisTurn = 0, p1 = 0, p2 = 0
+    var names: [String] = []
+    for i in 0..<points {
+        names.append(lineup.name(for: lineup.server(afterServeTurns: turn)))
+        let limit = (p1 >= target - 1 && p2 >= target - 1) ? 1 : interval
+        servedThisTurn += 1
+        if servedThisTurn >= limit { turn += 1; servedThisTurn = 0 }
+        if i % 2 == 0 { p1 += 1 } else { p2 += 1 }
+    }
+    return names
+}
+func appServerSequence(target: Int, interval: Int, points: Int, _ lineup: DoublesLineup) -> [String] {
+    (0..<points).map { tp in
+        lineup.name(for: lineup.server(totalPoints: tp, interval: interval, deuceAfter: 2 * (target - 1)))
+    }
+}
+check("the standard 11-point game keeps rotating correctly through deuce",
+      appServerSequence(target: 11, interval: 2, points: 26, lineup).suffix(6).joined(separator: ","),
+      legalServerSequence(target: 11, interval: 2, points: 26, lineup).suffix(6).joined(separator: ","))
+check("the seat at 10-10 is the one the rules say",
+      lineup.name(for: lineup.server(totalPoints: 20, interval: 2, deuceAfter: 20)), "A2")
+
+// Sweep every plausible format against the simulation — this is the check that would have caught
+// the original single-division formula.
+var sweepMismatches: [String] = []
+// Sweep the rule-DEFINED space: serveRotationInterval is restricted to {2, 5}, and the interval
+// must divide the deuce point total. Where it does not (a game to 3 with 5-serve turns) deuce
+// arrives mid-turn, and no ITTF law says whether that turn ends immediately or finishes its point
+// — the convention is asserted separately below rather than pretended to be a rule.
+for target in 1...30 {
+    for interval in [2, 5] where (2 * (target - 1)) % interval == 0 {
+        let points = 2 * (target - 1) + 10
+        let want = legalServerSequence(target: target, interval: interval, points: points, lineup)
+        let got = appServerSequence(target: target, interval: interval, points: points, lineup)
+        if want != got, sweepMismatches.count < 3 {
+            let at = zip(want, got).enumerated().first { $0.element.0 != $0.element.1 }?.offset ?? -1
+            sweepMismatches.append("target=\(target) interval=\(interval) at \(at) points")
+        }
+    }
+}
+check("serve rotation matches the rules for every reachable target and interval",
+      sweepMismatches.isEmpty ? "no mismatches" : sweepMismatches.joined(separator: "; "), "no mismatches")
+
+// Singles derives its side from the same turn count, so parity must hold there too.
+var singlesMismatches = 0
+for target in 1...30 {
+    for interval in [2, 5] where (2 * (target - 1)) % interval == 0 {
+        let points = 2 * (target - 1) + 10
+        var turn = 0, served = 0, p1 = 0, p2 = 0
+        for i in 0..<points {
+            let appTurn = DoublesLineup.serveTurns(totalPoints: i, interval: interval, deuceAfter: 2 * (target - 1))
+            if appTurn % 2 != turn % 2 { singlesMismatches += 1 }
+            let limit = (p1 >= target - 1 && p2 >= target - 1) ? 1 : interval
+            served += 1
+            if served >= limit { turn += 1; served = 0 }
+            if i % 2 == 0 { p1 += 1 } else { p2 += 1 }
+        }
+    }
+}
+check("singles side alternation matches the rules across the same sweep", "\(singlesMismatches)", "0")
+
+// Documented convention for the undefined boundary: a turn only part-played when deuce arrives is
+// treated as finished, so the serve changes hands at deuce rather than completing a long turn.
+check("a part-played turn is ended by deuce, not completed",
+      "\(DoublesLineup.serveTurns(totalPoints: 4, interval: 5, deuceAfter: 4))", "1")
+check("turn counting is monotonic across the deuce boundary", {
+    var previous = -1
+    var monotonic = true
+    for tp in 0...30 {
+        let turns = DoublesLineup.serveTurns(totalPoints: tp, interval: 5, deuceAfter: 12)
+        if turns < previous { monotonic = false }
+        previous = turns
+    }
+    return "\(monotonic)"
+}(), "true")
+
+// ITTF: whoever received first serves first in the next set, and the player who served to them receives.
+let set2 = lineup.advancedToNextSet()
+check("next set is opened by the previous first receiver", set2.name(for: set2.serveCycle[0]), "B1")
+check("next set's first receiver is the previous first server", set2.name(for: set2.serveCycle[1]), "A1")
+check("next set's cycle stays alternating", cycleNames(set2), "B1→A1→B2→A2")
+check("a third set rotates on again", cycleNames(set2.advancedToNextSet()), "A1→B1→A2→B2")
+check("every seat opens a set within four sets",
+      [lineup, set2, set2.advancedToNextSet(), set2.advancedToNextSet().advancedToNextSet()]
+        .map { $0.name(for: $0.serveCycle[0]) }.joined(separator: ","),
+      "A1,B1,A1,B1")
+
+// Every serve must cross the net, in every set and at every phase.
+var crossingFailures = 0
+var walk = lineup
+for _ in 0..<6 {
+    for turn in 0..<8 {
+        let server = walk.server(afterServeTurns: turn)
+        let receiver = walk.receiver(afterServeTurns: turn)
+        if server.team == receiver.team { crossingFailures += 1 }
+        if server == receiver { crossingFailures += 1 }
+    }
+    walk = walk.advancedToNextSet()
+}
+check("a server never serves to their own team", "\(crossingFailures)", "0")
+
+// Each seat serves exactly one turn in four, and receives exactly one.
+var served: [String: Int] = [:]
+var receivedCount: [String: Int] = [:]
+for turn in 0..<4 {
+    served[lineup.name(for: lineup.server(afterServeTurns: turn)), default: 0] += 1
+    receivedCount[lineup.name(for: lineup.receiver(afterServeTurns: turn)), default: 0] += 1
+}
+check("all four seats serve once per cycle", served.values.sorted().map(String.init).joined(separator: ","), "1,1,1,1")
+check("all four seats receive once per cycle", receivedCount.values.sorted().map(String.init).joined(separator: ","), "1,1,1,1")
+
+// Changing ends mirrors the teams but keeps partnerships and the rotation phase intact.
+let swapped = lineup.swappedTeams()
+check("changing ends moves both pairs across", "\(swapped.teamOneFirstName)\(swapped.teamOneSecondName)/\(swapped.teamTwoFirstName)\(swapped.teamTwoSecondName)", "B1B2/A1A2")
+check("changing ends preserves who serves to whom", rotation(swapped, turns: 4), rotation(lineup, turns: 4))
+
+// Swapping partners on one team must not disturb the other team's order.
+var partnerSwap = lineup
+partnerSwap.swapPartners(on: .player1)
+check("swapping partners reorders only that team",
+      "\(partnerSwap.teamOneFirstName)\(partnerSwap.teamOneSecondName)/\(partnerSwap.teamTwoFirstName)\(partnerSwap.teamTwoSecondName)",
+      "A2A1/B1B2")
+check("swapping partners keeps the same player serving first", partnerSwap.name(for: partnerSwap.serveCycle[0]), "A1")
+
+// A receiver on the serving team is incoherent, so it is corrected rather than trusted.
+let bogus = DoublesLineup(
+    teamOneFirstName: "A1", teamOneSecondName: "A2",
+    teamTwoFirstName: "B1", teamTwoSecondName: "B2",
+    setStartingServer: DoublesSeat(team: .player1, slot: .first),
+    setStartingReceiver: DoublesSeat(team: .player1, slot: .second)
+)
+check("a same-team receiver is corrected to the opposing team", cycleNames(bogus), "A1→B1→A2→B2")
+
+// Manual correction of the opening rotation.
+var corrected = lineup
+corrected.setOpening(server: DoublesSeat(team: .player2, slot: .second), receiver: DoublesSeat(team: .player1, slot: .second))
+check("the opening rotation can be reassigned", cycleNames(corrected), "B2→A2→B1→A1")
+
+// The view model stores only the MATCH opening and derives each set's rotation, which is sound
+// only because advancing is its own inverse. If that ever stopped holding, undo across a set
+// boundary would silently desynchronise the rotation from the score.
+check("advancing twice returns to the opening", cycleNames(lineup.advancedToNextSet().advancedToNextSet()), cycleNames(lineup))
+func derivedSetLineup(_ opening: DoublesLineup, setsPlayed: Int) -> DoublesLineup {
+    setsPlayed % 2 == 0 ? opening : opening.advancedToNextSet()
+}
+check("derived rotation alternates by set",
+      (0..<4).map { cycleNames(derivedSetLineup(lineup, setsPlayed: $0)) }.joined(separator: " | "),
+      "A1→B1→A2→B2 | B1→A1→B2→A2 | A1→B1→A2→B2 | B1→A1→B2→A2")
+
+// Correcting the serve nudges the opening one seat at a time, mirroring setServer(to:).
+check("rotating the opening walks the cycle",
+      (0..<4).map { step -> String in
+          var l = lineup
+          for _ in 0..<step { l = l.rotatedOpening() }
+          return l.name(for: l.serveCycle[0])
+      }.joined(separator: ","),
+      "A1,B1,A2,B2")
+check("four rotations return to the start", cycleNames(lineup.rotatedOpening().rotatedOpening().rotatedOpening().rotatedOpening()), cycleNames(lineup))
+
+// Round-trips through Codable, since the lineup is persisted.
+let lineupData = try! JSONEncoder().encode(set2)
+check("lineup survives a Codable round-trip",
+      cycleNames(try! JSONDecoder().decode(DoublesLineup.self, from: lineupData)), cycleNames(set2))
+
 // MARK: - Result
 
 print("")

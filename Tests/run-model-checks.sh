@@ -19,6 +19,8 @@ swiftc -module-name PingPongTest -o "$BUILD_DIR/model-checks" \
     "$ROOT/PingPong/SetRecord.swift" \
     "$ROOT/PingPong/RosterPlayer.swift" \
     "$ROOT/PingPong/MatchClock.swift" \
-    "$ROOT/PingPong/StatsAggregates.swift"
+    "$ROOT/PingPong/StatsAggregates.swift" \
+    "$ROOT/PingPong/DoublesLineup.swift" \
+    "$ROOT/PingPong/Localized.swift"
 
 "$BUILD_DIR/model-checks"
