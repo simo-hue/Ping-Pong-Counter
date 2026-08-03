@@ -25,6 +25,9 @@
 		D60001002C20000100000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D60001012C20000100000001 /* PrivacyInfo.xcprivacy */; };
 		410E3ADEFD8645802D28760A /* MatchClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F841BF32AD3B5EE66FBDF28 /* MatchClock.swift */; };
 		24462125F686CAC017E571B5 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0058B47AD6316BF398F29EA /* SoundManager.swift */; };
+		9C5A3341F0B37221B319405E /* SetRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44C46D09540DD626E05DD650 /* SetRecord.swift */; };
+		F86B693A269AA76FF2B9CF15 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1081208582FFBCDA00AC39 /* AppTheme.swift */; };
+		D665F0BA7C628BE7DF94F17C /* MatchDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5F7EB981D21C46457EC1C2 /* MatchDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +92,9 @@
 		D60001022C20000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8F841BF32AD3B5EE66FBDF28 /* MatchClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchClock.swift; sourceTree = "<group>"; };
 		C0058B47AD6316BF398F29EA /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
+		44C46D09540DD626E05DD650 /* SetRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetRecord.swift; sourceTree = "<group>"; };
+		0A1081208582FFBCDA00AC39 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		9D5F7EB981D21C46457EC1C2 /* MatchDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -166,6 +172,9 @@
 		D60000132C1E000200000001 /* PingPong */ = {
 			isa = PBXGroup;
 			children = (
+				9D5F7EB981D21C46457EC1C2 /* MatchDetailView.swift */,
+				0A1081208582FFBCDA00AC39 /* AppTheme.swift */,
+				44C46D09540DD626E05DD650 /* SetRecord.swift */,
 				C0058B47AD6316BF398F29EA /* SoundManager.swift */,
 				8F841BF32AD3B5EE66FBDF28 /* MatchClock.swift */,
 				D60000022C1E000100000001 /* PingPongApp.swift */,
@@ -340,6 +349,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D665F0BA7C628BE7DF94F17C /* MatchDetailView.swift in Sources */,
+				F86B693A269AA76FF2B9CF15 /* AppTheme.swift in Sources */,
+				9C5A3341F0B37221B319405E /* SetRecord.swift in Sources */,
 				24462125F686CAC017E571B5 /* SoundManager.swift in Sources */,
 				410E3ADEFD8645802D28760A /* MatchClock.swift in Sources */,
 				D60000012C1E000100000001 /* PingPongApp.swift in Sources */,

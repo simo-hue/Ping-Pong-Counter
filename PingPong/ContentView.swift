@@ -22,36 +22,8 @@ struct ContentView: View {
     @State private var p2PlusOffset: CGFloat = 0
     @State private var p2PlusOpacity: Double = 0
     
-    // Custom theme styling based on the selection in ViewModel
-    let themesList = [
-        // Theme 0: Neon Classic
-        (
-            name: "Néon Classic",
-            p1Color: Color(red: 1.0, green: 0.25, blue: 0.35),
-            p2Color: Color(red: 0.0, green: 0.7, blue: 1.0),
-            bgStart: Color(red: 0.08, green: 0.02, blue: 0.03),
-            bgEnd: Color(red: 0.02, green: 0.04, blue: 0.08)
-        ),
-        // Theme 1: Mint & Royal
-        (
-            name: "Mint & Royal",
-            p1Color: Color(red: 0.0, green: 0.85, blue: 0.55),
-            p2Color: Color(red: 0.55, green: 0.3, blue: 0.9),
-            bgStart: Color(red: 0.01, green: 0.06, blue: 0.04),
-            bgEnd: Color(red: 0.04, green: 0.02, blue: 0.06)
-        ),
-        // Theme 2: Solar Flare
-        (
-            name: "Solar Flare",
-            p1Color: Color(red: 1.0, green: 0.55, blue: 0.0),
-            p2Color: Color(red: 0.0, green: 0.8, blue: 0.8),
-            bgStart: Color(red: 0.06, green: 0.03, blue: 0.0),
-            bgEnd: Color(red: 0.0, green: 0.05, blue: 0.05)
-        )
-    ]
-    
-    var currentTheme: (name: String, p1Color: Color, p2Color: Color, bgStart: Color, bgEnd: Color) {
-        themesList[themesList.indices.contains(viewModel.themeIndex) ? viewModel.themeIndex : 0]
+    var currentTheme: AppTheme {
+        AppTheme.theme(at: viewModel.themeIndex)
     }
     
     var body: some View {
@@ -644,6 +616,10 @@ struct MatchHistoryView: View {
         viewModel.matchRecords
     }
 
+    private var theme: AppTheme {
+        AppTheme.theme(at: viewModel.themeIndex)
+    }
+
     private var completedCount: Int {
         records.filter { $0.winner != nil }.count
     }
@@ -681,7 +657,11 @@ struct MatchHistoryView: View {
 
                         Section(header: Text(Localized.savedResultsHeader).foregroundColor(.gray)) {
                             ForEach(records) { record in
-                                MatchRecordRow(record: record)
+                                NavigationLink {
+                                    MatchDetailView(record: record, theme: theme)
+                                } label: {
+                                    MatchRecordRow(record: record)
+                                }
                                     .listRowBackground(Color(white: 0.15))
                                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                         Button(role: .destructive) {
@@ -805,6 +785,7 @@ struct MatchHistoryView: View {
                 escaped(record.p2Name),
                 escaped("\(record.p1Sets)-\(record.p2Sets)"),
                 escaped("\(record.p1Score)-\(record.p2Score)"),
+                escaped(record.setScoreLine ?? "-"),
                 escaped(winnerName(for: record) ?? "-"),
                 escaped(record.winner == nil ? Localized.interruptedMatch : Localized.completedMatch),
                 escaped(record.formattedDuration ?? "-"),
@@ -934,6 +915,16 @@ private struct MatchRecordRow: View {
                 Spacer(minLength: 4)
 
                 playerName(record.p2Name, isLeading: false)
+            }
+
+            if let setScoreLine = record.setScoreLine {
+                Text(setScoreLine)
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundColor(.white.opacity(0.6))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                    .frame(maxWidth: .infinity, alignment: .center)
             }
 
             HStack(spacing: 8) {

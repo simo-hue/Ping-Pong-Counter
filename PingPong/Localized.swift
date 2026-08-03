@@ -56,6 +56,23 @@ public struct Localized {
             : "Points and sets apply to a new match — tap Apply to confirm."
     }
     public static var durationLabel: String { isItalian ? "Durata" : "Duration" }
+
+    // Match detail / set breakdown
+    public static var matchDetailTitle: String { isItalian ? "Dettaglio Partita" : "Match Detail" }
+    public static var setLabelSingular: String { isItalian ? "Set" : "Set" }
+    public static var ralliesLabel: String { isItalian ? "scambi" : "rallies" }
+    public static var longestRunLabel: String { isItalian ? "Serie max:" : "Best run:" }
+    public static var noRallyData: String {
+        isItalian ? "Nessun dato sugli scambi per questo set." : "No rally data for this set."
+    }
+    public static var noSetBreakdown: String {
+        isItalian
+            ? "Questa partita è stata registrata prima del tracciamento set per set."
+            : "This match was recorded before set-by-set tracking existed."
+    }
+    /// Describes a *set* that never finished — kept separate from `interruptedMatch`, whose
+    /// Italian form ("Interrotta") agrees with the feminine "partita" and reads wrong on "il set".
+    public static var unfinishedSet: String { isItalian ? "Non concluso" : "Unfinished" }
     public static var styleHeader: String { isItalian ? "Stile & Temi" : "Style & Themes" }
     public static var graphicTheme: String { isItalian ? "Tema Grafico" : "Graphic Theme" }
     public static var themePreview: String { isItalian ? "Anteprima Tema:" : "Theme Preview:" }
@@ -175,9 +192,9 @@ public struct Localized {
     // Match History Export Column Headers
     public static var exportHeaders: [String] {
         if isItalian {
-            return ["Data", "Giocatore 1", "Giocatore 2", "Set", "Punti", "Vincitore", "Stato", "Durata", "Regole"]
+            return ["Data", "Giocatore 1", "Giocatore 2", "Set", "Punti", "Parziali", "Vincitore", "Stato", "Durata", "Regole"]
         } else {
-            return ["Date", "Player 1", "Player 2", "Sets", "Points", "Winner", "Status", "Duration", "Rules"]
+            return ["Date", "Player 1", "Player 2", "Sets", "Points", "Set Scores", "Winner", "Status", "Duration", "Rules"]
         }
     }
 

@@ -19,6 +19,8 @@ struct GameSnapshot: Equatable {
     let currentServer: Player
     let startingServerOfSet: Player
     let winner: Player?
+    let completedSets: [SetRecord]
+    let currentSetRallies: RallyLog
 }
 
 struct MatchRecord: Identifiable, Codable, Equatable {
@@ -36,10 +38,23 @@ struct MatchRecord: Identifiable, Codable, Equatable {
     let winByTwo: Bool
     /// Optional so records written by 1.0.1 — which had no clock — still decode.
     let durationSeconds: Int?
+    /// Set-by-set breakdown with the rally log for each. Optional for the same migration reason:
+    /// records written before this field existed must keep decoding.
+    let sets: [SetRecord]?
 
     var formattedDuration: String? {
         guard let durationSeconds, durationSeconds > 0 else { return nil }
         return MatchClock.formatted(TimeInterval(durationSeconds))
+    }
+
+    /// "11-9 · 8-11 · 11-6", or nil for records predating set tracking.
+    var setScoreLine: String? {
+        guard let sets, !sets.isEmpty else { return nil }
+        return sets.map(\.scoreLine).joined(separator: " · ")
+    }
+
+    var totalRallies: Int {
+        (sets ?? []).reduce(0) { $0 + $1.rallies.count }
     }
 }
 
@@ -68,6 +83,8 @@ final class ScoreViewModel: ObservableObject {
         static let hapticIntensity = "hapticIntensity"
         static let matchClock = "matchClock"
         static let showMatchTimer = "showMatchTimer"
+        static let completedSets = "completedSets"
+        static let currentSetRallies = "currentSetRallies"
     }
 
     /// 11 and 21 are the official formats; the wider range exists for casual house rules
@@ -195,6 +212,11 @@ final class ScoreViewModel: ObservableObject {
     private var isApplyingRuleChange = false
 
     @Published private(set) var matchRecords: [MatchRecord] = []
+
+    /// Sets already finished in the match currently on the table.
+    @Published private(set) var completedSets: [SetRecord] = []
+    /// Rally-by-rally log of the set being played right now.
+    @Published private(set) var currentSetRallies = RallyLog()
     
     // Voice announcements
     @Published var isVoiceEnabled: Bool = false {
@@ -275,6 +297,15 @@ final class ScoreViewModel: ObservableObject {
         self.startingServerOfSet = Player(rawValue: defaults.string(forKey: DefaultsKey.startingServerOfSet) ?? "") ?? startingServerOfMatch
         self.currentServer = Player(rawValue: defaults.string(forKey: DefaultsKey.currentServer) ?? "") ?? startingServerOfSet
         self.winner = Player(rawValue: defaults.string(forKey: DefaultsKey.winner) ?? "")
+
+        if let data = defaults.data(forKey: DefaultsKey.completedSets),
+           let sets = try? JSONDecoder().decode([SetRecord].self, from: data) {
+            self.completedSets = sets
+        }
+        if let data = defaults.data(forKey: DefaultsKey.currentSetRallies),
+           let rallies = try? JSONDecoder().decode(RallyLog.self, from: data) {
+            self.currentSetRallies = rallies
+        }
         
         // Push initial feedback preferences into the shared managers
         SpeechManager.shared.isVoiceEnabled = self.isVoiceEnabled
@@ -301,6 +332,8 @@ final class ScoreViewModel: ObservableObject {
         let setsPlayedBefore = p1Sets + p2Sets
 
         performStateMutation {
+            currentSetRallies.append(player)
+
             if player == .player1 {
                 p1Score += 1
                 HapticManager.shared.play(.scoreIncrement)
@@ -337,6 +370,8 @@ final class ScoreViewModel: ObservableObject {
 
         saveToHistory()
         performStateMutation {
+            currentSetRallies.removeLastRally(wonBy: player)
+
             if player == .player1 {
                 p1Score -= 1
                 HapticManager.shared.play(.scoreDecrement)
@@ -368,6 +403,8 @@ final class ScoreViewModel: ObservableObject {
             currentServer = previousState.currentServer
             startingServerOfSet = previousState.startingServerOfSet
             winner = previousState.winner
+            completedSets = previousState.completedSets
+            currentSetRallies = previousState.currentSetRallies
         }
         
         HapticManager.shared.play(.scoreDecrement)
@@ -406,6 +443,8 @@ final class ScoreViewModel: ObservableObject {
             winner = nil
             startingServerOfSet = startingServerOfMatch
             currentServer = startingServerOfMatch
+            completedSets.removeAll()
+            currentSetRallies.removeAll()
         }
 
         HapticManager.shared.play(.reset)
@@ -468,6 +507,8 @@ final class ScoreViewModel: ObservableObject {
         let swappedStartingServerOfSet = startingServerOfSet.opponent
         let swappedCurrentServer = currentServer.opponent
         let swappedWinner = winner?.opponent
+        let swappedCompletedSets = completedSets.map { $0.swapped() }
+        let swappedCurrentSetRallies = currentSetRallies.swapped()
 
         performStateMutation {
             // Swap player names and their active set counts and scores so players can change sides on the physical table
@@ -487,6 +528,9 @@ final class ScoreViewModel: ObservableObject {
             startingServerOfSet = swappedStartingServerOfSet
             currentServer = swappedCurrentServer
 
+            completedSets = swappedCompletedSets
+            currentSetRallies = swappedCurrentSetRallies
+
             // Re-map history states to new swap
             history = history.map { snapshot in
                 GameSnapshot(
@@ -496,7 +540,9 @@ final class ScoreViewModel: ObservableObject {
                     p2Sets: snapshot.p1Sets,
                     currentServer: snapshot.currentServer.opponent,
                     startingServerOfSet: snapshot.startingServerOfSet.opponent,
-                    winner: snapshot.winner?.opponent
+                    winner: snapshot.winner?.opponent,
+                    completedSets: snapshot.completedSets.map { $0.swapped() },
+                    currentSetRallies: snapshot.currentSetRallies.swapped()
                 )
             }
         }
@@ -543,28 +589,46 @@ final class ScoreViewModel: ObservableObject {
     // MARK: - Match Rules Engine
     
     private func checkSetEnd() {
-        let setsNeededToWin = setsRequiredToWin
-        
         if isSetWon(pScore: p1Score, oScore: p2Score) {
-            p1Sets += 1
-            if p1Sets >= setsNeededToWin {
-                winner = .player1
-                HapticManager.shared.play(.gameWon)
-            } else {
-                HapticManager.shared.play(.serveChange)
-                SoundManager.shared.play(.setWon)
-                startNewSet(wonBy: .player1)
-            }
+            completeSet(wonBy: .player1)
         } else if isSetWon(pScore: p2Score, oScore: p1Score) {
+            completeSet(wonBy: .player2)
+        }
+    }
+
+    /// Archives the finished set — points and rally log — then either ends the match or opens the
+    /// next set. Both outcomes must archive, so the bookkeeping lives here rather than in
+    /// `startNewSet`, which only runs when play continues.
+    private func completeSet(wonBy setWinner: Player) {
+        if setWinner == .player1 {
+            p1Sets += 1
+        } else {
             p2Sets += 1
-            if p2Sets >= setsNeededToWin {
-                winner = .player2
-                HapticManager.shared.play(.gameWon)
-            } else {
-                HapticManager.shared.play(.serveChange)
-                SoundManager.shared.play(.setWon)
-                startNewSet(wonBy: .player2)
-            }
+        }
+
+        completedSets.append(
+            SetRecord(
+                id: UUID(),
+                // Derived from the set tally rather than completedSets.count: a match that began
+                // on a build without rally tracking has a set count but no archived sets, and
+                // numbering from the array would restart this match's sets at 1.
+                index: p1Sets + p2Sets,
+                p1Points: p1Score,
+                p2Points: p2Score,
+                winner: setWinner,
+                rallies: rallyLog(currentSetRallies, matching: p1Score, p2Score)
+            )
+        )
+        currentSetRallies.removeAll()
+
+        let setsWonByWinner = setWinner == .player1 ? p1Sets : p2Sets
+        if setsWonByWinner >= setsRequiredToWin {
+            winner = setWinner
+            HapticManager.shared.play(.gameWon)
+        } else {
+            HapticManager.shared.play(.serveChange)
+            SoundManager.shared.play(.setWon)
+            startNewSet(wonBy: setWinner)
         }
     }
     
@@ -664,7 +728,9 @@ final class ScoreViewModel: ObservableObject {
             p2Sets: p2Sets,
             currentServer: currentServer,
             startingServerOfSet: startingServerOfSet,
-            winner: winner
+            winner: winner,
+            completedSets: completedSets,
+            currentSetRallies: currentSetRallies
         )
         guard history.last != snapshot else { return }
         history.append(snapshot)
@@ -710,11 +776,45 @@ final class ScoreViewModel: ObservableObject {
             targetScore: recordedTargetScore ?? targetScore,
             bestOfSets: recordedBestOfSets ?? bestOfSets,
             winByTwo: recordedWinByTwo ?? winByTwo,
-            durationSeconds: matchClock.hasStarted ? Int(matchClock.elapsed().rounded()) : nil
+            durationSeconds: matchClock.hasStarted ? Int(matchClock.elapsed().rounded()) : nil,
+            sets: archivedSets
         )
 
         matchRecords.insert(record, at: 0)
         persistMatchRecords()
+    }
+
+    /// Finished sets plus the set still on the table, so an abandoned match keeps its partial
+    /// final set instead of silently dropping those rallies.
+    ///
+    /// A *decided* match has no set on the table: `completeSet` archived the deciding set and
+    /// deliberately left `p1Score`/`p2Score` standing so the celebration overlay can show them.
+    /// Without the `winner == nil` guard those leftover scores would be archived a second time,
+    /// giving every completed match a phantom trailing set.
+    private var archivedSets: [SetRecord] {
+        var sets = completedSets
+
+        if winner == nil, p1Score > 0 || p2Score > 0 || !currentSetRallies.isEmpty {
+            sets.append(
+                SetRecord(
+                    id: UUID(),
+                    index: p1Sets + p2Sets + 1,
+                    p1Points: p1Score,
+                    p2Points: p2Score,
+                    winner: nil,
+                    rallies: rallyLog(currentSetRallies, matching: p1Score, p2Score)
+                )
+            )
+        }
+
+        return sets
+    }
+
+    /// Passes the log through when it accounts for the score, and substitutes an empty one when it
+    /// does not — the detail view then honestly reports "no rally data" rather than plotting a
+    /// momentum curve that disagrees with the set score printed beside it.
+    private func rallyLog(_ log: RallyLog, matching p1Points: Int, _ p2Points: Int) -> RallyLog {
+        log.accountsFor(p1Points: p1Points, p2Points: p2Points) ? log : RallyLog()
     }
 
     private func persistMatchRecords() {
@@ -787,6 +887,14 @@ final class ScoreViewModel: ObservableObject {
 
     private func persistMatchState() {
         let defaults = UserDefaults.standard
+
+        if let data = try? JSONEncoder().encode(completedSets) {
+            defaults.set(data, forKey: DefaultsKey.completedSets)
+        }
+        if let data = try? JSONEncoder().encode(currentSetRallies) {
+            defaults.set(data, forKey: DefaultsKey.currentSetRallies)
+        }
+
         defaults.set(max(0, p1Score), forKey: DefaultsKey.p1Score)
         defaults.set(max(0, p2Score), forKey: DefaultsKey.p2Score)
         defaults.set(max(0, p1Sets), forKey: DefaultsKey.p1Sets)

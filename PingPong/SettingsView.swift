@@ -23,14 +23,8 @@ struct SettingsView: View {
     private let supportURL = URL(string: "https://simo-hue.github.io/Ping-Pong-Counter/#support")
     private let privacyPolicyURL = URL(string: "https://simo-hue.github.io/Ping-Pong-Counter/#privacy")
 
-    private let themesList = [
-        ("Néon Classic", "Rosso & Blu", Color(red: 1.0, green: 0.25, blue: 0.35), Color(red: 0.0, green: 0.7, blue: 1.0)),
-        ("Mint & Royal", "Verde & Viola", Color(red: 0.0, green: 0.85, blue: 0.55), Color(red: 0.55, green: 0.3, blue: 0.9)),
-        ("Solar Flare", "Arancione & Teal", Color(red: 1.0, green: 0.55, blue: 0.0), Color(red: 0.0, green: 0.8, blue: 0.8))
-    ]
-
-    private var selectedThemeIndex: Int {
-        themesList.indices.contains(viewModel.themeIndex) ? viewModel.themeIndex : 0
+    private var selectedTheme: AppTheme {
+        AppTheme.theme(at: viewModel.themeIndex)
     }
     
     var body: some View {
@@ -48,7 +42,7 @@ struct SettingsView: View {
                     Section(header: Text(Localized.playersHeader).foregroundColor(.gray)) {
                         HStack {
                             Image(systemName: "person.fill")
-                                .foregroundColor(themesList[selectedThemeIndex].2)
+                                .foregroundColor(selectedTheme.p1Color)
                             TextField(Localized.p1Placeholder, text: $viewModel.p1Name)
                                 .foregroundColor(.white)
                         }
@@ -56,7 +50,7 @@ struct SettingsView: View {
                         
                         HStack {
                             Image(systemName: "person.fill")
-                                .foregroundColor(themesList[selectedThemeIndex].3)
+                                .foregroundColor(selectedTheme.p2Color)
                             TextField(Localized.p2Placeholder, text: $viewModel.p2Name)
                                 .foregroundColor(.white)
                         }
@@ -73,7 +67,7 @@ struct SettingsView: View {
                                     .font(.system(.body, design: .rounded))
                                     .fontWeight(.bold)
                                     .monospacedDigit()
-                                    .foregroundColor(themesList[selectedThemeIndex].2)
+                                    .foregroundColor(selectedTheme.p1Color)
                             }
                         }
                         .listRowBackground(Color(white: 0.15))
@@ -111,7 +105,7 @@ struct SettingsView: View {
                                         .fontWeight(.semibold)
                                     Spacer()
                                 }
-                                .foregroundColor(themesList[selectedThemeIndex].2)
+                                .foregroundColor(selectedTheme.p1Color)
                             }
                             .listRowBackground(Color(white: 0.15))
                         }
@@ -124,7 +118,7 @@ struct SettingsView: View {
 
                     Section(header: Text(Localized.serveRulesHeader).foregroundColor(.gray)) {
                         Toggle(Localized.winByTwo, isOn: $viewModel.winByTwo)
-                            .tint(themesList[selectedThemeIndex].2)
+                            .tint(selectedTheme.p1Color)
                             .foregroundColor(.white)
                             .listRowBackground(Color(white: 0.15))
 
@@ -142,12 +136,12 @@ struct SettingsView: View {
                     
                     Section(header: Text(Localized.audioHeader).foregroundColor(.gray)) {
                         Toggle(Localized.voiceAssistant, isOn: $viewModel.isVoiceEnabled)
-                            .tint(themesList[selectedThemeIndex].2)
+                            .tint(selectedTheme.p1Color)
                             .foregroundColor(.white)
                             .listRowBackground(Color(white: 0.15))
 
                         Toggle(Localized.soundEffects, isOn: $viewModel.isSoundEnabled)
-                            .tint(themesList[selectedThemeIndex].2)
+                            .tint(selectedTheme.p1Color)
                             .foregroundColor(.white)
                             .listRowBackground(Color(white: 0.15))
 
@@ -166,12 +160,12 @@ struct SettingsView: View {
 
                     Section {
                         Toggle(Localized.keepScreenAwake, isOn: $viewModel.keepScreenAwake)
-                            .tint(themesList[selectedThemeIndex].2)
+                            .tint(selectedTheme.p1Color)
                             .foregroundColor(.white)
                             .listRowBackground(Color(white: 0.15))
 
                         Toggle(Localized.showMatchTimer, isOn: $viewModel.showMatchTimer)
-                            .tint(themesList[selectedThemeIndex].2)
+                            .tint(selectedTheme.p1Color)
                             .foregroundColor(.white)
                             .listRowBackground(Color(white: 0.15))
                     } header: {
@@ -183,8 +177,8 @@ struct SettingsView: View {
 
                     Section(header: Text(Localized.styleHeader).foregroundColor(.gray)) {
                         Picker(selection: $viewModel.themeIndex) {
-                            ForEach(0..<themesList.count, id: \.self) { idx in
-                                Text(themesList[idx].0).tag(idx)
+                            ForEach(AppTheme.all) { theme in
+                                Text("\(theme.name) — \(theme.subtitle)").tag(theme.id)
                             }
                         } label: {
                             Text(Localized.graphicTheme)
@@ -200,10 +194,10 @@ struct SettingsView: View {
                                 .foregroundColor(.white)
                             Spacer()
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(themesList[selectedThemeIndex].2)
+                                .fill(selectedTheme.p1Color)
                                 .frame(width: 40, height: 25)
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(themesList[selectedThemeIndex].3)
+                                .fill(selectedTheme.p2Color)
                                 .frame(width: 40, height: 25)
                         }
                         .listRowBackground(Color(white: 0.15))
@@ -293,7 +287,7 @@ struct SettingsView: View {
                 .padding(.vertical, 8)
                 .foregroundColor(isSelected ? .black : .white.opacity(0.85))
                 .background(
-                    Capsule().fill(isSelected ? themesList[selectedThemeIndex].2 : Color.white.opacity(0.08))
+                    Capsule().fill(isSelected ? selectedTheme.p1Color : Color.white.opacity(0.08))
                 )
         }
         .buttonStyle(.plain)
