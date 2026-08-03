@@ -139,7 +139,7 @@ private struct DynamicIslandExpandedScoreboard: View {
     private var centerSummary: some View {
         VStack(alignment: .center, spacing: 7) {
             VStack(spacing: 1) {
-                Text("SET")
+                Text(WidgetLocalized.setsLabel)
                     .font(.system(size: 8, weight: .black, design: .rounded))
                     .foregroundStyle(.white.opacity(0.42))
 
@@ -154,7 +154,7 @@ private struct DynamicIslandExpandedScoreboard: View {
                 HStack(spacing: 5) {
                     Image(systemName: "trophy.fill")
                         .foregroundStyle(.yellow)
-                    Text("Vince \(winnerName)!")
+                    Text(WidgetLocalized.winnerBanner(name: winnerName))
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                 }
@@ -164,7 +164,7 @@ private struct DynamicIslandExpandedScoreboard: View {
                 HStack(spacing: 8) {
                     Text("\(p1Score)")
                         .foregroundStyle(p1Tint)
-                    Text("MATCH")
+                    Text(WidgetLocalized.matchLabel)
                         .foregroundStyle(.white.opacity(0.45))
                     Text("\(p2Score)")
                         .foregroundStyle(p2Tint)
@@ -224,7 +224,7 @@ private struct DynamicIslandMinimalScore: View {
             .foregroundStyle(.white)
             .lineLimit(1)
             .minimumScaleFactor(0.7)
-            .accessibilityLabel("Score \(p1Score) a \(p2Score)")
+            .accessibilityLabel(WidgetLocalized.scoreAccessibilityLabel(p1Score: p1Score, p2Score: p2Score))
     }
 }
 
@@ -279,7 +279,7 @@ public struct PingPongWidgetLiveActivity: Widget {
                             .shadow(color: .yellow.opacity(0.3), radius: 4)
                         
                         HStack(spacing: 6) {
-                            Text("SET")
+                            Text(WidgetLocalized.setsLabel)
                                 .font(.system(size: 8, weight: .black, design: .rounded))
                                 .foregroundColor(.white.opacity(0.4))
                             
@@ -335,7 +335,7 @@ public struct PingPongWidgetLiveActivity: Widget {
                         Image(systemName: "trophy.fill")
                             .foregroundColor(.yellow)
                             .shadow(color: .yellow.opacity(0.6), radius: 4)
-                        Text("Vince \(winnerName)!")
+                        Text(WidgetLocalized.winnerBanner(name: winnerName))
                             .font(.system(.caption, design: .rounded))
                             .fontWeight(.bold)
                             .foregroundColor(.yellow)

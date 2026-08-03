@@ -9,10 +9,7 @@ struct WatchContentView: View {
     @State private var isShowingResetConfirmation = false
     
     // Check if the current locale is Italian
-    private var isItalian: Bool {
-        let lang = Locale.current.language.languageCode?.identifier ?? "en"
-        return lang.hasPrefix("it")
-    }
+    private var isItalian: Bool { WatchLocalized.isItalian }
     
     var body: some View {
         ZStack {

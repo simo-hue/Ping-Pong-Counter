@@ -4,8 +4,8 @@ import Combine
 final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
     static let shared = WatchConnector()
     
-    @Published var p1Name: String = "Giocatore 1"
-    @Published var p2Name: String = "Giocatore 2"
+    @Published var p1Name: String = WatchLocalized.defaultP1Name
+    @Published var p2Name: String = WatchLocalized.defaultP2Name
     @Published var p1Score: Int = 0
     @Published var p2Score: Int = 0
     @Published var p1Sets: Int = 0
@@ -173,7 +173,6 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
         } else {
             currentServer = (totalServes % 2 == 0) ? "player2" : "player1"
         }
-        winner = ""
     }
 
     private func toggledPlayer(_ player: String) -> String {

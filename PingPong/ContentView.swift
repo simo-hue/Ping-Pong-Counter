@@ -204,7 +204,9 @@ struct ContentView: View {
 
     @ViewBuilder
     private func matchPointBorder(isLandscape: Bool, size: CGSize) -> some View {
-        if let player = matchPointPlayer {
+        // A no-deuce game can put both halves at set point simultaneously (e.g. 10-10 to 11),
+        // so every qualifying half gets its own halo rather than only the first match.
+        ForEach(criticalPointPlayers, id: \.self) { player in
             let isP1 = player == .player1
             let color = isP1 ? currentTheme.p1Color : currentTheme.p2Color
             let fieldSize = CGSize(
@@ -230,15 +232,8 @@ struct ContentView: View {
         }
     }
 
-    private var matchPointPlayer: Player? {
-        guard viewModel.winner == nil else { return nil }
-        if viewModel.p1Score >= viewModel.targetScore - 1 && viewModel.p1Score > viewModel.p2Score {
-            return .player1
-        }
-        if viewModel.p2Score >= viewModel.targetScore - 1 && viewModel.p2Score > viewModel.p1Score {
-            return .player2
-        }
-        return nil
+    private var criticalPointPlayers: [Player] {
+        [Player.player1, .player2].filter { viewModel.isSetPoint(for: $0) }
     }
     
     // MARK: - Player Half Screen Component
@@ -345,8 +340,7 @@ struct ContentView: View {
                 
                 // Server visual indicator (Tappable to manually override serving rights)
                 Button {
-                    viewModel.currentServer = player
-                    HapticManager.shared.play(.serveChange)
+                    viewModel.setServer(to: player)
                 } label: {
                     HStack(spacing: 8) {
                         if isServing {
@@ -754,16 +748,7 @@ struct MatchHistoryView: View {
     }
 
     private var matchHistoryExportText: String {
-        let header = [
-            "Data",
-            "Giocatore 1",
-            "Giocatore 2",
-            "Set",
-            "Punti",
-            "Vincitore",
-            "Stato",
-            "Regole"
-        ].joined(separator: ";")
+        let header = Localized.exportHeaders.map(escaped).joined(separator: ";")
 
         let rows = records.map { record in
             [
@@ -773,8 +758,12 @@ struct MatchHistoryView: View {
                 escaped("\(record.p1Sets)-\(record.p2Sets)"),
                 escaped("\(record.p1Score)-\(record.p2Score)"),
                 escaped(winnerName(for: record) ?? "-"),
-                escaped(record.winner == nil ? Localized.interruptedMatch : Localized.completedMatches),
-                escaped("\(record.targetScore) pt, \(record.bestOfSets) set, \(record.winByTwo ? "deuce" : "no deuce")")
+                escaped(record.winner == nil ? Localized.interruptedMatch : Localized.completedMatch),
+                escaped(Localized.exportRulesSummary(
+                    targetScore: record.targetScore,
+                    bestOfSets: record.bestOfSets,
+                    winByTwo: record.winByTwo
+                ))
             ].joined(separator: ";")
         }
 

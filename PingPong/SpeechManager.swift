@@ -1,5 +1,14 @@
 import AVFoundation
 
+/// Identifies *which* player a set/match point belongs to, alongside the score read from their
+/// own perspective. Passing the identity explicitly stops the announcer from having to guess it
+/// from a score comparison, which cannot disambiguate a tie.
+struct PointAlert {
+    let name: String
+    let ownScore: Int
+    let opponentScore: Int
+}
+
 @MainActor
 final class SpeechManager: NSObject, @preconcurrency AVSpeechSynthesizerDelegate {
     static let shared = SpeechManager()
@@ -91,8 +100,8 @@ final class SpeechManager: NSObject, @preconcurrency AVSpeechSynthesizerDelegate
         p2Name: String,
         p2Score: Int,
         serverName: String,
-        isMatchPoint: Bool,
-        isSetPoint: Bool,
+        matchPoint: PointAlert?,
+        setPoint: PointAlert?,
         isDeuce: Bool,
         winnerName: String?
     ) {
@@ -103,25 +112,33 @@ final class SpeechManager: NSObject, @preconcurrency AVSpeechSynthesizerDelegate
             speak(Localized.speechWinner(name: winner), immediate: true)
             return
         }
-        
-        if isMatchPoint {
-            if p1Score > p2Score {
-                speak(Localized.speechMatchPoint(for: p1Name, p1Score: p1Score, p2Score: p2Score, server: serverName), immediate: true)
-            } else {
-                speak(Localized.speechMatchPoint(for: p2Name, p1Score: p2Score, p2Score: p1Score, server: serverName), immediate: true)
-            }
+
+        if let matchPoint {
+            speak(
+                Localized.speechMatchPoint(
+                    for: matchPoint.name,
+                    p1Score: matchPoint.ownScore,
+                    p2Score: matchPoint.opponentScore,
+                    server: serverName
+                ),
+                immediate: true
+            )
             return
         }
-        
-        if isSetPoint {
-            if p1Score > p2Score {
-                speak(Localized.speechSetPoint(for: p1Name, p1Score: p1Score, p2Score: p2Score, server: serverName), immediate: true)
-            } else {
-                speak(Localized.speechSetPoint(for: p2Name, p1Score: p2Score, p2Score: p1Score, server: serverName), immediate: true)
-            }
+
+        if let setPoint {
+            speak(
+                Localized.speechSetPoint(
+                    for: setPoint.name,
+                    p1Score: setPoint.ownScore,
+                    p2Score: setPoint.opponentScore,
+                    server: serverName
+                ),
+                immediate: true
+            )
             return
         }
-        
+
         if isDeuce {
             speak(Localized.speechDeuce(score: p1Score, server: serverName), immediate: true)
             return

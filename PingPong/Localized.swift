@@ -108,4 +108,51 @@ public struct Localized {
             return "Match over! Winner \(name)!"
         }
     }
+
+    public static func speechUndo(p1Score: Int, p2Score: Int, server: String) -> String {
+        if isItalian {
+            return "Annullato. Punteggio: \(p1Score) a \(p2Score). Batte \(server)."
+        } else {
+            return "Undone. Score: \(p1Score) to \(p2Score). Service \(server)."
+        }
+    }
+
+    public static func speechReset(server: String) -> String {
+        if isItalian {
+            return "Incontro azzerato. Nuova partita! Batte \(server)."
+        } else {
+            return "Match reset. New game! Service \(server)."
+        }
+    }
+
+    public static func speechSideSwap(leftName: String, rightName: String) -> String {
+        if isItalian {
+            return "Cambio campo! Adesso \(leftName) a sinistra e \(rightName) a destra."
+        } else {
+            return "Change ends! Now \(leftName) on the left and \(rightName) on the right."
+        }
+    }
+
+    public static func speechSetEnd(setWinner: String, server: String) -> String {
+        if isItalian {
+            return "Fine set! Set per \(setWinner). Inizio del set successivo. Batte \(server)."
+        } else {
+            return "End of set! Set to \(setWinner). Next set starting. Service \(server)."
+        }
+    }
+
+    // Match History Export Column Headers
+    public static var exportHeaders: [String] {
+        if isItalian {
+            return ["Data", "Giocatore 1", "Giocatore 2", "Set", "Punti", "Vincitore", "Stato", "Regole"]
+        } else {
+            return ["Date", "Player 1", "Player 2", "Sets", "Points", "Winner", "Status", "Rules"]
+        }
+    }
+
+    public static var completedMatch: String { isItalian ? "Completata" : "Completed" }
+    public static func exportRulesSummary(targetScore: Int, bestOfSets: Int, winByTwo: Bool) -> String {
+        let setsLabel = isItalian ? "set" : "sets"
+        return "\(targetScore) pt, \(bestOfSets) \(setsLabel), \(winByTwo ? deuceOn : deuceOff)"
+    }
 }

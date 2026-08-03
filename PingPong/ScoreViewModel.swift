@@ -5,6 +5,10 @@ import Combine
 enum Player: String, Codable {
     case player1
     case player2
+
+    var opponent: Player {
+        self == .player1 ? .player2 : .player1
+    }
 }
 
 struct GameSnapshot: Equatable {
@@ -222,9 +226,10 @@ final class ScoreViewModel: ObservableObject {
     
     func incrementScore(for player: Player) {
         guard winner == nil else { return }
-        
+
+        let wasMatchPoint = isMatchPoint()
         saveToHistory()
-        
+
         performStateMutation {
             if player == .player1 {
                 p1Score += 1
@@ -236,6 +241,11 @@ final class ScoreViewModel: ObservableObject {
 
             checkSetEnd()
             updateServer()
+        }
+
+        // Fire the match-point alert only on the transition into match point, never on every announce.
+        if winner == nil && !wasMatchPoint && isMatchPoint() {
+            HapticManager.shared.play(.matchPoint)
         }
 
         announceState()
@@ -276,10 +286,10 @@ final class ScoreViewModel: ObservableObject {
         }
         
         HapticManager.shared.play(.scoreDecrement)
-        
+
         // Announce score again after undoing
         let serverName = currentServer == .player1 ? p1Name : p2Name
-        SpeechManager.shared.speak("Annullato. Punteggio: \(p1Score) a \(p2Score). Batte \(serverName).")
+        SpeechManager.shared.speak(Localized.speechUndo(p1Score: p1Score, p2Score: p2Score, server: serverName))
     }
     
     func canUndo() -> Bool {
@@ -311,28 +321,56 @@ final class ScoreViewModel: ObservableObject {
         }
 
         HapticManager.shared.play(.reset)
-        SpeechManager.shared.speak("Incontro azzerato. Nuova partita! Batte \(startingServerOfMatch == .player1 ? p1Name : p2Name).")
+        SpeechManager.shared.speak(Localized.speechReset(server: startingServerOfMatch == .player1 ? p1Name : p2Name))
+    }
+
+    /// Manually hands the serve to `player` and rewrites the set's serve baseline so the
+    /// override survives the next `updateServer()` recomputation.
+    func setServer(to player: Player) {
+        guard winner == nil else { return }
+        guard currentServer != player else { return }
+
+        saveToHistory()
+
+        performStateMutation {
+            let interval = isDeuce() ? 1 : max(1, serveRotationInterval)
+            let servesPlayed = (p1Score + p2Score) / interval
+            startingServerOfSet = (servesPlayed % 2 == 0) ? player : player.opponent
+            currentServer = player
+        }
+
+        HapticManager.shared.play(.serveChange)
     }
     
     func swapSides() {
+        // Resolve every mirrored value up front. `startingServerOfMatch`'s own didSet rewrites
+        // startingServerOfSet/currentServer while the match is still at 0-0, so toggling those
+        // afterwards would flip them a second time and land on the wrong server.
+        let swappedNames = (p1: p2Name, p2: p1Name)
+        let swappedScores = (p1: p2Score, p2: p1Score)
+        let swappedSets = (p1: p2Sets, p2: p1Sets)
+        let swappedStartingServerOfMatch = startingServerOfMatch.opponent
+        let swappedStartingServerOfSet = startingServerOfSet.opponent
+        let swappedCurrentServer = currentServer.opponent
+        let swappedWinner = winner?.opponent
+
         performStateMutation {
             // Swap player names and their active set counts and scores so players can change sides on the physical table
-            let tempName = p1Name
-            p1Name = p2Name
-            p2Name = tempName
+            p1Name = swappedNames.p1
+            p2Name = swappedNames.p2
 
-            let tempScore = p1Score
-            p1Score = p2Score
-            p2Score = tempScore
+            p1Score = swappedScores.p1
+            p2Score = swappedScores.p2
 
-            let tempSets = p1Sets
-            p1Sets = p2Sets
-            p2Sets = tempSets
+            p1Sets = swappedSets.p1
+            p2Sets = swappedSets.p2
 
-            // Also swap server states
-            startingServerOfMatch = startingServerOfMatch == .player1 ? .player2 : .player1
-            startingServerOfSet = startingServerOfSet == .player1 ? .player2 : .player1
-            currentServer = currentServer == .player1 ? .player2 : .player1
+            winner = swappedWinner
+
+            // Assign absolute values (never toggle) so the didSet cascade cannot double-apply.
+            startingServerOfMatch = swappedStartingServerOfMatch
+            startingServerOfSet = swappedStartingServerOfSet
+            currentServer = swappedCurrentServer
 
             // Re-map history states to new swap
             history = history.map { snapshot in
@@ -341,15 +379,15 @@ final class ScoreViewModel: ObservableObject {
                     p2Score: snapshot.p1Score,
                     p1Sets: snapshot.p2Sets,
                     p2Sets: snapshot.p1Sets,
-                    currentServer: snapshot.currentServer == .player1 ? .player2 : .player1,
-                    startingServerOfSet: snapshot.startingServerOfSet == .player1 ? .player2 : .player1,
-                    winner: snapshot.winner == nil ? nil : (snapshot.winner == .player1 ? .player2 : .player1)
+                    currentServer: snapshot.currentServer.opponent,
+                    startingServerOfSet: snapshot.startingServerOfSet.opponent,
+                    winner: snapshot.winner?.opponent
                 )
             }
         }
-        
+
         HapticManager.shared.play(.serveChange)
-        SpeechManager.shared.speak("Cambio campo! Adesso \(p1Name) a sinistra e \(p2Name) a destra.")
+        SpeechManager.shared.speak(Localized.speechSideSwap(leftName: p1Name, rightName: p2Name))
     }
 
     func deleteMatchRecords() {
@@ -399,7 +437,7 @@ final class ScoreViewModel: ObservableObject {
                 HapticManager.shared.play(.gameWon)
             } else {
                 HapticManager.shared.play(.serveChange)
-                startNewSet()
+                startNewSet(wonBy: .player1)
             }
         } else if isSetWon(pScore: p2Score, oScore: p1Score) {
             p2Sets += 1
@@ -408,7 +446,7 @@ final class ScoreViewModel: ObservableObject {
                 HapticManager.shared.play(.gameWon)
             } else {
                 HapticManager.shared.play(.serveChange)
-                startNewSet()
+                startNewSet(wonBy: .player2)
             }
         }
     }
@@ -424,46 +462,46 @@ final class ScoreViewModel: ObservableObject {
         return false
     }
     
-    private func startNewSet() {
+    private func startNewSet(wonBy setWinner: Player) {
         p1Score = 0
         p2Score = 0
-        
+
         // ITTF Rule: Alternating initial server for each set
-        let lastSetStarter = startingServerOfSet
-        startingServerOfSet = lastSetStarter == .player1 ? .player2 : .player1
+        startingServerOfSet = startingServerOfSet.opponent
         currentServer = startingServerOfSet
-        
-        SpeechManager.shared.speak("Fine set! Set per \(startingServerOfSet == .player1 ? p2Name : p1Name). Inizio del set successivo. Batte \(currentServer == .player1 ? p1Name : p2Name).")
+
+        let setWinnerName = setWinner == .player1 ? p1Name : p2Name
+        let serverName = currentServer == .player1 ? p1Name : p2Name
+        SpeechManager.shared.speak(Localized.speechSetEnd(setWinner: setWinnerName, server: serverName))
     }
     
     private func isDeuce() -> Bool {
         return p1Score >= (targetScore - 1) && p2Score >= (targetScore - 1)
     }
     
-    private func isMatchPoint() -> Bool {
-        let setsNeededToWin = setsRequiredToWin
-        
-        // P1 is 1 point away from winning match
-        let p1IsSetPoint = p1Score >= (targetScore - 1) && p1Score > p2Score && (p1Score - p2Score >= 1 || !winByTwo)
-        let p1NearMatchWin = (p1Sets == setsNeededToWin - 1) && p1IsSetPoint
-        
-        // P2 is 1 point away from winning match
-        let p2IsSetPoint = p2Score >= (targetScore - 1) && p2Score > p1Score && (p2Score - p1Score >= 1 || !winByTwo)
-        let p2NearMatchWin = (p2Sets == setsNeededToWin - 1) && p2IsSetPoint
-        
-        if p1NearMatchWin || p2NearMatchWin {
-            HapticManager.shared.play(.matchPoint)
-            return true
-        }
-        
-        return false
+    /// True when `pScore` is a single rally away from taking the current set.
+    /// With deuce enabled the player must already lead; without it, reaching `targetScore - 1`
+    /// is enough (so 10-10 in a no-deuce game to 11 is set point for *both* players).
+    private func isSetPointScore(pScore: Int, oScore: Int) -> Bool {
+        guard pScore >= (targetScore - 1) else { return false }
+        return winByTwo ? (pScore - oScore >= 1) : true
     }
-    
-    private func isSetPoint() -> Bool {
-        // Set point represents set completion target point
-        let p1IsSetPoint = p1Score >= (targetScore - 1) && p1Score > p2Score && (p1Score - p2Score >= 1 || !winByTwo)
-        let p2IsSetPoint = p2Score >= (targetScore - 1) && p2Score > p1Score && (p2Score - p1Score >= 1 || !winByTwo)
-        return p1IsSetPoint || p2IsSetPoint
+
+    func isSetPoint(for player: Player) -> Bool {
+        guard winner == nil else { return false }
+        return player == .player1
+            ? isSetPointScore(pScore: p1Score, oScore: p2Score)
+            : isSetPointScore(pScore: p2Score, oScore: p1Score)
+    }
+
+    func isMatchPoint(for player: Player) -> Bool {
+        let setsWon = player == .player1 ? p1Sets : p2Sets
+        return setsWon == setsRequiredToWin - 1 && isSetPoint(for: player)
+    }
+
+    // Pure query — callers own any haptic or speech reaction.
+    private func isMatchPoint() -> Bool {
+        isMatchPoint(for: .player1) || isMatchPoint(for: .player2)
     }
     
     // MARK: - State Callouts
@@ -471,18 +509,32 @@ final class ScoreViewModel: ObservableObject {
     private func announceState() {
         let serverName = currentServer == .player1 ? p1Name : p2Name
         let winnerName = winner == nil ? nil : (winner == .player1 ? p1Name : p2Name)
-        
+
         SpeechManager.shared.announceScore(
             p1Name: p1Name,
             p1Score: p1Score,
             p2Name: p2Name,
             p2Score: p2Score,
             serverName: serverName,
-            isMatchPoint: isMatchPoint(),
-            isSetPoint: isSetPoint(),
-            isDeuce: isDeuce() && p1Score == p2Score,
+            matchPoint: pointAlert { self.isMatchPoint(for: $0) },
+            setPoint: pointAlert { self.isSetPoint(for: $0) },
+            // "Vantaggi"/"Deuce" only exists as a concept when winning by two is required.
+            isDeuce: winByTwo && isDeuce() && p1Score == p2Score,
             winnerName: winnerName
         )
+    }
+
+    /// Names the one player `predicate` singles out. A no-deuce game can leave *both* players a
+    /// single rally from the set, and naming either would be a lie — so an ambiguous tie yields
+    /// nil and the announcer falls through to the neutral "N all" phrasing.
+    private func pointAlert(_ predicate: (Player) -> Bool) -> PointAlert? {
+        let p1Qualifies = predicate(.player1)
+        let p2Qualifies = predicate(.player2)
+        guard p1Qualifies != p2Qualifies else { return nil }
+
+        return p1Qualifies
+            ? PointAlert(name: p1Name, ownScore: p1Score, opponentScore: p2Score)
+            : PointAlert(name: p2Name, ownScore: p2Score, opponentScore: p1Score)
     }
     
     // MARK: - History Snapshotting
