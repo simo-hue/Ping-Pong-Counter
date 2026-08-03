@@ -9,44 +9,65 @@ enum HapticPattern {
     case reset
 }
 
+/// How forcefully the Taptic Engine responds. `.light` keeps the confirmation cues but softens
+/// them for players who find full-strength feedback distracting during a rally.
+enum HapticIntensity: String, CaseIterable, Codable {
+    case off
+    case light
+    case full
+}
+
 final class HapticManager {
     static let shared = HapticManager()
-    
+
+    var intensity: HapticIntensity = .full
+
     private init() {}
-    
+
     func play(_ pattern: HapticPattern) {
+        let intensity = self.intensity
+        guard intensity != .off else { return }
+
         DispatchQueue.main.async {
             switch pattern {
             case .scoreIncrement:
-                let generator = UIImpactFeedbackGenerator(style: .medium)
-                generator.prepare()
-                generator.impactOccurred()
-                
+                Self.impact(intensity == .light ? .light : .medium)
+
             case .scoreDecrement:
-                let generator = UIImpactFeedbackGenerator(style: .light)
-                generator.prepare()
-                generator.impactOccurred()
-                
+                Self.impact(.light)
+
             case .serveChange:
-                let generator = UIImpactFeedbackGenerator(style: .rigid)
-                generator.prepare()
-                generator.impactOccurred()
-                
+                Self.impact(intensity == .light ? .soft : .rigid)
+
             case .matchPoint:
-                let generator = UINotificationFeedbackGenerator()
-                generator.prepare()
-                generator.notificationOccurred(.warning)
-                
+                if intensity == .light {
+                    Self.impact(.light)
+                } else {
+                    Self.notification(.warning)
+                }
+
             case .gameWon:
-                let generator = UINotificationFeedbackGenerator()
-                generator.prepare()
-                generator.notificationOccurred(.success)
-                
+                if intensity == .light {
+                    Self.impact(.medium)
+                } else {
+                    Self.notification(.success)
+                }
+
             case .reset:
-                let generator = UIImpactFeedbackGenerator(style: .heavy)
-                generator.prepare()
-                generator.impactOccurred()
+                Self.impact(intensity == .light ? .light : .heavy)
             }
         }
+    }
+
+    private static func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
+        let generator = UIImpactFeedbackGenerator(style: style)
+        generator.prepare()
+        generator.impactOccurred()
+    }
+
+    private static func notification(_ type: UINotificationFeedbackGenerator.FeedbackType) {
+        let generator = UINotificationFeedbackGenerator()
+        generator.prepare()
+        generator.notificationOccurred(type)
     }
 }

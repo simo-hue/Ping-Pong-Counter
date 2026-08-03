@@ -221,7 +221,8 @@ final class WatchConnector: NSObject, WCSessionDelegate, ObservableObject {
             if let startingServerOfMatch = message["startingServerOfMatch"] as? String { self.startingServerOfMatch = startingServerOfMatch }
             if let startingServerOfSet = message["startingServerOfSet"] as? String { self.startingServerOfSet = startingServerOfSet }
             if let winner = message["winner"] as? String { self.winner = winner }
-            if let targetScore = message["targetScore"] as? Int { self.targetScore = [11, 21].contains(targetScore) ? targetScore : 11 }
+            // Mirrors the phone's custom-target range rather than only the two official formats.
+            if let targetScore = message["targetScore"] as? Int { self.targetScore = (1...99).contains(targetScore) ? targetScore : 11 }
             if let winByTwo = message["winByTwo"] as? Bool { self.winByTwo = winByTwo }
             if let bestOfSets = message["bestOfSets"] as? Int { self.bestOfSets = [1, 3, 5].contains(bestOfSets) ? bestOfSets : 3 }
             if let serveRotationInterval = message["serveRotationInterval"] as? Int {

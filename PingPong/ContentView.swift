@@ -3,6 +3,7 @@ import UIKit
 
 struct ContentView: View {
     @StateObject private var viewModel = ScoreViewModel()
+    @Environment(\.scenePhase) private var scenePhase
     @State private var isShowingSettings = false
     @State private var isShowingMatchHistory = false
     @State private var animateP1 = false
@@ -117,6 +118,16 @@ struct ContentView: View {
                     serverPulseScale = 1.3
                 }
                 viewModel.syncLiveActivity()
+                updateIdleTimer()
+            }
+            .onDisappear {
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
+            .onChange(of: viewModel.keepScreenAwake) { _, _ in
+                updateIdleTimer()
+            }
+            .onChange(of: scenePhase) { _, _ in
+                updateIdleTimer()
             }
             .sheet(isPresented: $isShowingSettings) {
                 SettingsView(viewModel: viewModel)
@@ -150,6 +161,12 @@ struct ContentView: View {
             }
         }
         .ignoresSafeArea()
+    }
+
+    /// Holds the display awake while the scoreboard is on screen and in the foreground — a phone
+    /// propped against the net is useless if it dims between rallies.
+    private func updateIdleTimer() {
+        UIApplication.shared.isIdleTimerDisabled = viewModel.keepScreenAwake && scenePhase == .active
     }
 
     @ViewBuilder
@@ -460,8 +477,39 @@ struct ContentView: View {
         .offset(x: centerOffset.width, y: centerOffset.height)
     }
 
+    /// Live match stopwatch. Only the running case needs a `TimelineView` — once a winner freezes
+    /// the clock the value never changes again, so a static label avoids a pointless 1 Hz redraw
+    /// of the whole control centre.
+    @ViewBuilder
+    private var matchTimerLabel: some View {
+        if viewModel.showMatchTimer && viewModel.matchClock.hasStarted {
+            if viewModel.matchClock.isRunning {
+                TimelineView(.periodic(from: .now, by: 1)) { context in
+                    matchTimerText(asOf: context.date)
+                }
+            } else {
+                matchTimerText(asOf: Date())
+            }
+        }
+    }
+
+    private func matchTimerText(asOf date: Date) -> some View {
+        let elapsed = viewModel.matchClock.formattedElapsed(asOf: date)
+
+        return Text(elapsed)
+            .font(.system(.footnote, design: .rounded))
+            .fontWeight(.bold)
+            .monospacedDigit()
+            .foregroundColor(.white.opacity(viewModel.matchClock.isRunning ? 0.85 : 0.45))
+            .lineLimit(1)
+            .fixedSize()
+            .accessibilityLabel("\(Localized.durationLabel) \(elapsed)")
+    }
+
     @ViewBuilder
     private var controlCenterButtons: some View {
+        matchTimerLabel
+
         Button {
             viewModel.undo()
         } label: {
@@ -759,6 +807,7 @@ struct MatchHistoryView: View {
                 escaped("\(record.p1Score)-\(record.p2Score)"),
                 escaped(winnerName(for: record) ?? "-"),
                 escaped(record.winner == nil ? Localized.interruptedMatch : Localized.completedMatch),
+                escaped(record.formattedDuration ?? "-"),
                 escaped(Localized.exportRulesSummary(
                     targetScore: record.targetScore,
                     bestOfSets: record.bestOfSets,
@@ -891,6 +940,9 @@ private struct MatchRecordRow: View {
                 Spacer(minLength: 0)
                 resultTag("\(Localized.pointsLabel): \(record.p1Score)-\(record.p2Score)", systemImage: "circle.grid.cross.fill")
                 resultTag("\(record.targetScore) pt", systemImage: "flag.checkered")
+                if let duration = record.formattedDuration {
+                    resultTag(duration, systemImage: "stopwatch.fill")
+                }
                 resultTag(record.winByTwo ? Localized.deuceOn : Localized.deuceOff, systemImage: "arrow.left.and.right")
                 Spacer(minLength: 0)
             }

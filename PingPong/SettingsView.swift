@@ -3,7 +3,23 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: ScoreViewModel
-    
+
+    // Points-per-set and match length are staged rather than applied live: every intermediate
+    // value of a stepper would otherwise reset — and archive — the match in progress.
+    @State private var draftTargetScore: Int
+    @State private var draftBestOfSets: Int
+    @State private var isShowingApplyConfirmation = false
+
+    init(viewModel: ScoreViewModel) {
+        self.viewModel = viewModel
+        _draftTargetScore = State(initialValue: viewModel.targetScore)
+        _draftBestOfSets = State(initialValue: viewModel.bestOfSets)
+    }
+
+    private var hasPendingRuleChanges: Bool {
+        draftTargetScore != viewModel.targetScore || draftBestOfSets != viewModel.bestOfSets
+    }
+
     private let supportURL = URL(string: "https://simo-hue.github.io/Ping-Pong-Counter/#support")
     private let privacyPolicyURL = URL(string: "https://simo-hue.github.io/Ping-Pong-Counter/#privacy")
 
@@ -47,19 +63,28 @@ struct SettingsView: View {
                         .listRowBackground(Color(white: 0.15))
                     }
                     
-                    Section(header: Text(Localized.rulesHeader).foregroundColor(.gray)) {
-                        Picker(selection: $viewModel.targetScore) {
-                            Text(Localized.points11).tag(11)
-                            Text(Localized.points21).tag(21)
-                        } label: {
-                            Text(Localized.pointsPerSet)
-                                .foregroundColor(.white)
+                    Section {
+                        Stepper(value: $draftTargetScore, in: ScoreViewModel.validTargetScoreRange) {
+                            HStack {
+                                Text(Localized.pointsPerSet)
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Text("\(draftTargetScore)")
+                                    .font(.system(.body, design: .rounded))
+                                    .fontWeight(.bold)
+                                    .monospacedDigit()
+                                    .foregroundColor(themesList[selectedThemeIndex].2)
+                            }
                         }
-                        .pickerStyle(.menu)
-                        .tint(.white)
                         .listRowBackground(Color(white: 0.15))
-                        
-                        Picker(selection: $viewModel.bestOfSets) {
+
+                        HStack(spacing: 10) {
+                            quickTargetButton(11, label: Localized.points11)
+                            quickTargetButton(21, label: Localized.points21)
+                        }
+                        .listRowBackground(Color(white: 0.15))
+
+                        Picker(selection: $draftBestOfSets) {
                             Text(Localized.singleSet).tag(1)
                             Text(Localized.bestOf3).tag(3)
                             Text(Localized.bestOf5).tag(5)
@@ -70,12 +95,39 @@ struct SettingsView: View {
                         .pickerStyle(.menu)
                         .tint(.white)
                         .listRowBackground(Color(white: 0.15))
-                        
+
+                        if hasPendingRuleChanges {
+                            Button {
+                                if viewModel.hasMeaningfulMatchState {
+                                    isShowingApplyConfirmation = true
+                                } else {
+                                    commitRuleChanges()
+                                }
+                            } label: {
+                                HStack {
+                                    Spacer()
+                                    Image(systemName: "checkmark.circle.fill")
+                                    Text(Localized.applyNewRules)
+                                        .fontWeight(.semibold)
+                                    Spacer()
+                                }
+                                .foregroundColor(themesList[selectedThemeIndex].2)
+                            }
+                            .listRowBackground(Color(white: 0.15))
+                        }
+                    } header: {
+                        Text(Localized.rulesHeader).foregroundColor(.gray)
+                    } footer: {
+                        Text(Localized.pendingRulesFooter)
+                            .foregroundColor(.gray)
+                    }
+
+                    Section(header: Text(Localized.serveRulesHeader).foregroundColor(.gray)) {
                         Toggle(Localized.winByTwo, isOn: $viewModel.winByTwo)
                             .tint(themesList[selectedThemeIndex].2)
                             .foregroundColor(.white)
                             .listRowBackground(Color(white: 0.15))
-                        
+
                         Picker(selection: $viewModel.serveRotationInterval) {
                             Text(Localized.every2Serves).tag(2)
                             Text(Localized.every5Serves).tag(5)
@@ -93,8 +145,42 @@ struct SettingsView: View {
                             .tint(themesList[selectedThemeIndex].2)
                             .foregroundColor(.white)
                             .listRowBackground(Color(white: 0.15))
+
+                        Toggle(Localized.soundEffects, isOn: $viewModel.isSoundEnabled)
+                            .tint(themesList[selectedThemeIndex].2)
+                            .foregroundColor(.white)
+                            .listRowBackground(Color(white: 0.15))
+
+                        Picker(selection: $viewModel.hapticIntensity) {
+                            Text(Localized.hapticsOff).tag(HapticIntensity.off)
+                            Text(Localized.hapticsLight).tag(HapticIntensity.light)
+                            Text(Localized.hapticsFull).tag(HapticIntensity.full)
+                        } label: {
+                            Text(Localized.hapticsLabel)
+                                .foregroundColor(.white)
+                        }
+                        .pickerStyle(.menu)
+                        .tint(.white)
+                        .listRowBackground(Color(white: 0.15))
                     }
-                    
+
+                    Section {
+                        Toggle(Localized.keepScreenAwake, isOn: $viewModel.keepScreenAwake)
+                            .tint(themesList[selectedThemeIndex].2)
+                            .foregroundColor(.white)
+                            .listRowBackground(Color(white: 0.15))
+
+                        Toggle(Localized.showMatchTimer, isOn: $viewModel.showMatchTimer)
+                            .tint(themesList[selectedThemeIndex].2)
+                            .foregroundColor(.white)
+                            .listRowBackground(Color(white: 0.15))
+                    } header: {
+                        Text(Localized.displayHeader).foregroundColor(.gray)
+                    } footer: {
+                        Text(Localized.keepScreenAwakeFooter).foregroundColor(.gray)
+                    }
+
+
                     Section(header: Text(Localized.styleHeader).foregroundColor(.gray)) {
                         Picker(selection: $viewModel.themeIndex) {
                             ForEach(0..<themesList.count, id: \.self) { idx in
@@ -169,7 +255,51 @@ struct SettingsView: View {
                     .fontWeight(.semibold)
                 }
             }
+            .confirmationDialog(
+                Localized.applyRulesConfirmTitle,
+                isPresented: $isShowingApplyConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button(Localized.applyNewRules, role: .destructive) {
+                    commitRuleChanges()
+                }
+                Button(Localized.isItalian ? "Annulla" : "Cancel", role: .cancel) {}
+            } message: {
+                Text(Localized.applyRulesConfirmMessage)
+            }
+            // Re-seed the drafts if the rules change from elsewhere (e.g. a reset) while open.
+            .onChange(of: viewModel.targetScore) { _, newValue in
+                draftTargetScore = newValue
+            }
+            .onChange(of: viewModel.bestOfSets) { _, newValue in
+                draftBestOfSets = newValue
+            }
             .preferredColorScheme(.dark)
         }
+    }
+
+    private func quickTargetButton(_ value: Int, label: String) -> some View {
+        let isSelected = draftTargetScore == value
+
+        return Button {
+            draftTargetScore = value
+        } label: {
+            Text(label)
+                .font(.system(.footnote, design: .rounded))
+                .fontWeight(.bold)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .foregroundColor(isSelected ? .black : .white.opacity(0.85))
+                .background(
+                    Capsule().fill(isSelected ? themesList[selectedThemeIndex].2 : Color.white.opacity(0.08))
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func commitRuleChanges() {
+        viewModel.applyRules(targetScore: draftTargetScore, bestOfSets: draftBestOfSets)
     }
 }

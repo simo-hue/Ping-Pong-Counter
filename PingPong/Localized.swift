@@ -20,11 +20,42 @@ public struct Localized {
     public static var bestOf3: String { isItalian ? "Primo a 3 set" : "First to 3 sets" }
     public static var bestOf5: String { isItalian ? "Primo a 5 set" : "First to 5 sets" }
     public static var winByTwo: String { isItalian ? "Vantaggi (Vinci con 2 punti di scarto)" : "Deuce (Win by 2 points)" }
+    public static var serveRulesHeader: String { isItalian ? "Servizio & Vantaggi" : "Serve & Deuce" }
     public static var serviceRotation: String { isItalian ? "Rotazione Servizio" : "Service Rotation" }
     public static var every2Serves: String { isItalian ? "Ogni 2 servizi" : "Every 2 serves" }
     public static var every5Serves: String { isItalian ? "Ogni 5 servizi" : "Every 5 serves" }
     public static var audioHeader: String { isItalian ? "Audio & Voce" : "Audio & Voice" }
     public static var voiceAssistant: String { isItalian ? "Assistente Vocale (Sintesi Vocale)" : "Voice Assistant (Speech)" }
+    public static var soundEffects: String { isItalian ? "Effetti Sonori" : "Sound Effects" }
+    public static var hapticsLabel: String { isItalian ? "Vibrazione" : "Haptics" }
+    public static var hapticsOff: String { isItalian ? "Disattivata" : "Off" }
+    public static var hapticsLight: String { isItalian ? "Leggera" : "Light" }
+    public static var hapticsFull: String { isItalian ? "Completa" : "Full" }
+    public static var displayHeader: String { isItalian ? "Schermo" : "Display" }
+    public static var keepScreenAwake: String { isItalian ? "Mantieni Schermo Acceso" : "Keep Screen Awake" }
+    public static var keepScreenAwakeFooter: String {
+        isItalian
+            ? "Impedisce il blocco automatico mentre una partita è in corso."
+            : "Prevents auto-lock while a match is in progress."
+    }
+    public static var showMatchTimer: String { isItalian ? "Mostra Cronometro" : "Show Match Timer" }
+
+    // Custom target score
+    public static var applyNewRules: String { isItalian ? "Applica Nuove Regole" : "Apply New Rules" }
+    public static var applyRulesConfirmTitle: String {
+        isItalian ? "Applicare le nuove regole?" : "Apply the new rules?"
+    }
+    public static var applyRulesConfirmMessage: String {
+        isItalian
+            ? "La partita in corso verrà salvata nello storico e azzerata."
+            : "The match in progress will be saved to history and reset."
+    }
+    public static var pendingRulesFooter: String {
+        isItalian
+            ? "Punti e set si applicano a una nuova partita: tocca Applica per confermare."
+            : "Points and sets apply to a new match — tap Apply to confirm."
+    }
+    public static var durationLabel: String { isItalian ? "Durata" : "Duration" }
     public static var styleHeader: String { isItalian ? "Stile & Temi" : "Style & Themes" }
     public static var graphicTheme: String { isItalian ? "Tema Grafico" : "Graphic Theme" }
     public static var themePreview: String { isItalian ? "Anteprima Tema:" : "Theme Preview:" }
@@ -144,9 +175,9 @@ public struct Localized {
     // Match History Export Column Headers
     public static var exportHeaders: [String] {
         if isItalian {
-            return ["Data", "Giocatore 1", "Giocatore 2", "Set", "Punti", "Vincitore", "Stato", "Regole"]
+            return ["Data", "Giocatore 1", "Giocatore 2", "Set", "Punti", "Vincitore", "Stato", "Durata", "Regole"]
         } else {
-            return ["Date", "Player 1", "Player 2", "Sets", "Points", "Winner", "Status", "Rules"]
+            return ["Date", "Player 1", "Player 2", "Sets", "Points", "Winner", "Status", "Duration", "Rules"]
         }
     }
 

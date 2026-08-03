@@ -34,6 +34,13 @@ struct MatchRecord: Identifiable, Codable, Equatable {
     let targetScore: Int
     let bestOfSets: Int
     let winByTwo: Bool
+    /// Optional so records written by 1.0.1 — which had no clock — still decode.
+    let durationSeconds: Int?
+
+    var formattedDuration: String? {
+        guard let durationSeconds, durationSeconds > 0 else { return nil }
+        return MatchClock.formatted(TimeInterval(durationSeconds))
+    }
 }
 
 @MainActor
@@ -56,22 +63,31 @@ final class ScoreViewModel: ObservableObject {
         static let themeIndex = "themeIndex"
         static let isVoiceEnabled = "isVoiceEnabled"
         static let matchRecords = "matchRecords"
+        static let keepScreenAwake = "keepScreenAwake"
+        static let isSoundEnabled = "isSoundEnabled"
+        static let hapticIntensity = "hapticIntensity"
+        static let matchClock = "matchClock"
+        static let showMatchTimer = "showMatchTimer"
     }
 
-    private static let validTargetScores = Set([11, 21])
+    /// 11 and 21 are the official formats; the wider range exists for casual house rules
+    /// (first to 5, first to 7, marathon games to 51).
+    static let validTargetScoreRange = 1...99
     private static let validBestOfSets = Set([1, 3, 5])
     private static let validServeRotationIntervals = Set([2, 5])
     private static let validThemeRange = 0...2
 
     // Game Rules Settings
-    @Published var targetScore: Int = 11 { // 11 or 21 standard
+    @Published var targetScore: Int = 11 { // 11 or 21 standard, or a custom house rule
         didSet {
-            guard Self.validTargetScores.contains(targetScore) else {
+            guard Self.validTargetScoreRange.contains(targetScore) else {
                 targetScore = oldValue
                 return
             }
+            guard targetScore != oldValue else { return }
             guard hasFinishedInitialLoad else { return }
             UserDefaults.standard.set(targetScore, forKey: DefaultsKey.targetScore)
+            guard !isApplyingRuleChange else { return }
             resetMatch(recordedTargetScore: oldValue)
         }
     }
@@ -88,8 +104,10 @@ final class ScoreViewModel: ObservableObject {
                 bestOfSets = oldValue
                 return
             }
+            guard bestOfSets != oldValue else { return }
             guard hasFinishedInitialLoad else { return }
             UserDefaults.standard.set(bestOfSets, forKey: DefaultsKey.bestOfSets)
+            guard !isApplyingRuleChange else { return }
             resetMatch(recordedBestOfSets: oldValue)
         }
     }
@@ -172,6 +190,9 @@ final class ScoreViewModel: ObservableObject {
     private var history: [GameSnapshot] = []
     private var isApplyingStateBatch = false
     private var hasFinishedInitialLoad = false
+    /// Set while `applyRules` writes several rule properties, so their individual didSet hooks
+    /// persist the value but defer the single match reset to the caller.
+    private var isApplyingRuleChange = false
 
     @Published private(set) var matchRecords: [MatchRecord] = []
     
@@ -183,11 +204,48 @@ final class ScoreViewModel: ObservableObject {
             SpeechManager.shared.isVoiceEnabled = isVoiceEnabled
         }
     }
-    
+
+    // Scoreboard sound effects (independent of the spoken umpire)
+    @Published var isSoundEnabled: Bool = false {
+        didSet {
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(isSoundEnabled, forKey: DefaultsKey.isSoundEnabled)
+            SoundManager.shared.isSoundEnabled = isSoundEnabled
+        }
+    }
+
+    @Published var hapticIntensity: HapticIntensity = .full {
+        didSet {
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(hapticIntensity.rawValue, forKey: DefaultsKey.hapticIntensity)
+            HapticManager.shared.intensity = hapticIntensity
+        }
+    }
+
+    /// Keeps the display lit while a match is on the table — the phone propped by the net is
+    /// useless if it sleeps between rallies.
+    @Published var keepScreenAwake: Bool = true {
+        didSet {
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(keepScreenAwake, forKey: DefaultsKey.keepScreenAwake)
+        }
+    }
+
+    // Match stopwatch
+    @Published private(set) var matchClock = MatchClock()
+
+    @Published var showMatchTimer: Bool = true {
+        didSet {
+            guard hasFinishedInitialLoad else { return }
+            UserDefaults.standard.set(showMatchTimer, forKey: DefaultsKey.showMatchTimer)
+        }
+    }
+
     init() {
         // Load persisted settings from UserDefaults or use native defaults
         let defaults = UserDefaults.standard
-        self.targetScore = Self.validTargetScores.contains(defaults.integer(forKey: DefaultsKey.targetScore)) ? defaults.integer(forKey: DefaultsKey.targetScore) : 11
+        let savedTargetScore = defaults.integer(forKey: DefaultsKey.targetScore)
+        self.targetScore = Self.validTargetScoreRange.contains(savedTargetScore) ? savedTargetScore : 11
         self.winByTwo = defaults.object(forKey: DefaultsKey.winByTwo) as? Bool ?? true
         self.bestOfSets = Self.validBestOfSets.contains(defaults.integer(forKey: DefaultsKey.bestOfSets)) ? defaults.integer(forKey: DefaultsKey.bestOfSets) : 3
         self.serveRotationInterval = Self.validServeRotationIntervals.contains(defaults.integer(forKey: DefaultsKey.serveRotationInterval)) ? defaults.integer(forKey: DefaultsKey.serveRotationInterval) : 2
@@ -196,7 +254,12 @@ final class ScoreViewModel: ObservableObject {
         let savedThemeIndex = defaults.object(forKey: DefaultsKey.themeIndex) as? Int ?? 0
         self.themeIndex = Self.validThemeRange.contains(savedThemeIndex) ? savedThemeIndex : 0
         self.isVoiceEnabled = defaults.object(forKey: DefaultsKey.isVoiceEnabled) as? Bool ?? false
+        self.isSoundEnabled = defaults.object(forKey: DefaultsKey.isSoundEnabled) as? Bool ?? false
+        self.keepScreenAwake = defaults.object(forKey: DefaultsKey.keepScreenAwake) as? Bool ?? true
+        self.showMatchTimer = defaults.object(forKey: DefaultsKey.showMatchTimer) as? Bool ?? true
+        self.hapticIntensity = HapticIntensity(rawValue: defaults.string(forKey: DefaultsKey.hapticIntensity) ?? "") ?? .full
         self.matchRecords = Self.loadMatchRecords(from: defaults)
+        self.matchClock = Self.loadMatchClock(from: defaults)
 
         if let rawServer = defaults.string(forKey: DefaultsKey.startingServerOfMatch),
            let savedServer = Player(rawValue: rawServer) {
@@ -213,9 +276,11 @@ final class ScoreViewModel: ObservableObject {
         self.currentServer = Player(rawValue: defaults.string(forKey: DefaultsKey.currentServer) ?? "") ?? startingServerOfSet
         self.winner = Player(rawValue: defaults.string(forKey: DefaultsKey.winner) ?? "")
         
-        // Push initial speech commentary status
+        // Push initial feedback preferences into the shared managers
         SpeechManager.shared.isVoiceEnabled = self.isVoiceEnabled
-        
+        SoundManager.shared.isSoundEnabled = self.isSoundEnabled
+        HapticManager.shared.intensity = self.hapticIntensity
+
         WatchConnector.shared.configure(with: self)
         hasFinishedInitialLoad = true
         persistMatchState()
@@ -230,6 +295,11 @@ final class ScoreViewModel: ObservableObject {
         let wasMatchPoint = isMatchPoint()
         saveToHistory()
 
+        // The clock measures play, so it starts on the first rally won rather than on app launch.
+        startClockIfNeeded()
+
+        let setsPlayedBefore = p1Sets + p2Sets
+
         performStateMutation {
             if player == .player1 {
                 p1Score += 1
@@ -241,6 +311,15 @@ final class ScoreViewModel: ObservableObject {
 
             checkSetEnd()
             updateServer()
+        }
+
+        if winner != nil {
+            stopClock()
+            SoundManager.shared.play(.matchWon)
+        } else if p1Sets + p2Sets == setsPlayedBefore {
+            // A set-winning rally already played `.setWon` inside checkSetEnd; layering the
+            // ordinary point blip on top of it would overlap two system sounds on one tap.
+            SoundManager.shared.play(.point)
         }
 
         // Fire the match-point alert only on the transition into match point, never on every announce.
@@ -269,12 +348,18 @@ final class ScoreViewModel: ObservableObject {
             updateServer()
         }
 
+        SoundManager.shared.play(.undo)
         announceState()
     }
-    
+
     func undo() {
         guard let previousState = history.popLast() else { return }
-        
+
+        // Rewinding past the winning rally puts the match back in play, so the clock runs again.
+        if previousState.winner == nil && winner != nil {
+            resumeClock()
+        }
+
         performStateMutation {
             p1Score = previousState.p1Score
             p2Score = previousState.p2Score
@@ -286,6 +371,7 @@ final class ScoreViewModel: ObservableObject {
         }
         
         HapticManager.shared.play(.scoreDecrement)
+        SoundManager.shared.play(.undo)
 
         // Announce score again after undoing
         let serverName = currentServer == .player1 ? p1Name : p2Name
@@ -309,7 +395,9 @@ final class ScoreViewModel: ObservableObject {
             )
             saveToHistory()
         }
-        
+
+        resetClock()
+
         performStateMutation {
             p1Score = 0
             p2Score = 0
@@ -322,6 +410,32 @@ final class ScoreViewModel: ObservableObject {
 
         HapticManager.shared.play(.reset)
         SpeechManager.shared.speak(Localized.speechReset(server: startingServerOfMatch == .player1 ? p1Name : p2Name))
+    }
+
+    /// Commits a staged rule change as one operation. Applying the two properties separately
+    /// would reset — and therefore archive — the running match twice, littering the history with
+    /// a phantom record for every step of a stepper.
+    func applyRules(targetScore newTargetScore: Int, bestOfSets newBestOfSets: Int) {
+        let clampedTargetScore = min(
+            max(newTargetScore, Self.validTargetScoreRange.lowerBound),
+            Self.validTargetScoreRange.upperBound
+        )
+        let resolvedBestOfSets = Self.validBestOfSets.contains(newBestOfSets) ? newBestOfSets : bestOfSets
+
+        guard clampedTargetScore != targetScore || resolvedBestOfSets != bestOfSets else { return }
+
+        let previousTargetScore = targetScore
+        let previousBestOfSets = bestOfSets
+
+        isApplyingRuleChange = true
+        targetScore = clampedTargetScore
+        bestOfSets = resolvedBestOfSets
+        isApplyingRuleChange = false
+
+        resetMatch(
+            recordedTargetScore: previousTargetScore,
+            recordedBestOfSets: previousBestOfSets
+        )
     }
 
     /// Manually hands the serve to `player` and rewrites the set's serve baseline so the
@@ -340,6 +454,7 @@ final class ScoreViewModel: ObservableObject {
         }
 
         HapticManager.shared.play(.serveChange)
+        SoundManager.shared.play(.serveChange)
     }
     
     func swapSides() {
@@ -437,6 +552,7 @@ final class ScoreViewModel: ObservableObject {
                 HapticManager.shared.play(.gameWon)
             } else {
                 HapticManager.shared.play(.serveChange)
+                SoundManager.shared.play(.setWon)
                 startNewSet(wonBy: .player1)
             }
         } else if isSetWon(pScore: p2Score, oScore: p1Score) {
@@ -446,6 +562,7 @@ final class ScoreViewModel: ObservableObject {
                 HapticManager.shared.play(.gameWon)
             } else {
                 HapticManager.shared.play(.serveChange)
+                SoundManager.shared.play(.setWon)
                 startNewSet(wonBy: .player2)
             }
         }
@@ -558,7 +675,7 @@ final class ScoreViewModel: ObservableObject {
         }
     }
     
-    private var hasMeaningfulMatchState: Bool {
+    var hasMeaningfulMatchState: Bool {
         p1Score != 0 || p2Score != 0 || p1Sets != 0 || p2Sets != 0 || winner != nil
     }
 
@@ -592,7 +709,8 @@ final class ScoreViewModel: ObservableObject {
             winner: winner,
             targetScore: recordedTargetScore ?? targetScore,
             bestOfSets: recordedBestOfSets ?? bestOfSets,
-            winByTwo: recordedWinByTwo ?? winByTwo
+            winByTwo: recordedWinByTwo ?? winByTwo,
+            durationSeconds: matchClock.hasStarted ? Int(matchClock.elapsed().rounded()) : nil
         )
 
         matchRecords.insert(record, at: 0)
@@ -622,6 +740,49 @@ final class ScoreViewModel: ObservableObject {
     func resyncExternalState() {
         guard hasFinishedInitialLoad else { return }
         syncWithWatch()
+    }
+
+    // MARK: - Match Clock
+
+    private func startClockIfNeeded() {
+        guard !matchClock.hasStarted else { return }
+        matchClock.startIfNeeded()
+        persistMatchClock()
+    }
+
+    private func stopClock() {
+        guard matchClock.isRunning else { return }
+        matchClock.stop()
+        persistMatchClock()
+    }
+
+    private func resumeClock() {
+        guard matchClock.hasStarted, !matchClock.isRunning else { return }
+        matchClock.resume()
+        persistMatchClock()
+    }
+
+    private func resetClock() {
+        guard matchClock.hasStarted else { return }
+        matchClock.reset()
+        persistMatchClock()
+    }
+
+    private func persistMatchClock() {
+        let defaults = UserDefaults.standard
+        guard let data = try? JSONEncoder().encode(matchClock) else {
+            defaults.removeObject(forKey: DefaultsKey.matchClock)
+            return
+        }
+        defaults.set(data, forKey: DefaultsKey.matchClock)
+    }
+
+    private static func loadMatchClock(from defaults: UserDefaults) -> MatchClock {
+        guard let data = defaults.data(forKey: DefaultsKey.matchClock),
+              let clock = try? JSONDecoder().decode(MatchClock.self, from: data) else {
+            return MatchClock()
+        }
+        return clock
     }
 
     private func persistMatchState() {
