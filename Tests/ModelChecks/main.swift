@@ -283,6 +283,49 @@ check("duplicate names would both claim an unlinked record",
         + "/\(MatchStatistics.stats(for: clash, in: [unlinked]).matchesPlayed)",
       "1/1")
 
+// MARK: - Dashboard aggregates
+
+print("\n── Dashboard aggregates ──")
+
+let day0 = Date(timeIntervalSince1970: 1_700_000_000)          // fixed so the window is deterministic
+let dayBefore = day0.addingTimeInterval(-86_400)
+let weekBefore = day0.addingTimeInterval(-6 * 86_400)
+var utc = Calendar(identifier: .gregorian)
+utc.timeZone = TimeZone(secondsFromGMT: 0)!
+
+let dated: [MatchRecord] = [
+    playMatch(setsToWin: 2, [(11, 5), (11, 7)], p1: simo, p2: ale, date: day0),
+    playMatch(setsToWin: 2, [(11, 4), (11, 9)], p1: simo, p2: gio, date: day0),
+    playMatch(setsToWin: 2, [(5, 11), (7, 11)], p1: simo, p2: ale, date: dayBefore),
+    playMatch(setsToWin: 2, [(11, 6), (8, 11), (11, 9)], p1: ale, p2: simo, date: weekBefore),
+]
+
+let window = MatchStatistics.activity(in: dated, days: 7, endingOn: day0, calendar: utc)
+check("activity window has one entry per day", "\(window.count)", "7")
+check("activity is oldest-first with gaps preserved",
+      window.map { "\($0.matches)" }.joined(separator: ","), "1,0,0,0,0,1,2")
+check("activity ignores matches outside the window",
+      "\(MatchStatistics.activity(in: dated, days: 2, endingOn: day0, calendar: utc).map(\.matches))", "[1, 2]")
+check("a zero-day window is empty",
+      "\(MatchStatistics.activity(in: dated, days: 0, endingOn: day0, calendar: utc).count)", "0")
+
+let board = MatchStatistics.leaderboard(roster: roster + [stranger], records: dated)
+check("leaderboard excludes players who never played", "\(board.count)", "3")
+// Ale 2-1, Simo 2-2, Gio 0-1 across the four dated matches.
+check("leaderboard is ordered by win rate",
+      board.map { "\($0.player.name) \($0.stats.winRatePercentText)" }.joined(separator: " | "),
+      "Ale 67% | Simo 50% | Gio 0%")
+
+let tallies = MatchStatistics.setScoreDistribution(in: dated)
+check("set-score distribution folds both orientations together",
+      tallies.map { "\($0.label)×\($0.count)" }.joined(separator: ","), "2-0×3,2-1×1")
+
+let totals = MatchStatistics.overallTotals(in: dated)
+check("totals count every match", "\(totals.matches)/\(totals.completed)", "4/4")
+check("rallies are summed across sets", "\(totals.rallies)", "\(dated.reduce(0) { $0 + $1.totalRallies })")
+check("untimed matches do not drag the average down",
+      "\(totals.timedMatches) \(totals.averageSeconds)", "0 0")
+
 // MARK: - Result
 
 print("")

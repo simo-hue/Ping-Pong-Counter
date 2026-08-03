@@ -32,6 +32,8 @@
 		FB793DE97246324A40064C9C /* RosterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A94DB38CEEC7AD94DD9605 /* RosterView.swift */; };
 		0C868D0691DBC8E51CDE47F1 /* PlayerStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DAF13FC4DEED98FAB0D95E6 /* PlayerStatsView.swift */; };
 		5ED9BA0DA6A377FBBCE36474 /* MatchRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312920883E35F7E396B20EAB /* MatchRecord.swift */; };
+		6ED93C59FEA449DBD2852724 /* StatsAggregates.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5AA09F01976064B09B9010A /* StatsAggregates.swift */; };
+		FD35F9CD2171078F3395964C /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D77C6C89BAE11AF0E6E0ED /* StatsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,6 +105,8 @@
 		96A94DB38CEEC7AD94DD9605 /* RosterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterView.swift; sourceTree = "<group>"; };
 		0DAF13FC4DEED98FAB0D95E6 /* PlayerStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatsView.swift; sourceTree = "<group>"; };
 		312920883E35F7E396B20EAB /* MatchRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchRecord.swift; sourceTree = "<group>"; };
+		A5AA09F01976064B09B9010A /* StatsAggregates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsAggregates.swift; sourceTree = "<group>"; };
+		31D77C6C89BAE11AF0E6E0ED /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -180,6 +184,8 @@
 		D60000132C1E000200000001 /* PingPong */ = {
 			isa = PBXGroup;
 			children = (
+				31D77C6C89BAE11AF0E6E0ED /* StatsView.swift */,
+				A5AA09F01976064B09B9010A /* StatsAggregates.swift */,
 				312920883E35F7E396B20EAB /* MatchRecord.swift */,
 				0DAF13FC4DEED98FAB0D95E6 /* PlayerStatsView.swift */,
 				96A94DB38CEEC7AD94DD9605 /* RosterView.swift */,
@@ -361,6 +367,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FD35F9CD2171078F3395964C /* StatsView.swift in Sources */,
+				6ED93C59FEA449DBD2852724 /* StatsAggregates.swift in Sources */,
 				5ED9BA0DA6A377FBBCE36474 /* MatchRecord.swift in Sources */,
 				0C868D0691DBC8E51CDE47F1 /* PlayerStatsView.swift in Sources */,
 				FB793DE97246324A40064C9C /* RosterView.swift in Sources */,

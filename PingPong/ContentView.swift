@@ -663,6 +663,14 @@ struct MatchHistoryView: View {
                         }
 
                         Section {
+                            NavigationLink {
+                                StatsView(viewModel: viewModel)
+                            } label: {
+                                Label(Localized.statsTitle, systemImage: "chart.line.uptrend.xyaxis")
+                                    .foregroundColor(.white)
+                            }
+                            .listRowBackground(Color(white: 0.15))
+
                             actionsRow
                                 .listRowBackground(Color(white: 0.15))
                         }

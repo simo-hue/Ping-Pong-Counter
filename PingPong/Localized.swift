@@ -123,6 +123,36 @@ public struct Localized {
             ? "Nessuno scontro diretto: entrambi i giocatori devono essere salvati nei giocatori."
             : "No head-to-head yet — both players must be saved in the roster."
     }
+    // Statistics dashboard
+    public static var statsTitle: String { isItalian ? "Statistiche" : "Statistics" }
+    public static var totalRalliesLabel: String { isItalian ? "Scambi totali" : "Total rallies" }
+    public static var averageDurationLabel: String { isItalian ? "Durata media" : "Average duration" }
+    public static var activityChartTitle: String { isItalian ? "Attività" : "Activity" }
+    public static func activityChartSubtitle(days: Int) -> String {
+        isItalian ? "Partite giocate negli ultimi \(days) giorni" : "Matches played over the last \(days) days"
+    }
+    public static var dayAxisLabel: String { isItalian ? "Giorno" : "Day" }
+    public static var matchesAxisLabel: String { isItalian ? "Partite" : "Matches" }
+    public static var leaderboardTitle: String { isItalian ? "Classifica" : "Leaderboard" }
+    public static var leaderboardSubtitle: String {
+        isItalian ? "Percentuale di vittorie sulle partite concluse" : "Win rate across decided matches"
+    }
+    public static var pointsChartTitle: String { isItalian ? "Punti Fatti e Subiti" : "Points For and Against" }
+    public static var pointsChartSubtitle: String {
+        isItalian ? "Somma di tutti i set giocati" : "Summed across every set played"
+    }
+    public static var pointsForLabel: String { isItalian ? "Fatti" : "For" }
+    public static var pointsAgainstLabel: String { isItalian ? "Subiti" : "Against" }
+    public static var finishChartTitle: String { isItalian ? "Come Finiscono le Partite" : "How Matches Finish" }
+    public static var finishChartSubtitle: String {
+        isItalian ? "Punteggio finale in set, dal lato di chi vince" : "Final set score, from the winner's side"
+    }
+    public static var statsNeedRoster: String {
+        isItalian
+            ? "Salva i giocatori nella rosa per vedere classifica e punti."
+            : "Save players to the roster to see the leaderboard and points."
+    }
+
     public static var noMatchesForPlayer: String {
         isItalian ? "Nessuna partita registrata per questo giocatore." : "No matches recorded for this player yet."
     }
