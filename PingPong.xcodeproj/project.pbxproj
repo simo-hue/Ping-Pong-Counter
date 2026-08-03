@@ -37,6 +37,11 @@
 		D0F34EE11A2C4BFB1E5109D1 /* DoublesLineup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6323836537294B73BD08F7F9 /* DoublesLineup.swift */; };
 		AA6457626CF077CE4319CB69 /* DoublesSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0547B03605021680A9441055 /* DoublesSetupView.swift */; };
 		CA3A79B8DA6C3917A475AF2F /* DoublesRosterStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDAB47C7AA23C5E7FE4FF43 /* DoublesRosterStrip.swift */; };
+		A2A279621F767263880BA937 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A044F00CE9DD88850DF7D7 /* SharedStore.swift */; };
+		E2F3697BE64D09266F96446A /* ScoreActionIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DC178A58BCB850BCC7656C7 /* ScoreActionIntent.swift */; };
+		0D6DF8FB4609AB65DA6DF398 /* ScoreActionIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DC178A58BCB850BCC7656C7 /* ScoreActionIntent.swift */; };
+		412798FFAF8187068C24BBF9 /* ShareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F112F9944DDCEE082357BD5 /* ShareCardView.swift */; };
+		24291A59BD72DA032667A808 /* PersistenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915F62DCF34D221D12B1EFD0 /* PersistenceKeys.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +118,10 @@
 		6323836537294B73BD08F7F9 /* DoublesLineup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublesLineup.swift; sourceTree = "<group>"; };
 		0547B03605021680A9441055 /* DoublesSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublesSetupView.swift; sourceTree = "<group>"; };
 		4FDAB47C7AA23C5E7FE4FF43 /* DoublesRosterStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublesRosterStrip.swift; sourceTree = "<group>"; };
+		35A044F00CE9DD88850DF7D7 /* SharedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStore.swift; sourceTree = "<group>"; };
+		7DC178A58BCB850BCC7656C7 /* ScoreActionIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreActionIntent.swift; sourceTree = "<group>"; };
+		8F112F9944DDCEE082357BD5 /* ShareCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardView.swift; sourceTree = "<group>"; };
+		915F62DCF34D221D12B1EFD0 /* PersistenceKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceKeys.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -190,6 +199,10 @@
 		D60000132C1E000200000001 /* PingPong */ = {
 			isa = PBXGroup;
 			children = (
+				915F62DCF34D221D12B1EFD0 /* PersistenceKeys.swift */,
+				8F112F9944DDCEE082357BD5 /* ShareCardView.swift */,
+				7DC178A58BCB850BCC7656C7 /* ScoreActionIntent.swift */,
+				35A044F00CE9DD88850DF7D7 /* SharedStore.swift */,
 				4FDAB47C7AA23C5E7FE4FF43 /* DoublesRosterStrip.swift */,
 				0547B03605021680A9441055 /* DoublesSetupView.swift */,
 				6323836537294B73BD08F7F9 /* DoublesLineup.swift */,
@@ -368,6 +381,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D6DF8FB4609AB65DA6DF398 /* ScoreActionIntent.swift in Sources */,
 				2437AAFF2FBC6F9D0067E999 /* PingPongAttributes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -376,6 +390,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				24291A59BD72DA032667A808 /* PersistenceKeys.swift in Sources */,
+				412798FFAF8187068C24BBF9 /* ShareCardView.swift in Sources */,
+				E2F3697BE64D09266F96446A /* ScoreActionIntent.swift in Sources */,
+				A2A279621F767263880BA937 /* SharedStore.swift in Sources */,
 				CA3A79B8DA6C3917A475AF2F /* DoublesRosterStrip.swift in Sources */,
 				AA6457626CF077CE4319CB69 /* DoublesSetupView.swift in Sources */,
 				D0F34EE11A2C4BFB1E5109D1 /* DoublesLineup.swift in Sources */,

@@ -2,7 +2,9 @@ import SwiftUI
 import UIKit
 
 struct ContentView: View {
-    @StateObject private var viewModel = ScoreViewModel()
+    // Shared rather than owned: a Live Activity button's intent performs against the same
+    // instance, in the app's process.
+    @ObservedObject private var viewModel = ScoreViewModel.shared
     @Environment(\.scenePhase) private var scenePhase
     @State private var isShowingSettings = false
     @State private var isShowingMatchHistory = false

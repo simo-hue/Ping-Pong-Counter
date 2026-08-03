@@ -1,4 +1,5 @@
 import Foundation
+import WidgetKit
 import Combine
 @preconcurrency import WatchConnectivity
 
@@ -20,38 +21,13 @@ struct GameSnapshot: Equatable {
 }
 
 @MainActor
-final class ScoreViewModel: ObservableObject {
-    private enum DefaultsKey {
-        static let targetScore = "targetScore"
-        static let winByTwo = "winByTwo"
-        static let bestOfSets = "bestOfSets"
-        static let serveRotationInterval = "serveRotationInterval"
-        static let p1Name = "p1Name"
-        static let p2Name = "p2Name"
-        static let startingServerOfMatch = "startingServerOfMatch"
-        static let startingServerOfSet = "startingServerOfSet"
-        static let currentServer = "currentServer"
-        static let p1Score = "p1Score"
-        static let p2Score = "p2Score"
-        static let p1Sets = "p1Sets"
-        static let p2Sets = "p2Sets"
-        static let winner = "winner"
-        static let themeIndex = "themeIndex"
-        static let isVoiceEnabled = "isVoiceEnabled"
-        static let matchRecords = "matchRecords"
-        static let keepScreenAwake = "keepScreenAwake"
-        static let isSoundEnabled = "isSoundEnabled"
-        static let hapticIntensity = "hapticIntensity"
-        static let matchClock = "matchClock"
-        static let showMatchTimer = "showMatchTimer"
-        static let completedSets = "completedSets"
-        static let currentSetRallies = "currentSetRallies"
-        static let isDoubles = "isDoubles"
-        static let doublesLineup = "doublesLineup"
-        static let roster = "roster"
-        static let p1RosterId = "p1RosterId"
-        static let p2RosterId = "p2RosterId"
-    }
+final class ScoreViewModel: ObservableObject, ScoreActionHandling {
+    /// One instance for the whole app. A Live Activity button performs its intent in the app's
+    /// process, so the intent needs a view model to reach that is not owned by a particular view.
+    static let shared = ScoreViewModel()
+
+    /// Declared once in PersistenceKeys so the App Group migration cannot miss a key.
+    private typealias DefaultsKey = PersistenceKeys
 
     /// 11 and 21 are the official formats; the wider range exists for casual house rules
     /// (first to 5, first to 7, marathon games to 51).
@@ -69,7 +45,7 @@ final class ScoreViewModel: ObservableObject {
             }
             guard targetScore != oldValue else { return }
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(targetScore, forKey: DefaultsKey.targetScore)
+            SharedStore.defaults.set(targetScore, forKey: DefaultsKey.targetScore)
             guard !isApplyingRuleChange else { return }
             resetMatch(recordedTargetScore: oldValue)
         }
@@ -77,7 +53,7 @@ final class ScoreViewModel: ObservableObject {
     @Published var winByTwo: Bool = true {
         didSet {
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(winByTwo, forKey: DefaultsKey.winByTwo)
+            SharedStore.defaults.set(winByTwo, forKey: DefaultsKey.winByTwo)
             syncWithWatch()
         }
     }
@@ -89,7 +65,7 @@ final class ScoreViewModel: ObservableObject {
             }
             guard bestOfSets != oldValue else { return }
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(bestOfSets, forKey: DefaultsKey.bestOfSets)
+            SharedStore.defaults.set(bestOfSets, forKey: DefaultsKey.bestOfSets)
             guard !isApplyingRuleChange else { return }
             resetMatch(recordedBestOfSets: oldValue)
         }
@@ -101,7 +77,7 @@ final class ScoreViewModel: ObservableObject {
                 return
             }
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(serveRotationInterval, forKey: DefaultsKey.serveRotationInterval)
+            SharedStore.defaults.set(serveRotationInterval, forKey: DefaultsKey.serveRotationInterval)
             performStateMutation {
                 updateServer()
             }
@@ -112,7 +88,7 @@ final class ScoreViewModel: ObservableObject {
     @Published var p1Name: String = Localized.defaultP1Name {
         didSet {
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(p1Name, forKey: DefaultsKey.p1Name)
+            SharedStore.defaults.set(p1Name, forKey: DefaultsKey.p1Name)
             // didSet fires even when the value is unchanged, and the scoreboard's name alert
             // commits whatever is in the field — so without this guard, opening the alert and
             // tapping Save would silently drop the roster link.
@@ -123,7 +99,7 @@ final class ScoreViewModel: ObservableObject {
     @Published var p2Name: String = Localized.defaultP2Name {
         didSet {
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(p2Name, forKey: DefaultsKey.p2Name)
+            SharedStore.defaults.set(p2Name, forKey: DefaultsKey.p2Name)
             if oldValue != p2Name { releaseRosterIdIfNameWasTyped(for: .player2) }
             stateDidChange()
         }
@@ -139,7 +115,7 @@ final class ScoreViewModel: ObservableObject {
     @Published var startingServerOfMatch: Player = .player1 {
         didSet {
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(startingServerOfMatch.rawValue, forKey: DefaultsKey.startingServerOfMatch)
+            SharedStore.defaults.set(startingServerOfMatch.rawValue, forKey: DefaultsKey.startingServerOfMatch)
             if p1Score == 0 && p2Score == 0 && p1Sets == 0 && p2Sets == 0 {
                 if isApplyingStateBatch {
                     startingServerOfSet = startingServerOfMatch
@@ -166,7 +142,7 @@ final class ScoreViewModel: ObservableObject {
                 return
             }
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(themeIndex, forKey: DefaultsKey.themeIndex)
+            SharedStore.defaults.set(themeIndex, forKey: DefaultsKey.themeIndex)
             syncLiveActivity()
         }
     }
@@ -193,7 +169,7 @@ final class ScoreViewModel: ObservableObject {
         didSet {
             guard isDoubles != oldValue else { return }
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(isDoubles, forKey: DefaultsKey.isDoubles)
+            SharedStore.defaults.set(isDoubles, forKey: DefaultsKey.isDoubles)
             performStateMutation {
                 updateServer()
             }
@@ -257,7 +233,7 @@ final class ScoreViewModel: ObservableObject {
 
     private func persistDoublesLineup() {
         guard let data = try? JSONEncoder().encode(doublesLineup) else { return }
-        UserDefaults.standard.set(data, forKey: DefaultsKey.doublesLineup)
+        SharedStore.defaults.set(data, forKey: DefaultsKey.doublesLineup)
     }
 
     /// Saved competitors, most recently created first.
@@ -277,7 +253,7 @@ final class ScoreViewModel: ObservableObject {
     @Published var isVoiceEnabled: Bool = false {
         didSet {
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(isVoiceEnabled, forKey: DefaultsKey.isVoiceEnabled)
+            SharedStore.defaults.set(isVoiceEnabled, forKey: DefaultsKey.isVoiceEnabled)
             SpeechManager.shared.isVoiceEnabled = isVoiceEnabled
         }
     }
@@ -286,7 +262,7 @@ final class ScoreViewModel: ObservableObject {
     @Published var isSoundEnabled: Bool = false {
         didSet {
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(isSoundEnabled, forKey: DefaultsKey.isSoundEnabled)
+            SharedStore.defaults.set(isSoundEnabled, forKey: DefaultsKey.isSoundEnabled)
             SoundManager.shared.isSoundEnabled = isSoundEnabled
         }
     }
@@ -294,7 +270,7 @@ final class ScoreViewModel: ObservableObject {
     @Published var hapticIntensity: HapticIntensity = .full {
         didSet {
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(hapticIntensity.rawValue, forKey: DefaultsKey.hapticIntensity)
+            SharedStore.defaults.set(hapticIntensity.rawValue, forKey: DefaultsKey.hapticIntensity)
             HapticManager.shared.intensity = hapticIntensity
         }
     }
@@ -304,7 +280,7 @@ final class ScoreViewModel: ObservableObject {
     @Published var keepScreenAwake: Bool = true {
         didSet {
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(keepScreenAwake, forKey: DefaultsKey.keepScreenAwake)
+            SharedStore.defaults.set(keepScreenAwake, forKey: DefaultsKey.keepScreenAwake)
         }
     }
 
@@ -314,13 +290,13 @@ final class ScoreViewModel: ObservableObject {
     @Published var showMatchTimer: Bool = true {
         didSet {
             guard hasFinishedInitialLoad else { return }
-            UserDefaults.standard.set(showMatchTimer, forKey: DefaultsKey.showMatchTimer)
+            SharedStore.defaults.set(showMatchTimer, forKey: DefaultsKey.showMatchTimer)
         }
     }
 
     init() {
         // Load persisted settings from UserDefaults or use native defaults
-        let defaults = UserDefaults.standard
+        let defaults = SharedStore.defaults
         let savedTargetScore = defaults.integer(forKey: DefaultsKey.targetScore)
         self.targetScore = Self.validTargetScoreRange.contains(savedTargetScore) ? savedTargetScore : 11
         self.winByTwo = defaults.object(forKey: DefaultsKey.winByTwo) as? Bool ?? true
@@ -381,6 +357,7 @@ final class ScoreViewModel: ObservableObject {
         HapticManager.shared.intensity = self.hapticIntensity
 
         WatchConnector.shared.configure(with: self)
+        ScoreActionRouter.handler = self
         hasFinishedInitialLoad = true
         persistMatchState()
         syncWithWatch()
@@ -977,7 +954,10 @@ final class ScoreViewModel: ObservableObject {
 
     private func persistMatchRecords() {
         guard let data = try? JSONEncoder().encode(matchRecords) else { return }
-        UserDefaults.standard.set(data, forKey: DefaultsKey.matchRecords)
+        SharedStore.defaults.set(data, forKey: DefaultsKey.matchRecords)
+
+        // The widget falls back to the last archived result, so deleting history must refresh it.
+        reloadHomeWidget()
     }
 
     private func performStateMutation(_ updates: () -> Void) {
@@ -998,6 +978,16 @@ final class ScoreViewModel: ObservableObject {
     func resyncExternalState() {
         guard hasFinishedInitialLoad else { return }
         syncWithWatch()
+    }
+
+    // MARK: - External Actions
+
+    func handle(_ action: ScoreAction) {
+        switch action {
+        case .pointPlayer1: incrementScore(for: .player1)
+        case .pointPlayer2: incrementScore(for: .player2)
+        case .undo: undo()
+        }
     }
 
     // MARK: - Roster
@@ -1102,11 +1092,11 @@ final class ScoreViewModel: ObservableObject {
 
     private func persistRoster() {
         guard let data = try? JSONEncoder().encode(roster) else { return }
-        UserDefaults.standard.set(data, forKey: DefaultsKey.roster)
+        SharedStore.defaults.set(data, forKey: DefaultsKey.roster)
     }
 
     private func persistRosterAssignments() {
-        let defaults = UserDefaults.standard
+        let defaults = SharedStore.defaults
 
         if let p1RosterId {
             defaults.set(p1RosterId.uuidString, forKey: DefaultsKey.p1RosterId)
@@ -1148,7 +1138,7 @@ final class ScoreViewModel: ObservableObject {
     }
 
     private func persistMatchClock() {
-        let defaults = UserDefaults.standard
+        let defaults = SharedStore.defaults
         guard let data = try? JSONEncoder().encode(matchClock) else {
             defaults.removeObject(forKey: DefaultsKey.matchClock)
             return
@@ -1165,7 +1155,7 @@ final class ScoreViewModel: ObservableObject {
     }
 
     private func persistMatchState() {
-        let defaults = UserDefaults.standard
+        let defaults = SharedStore.defaults
 
         if let data = try? JSONEncoder().encode(completedSets) {
             defaults.set(data, forKey: DefaultsKey.completedSets)
@@ -1185,6 +1175,14 @@ final class ScoreViewModel: ObservableObject {
         } else {
             defaults.removeObject(forKey: DefaultsKey.winner)
         }
+
+        reloadHomeWidget()
+    }
+
+    /// Nudges the Home Screen widget after a write lands. WidgetKit coalesces reload requests, so
+    /// calling this per point is not wasteful.
+    private func reloadHomeWidget() {
+        WidgetCenter.shared.reloadTimelines(ofKind: "PingPongHomeWidget")
     }
 
     private func syncWithWatch() {

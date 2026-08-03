@@ -34,7 +34,34 @@ struct MatchDetailView: View {
         }
         .navigationTitle(Localized.matchDetailTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if let card = shareCardImage {
+                    ShareLink(
+                        item: card,
+                        preview: SharePreview(shareTitle, image: card)
+                    ) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .foregroundColor(.white)
+                }
+            }
+        }
         .preferredColorScheme(.dark)
+    }
+
+    private var shareTitle: String {
+        "\(record.p1Name) \(record.p1Sets)–\(record.p2Sets) \(record.p2Name)"
+    }
+
+    /// Rasterises the result card. Rendered on demand rather than held in state so it always
+    /// matches the current theme, and returns nil rather than a blank image if rendering fails.
+    private var shareCardImage: Image? {
+        let renderer = ImageRenderer(content: ShareCardView(record: record, theme: theme))
+        renderer.scale = 2
+
+        guard let cgImage = renderer.cgImage else { return nil }
+        return Image(decorative: cgImage, scale: 2)
     }
 
     // MARK: - Header

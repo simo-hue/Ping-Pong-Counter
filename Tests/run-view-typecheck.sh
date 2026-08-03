@@ -37,6 +37,7 @@ VIEWS=(
     RosterView
     DoublesSetupView
     DoublesRosterStrip
+    ShareCardView
     SettingsView
 )
 

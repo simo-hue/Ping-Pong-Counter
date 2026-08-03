@@ -38,6 +38,9 @@ swiftc -typecheck -target arm64-apple-macos14.0 \
     "$ROOT/PingPong/MatchClock.swift" \
     "$ROOT/PingPong/DoublesLineup.swift" \
     "$ROOT/PingPong/StatsAggregates.swift" \
-    "$ROOT/PingPong/Localized.swift"
+    "$ROOT/PingPong/Localized.swift" \
+    "$ROOT/PingPong/PersistenceKeys.swift" \
+    "$ROOT/PingPong/SharedStore.swift" \
+    "$ROOT/PingPong/ScoreActionIntent.swift"
 
 echo "View model type-check passed (ScoreViewModel against stubbed platform frameworks)"

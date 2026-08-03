@@ -22,3 +22,17 @@ enum WidgetLocalized {
     static var setsLabel: String { isItalian ? "SET" : "SETS" }
     static var matchLabel: String { isItalian ? "MATCH" : "MATCH" }
 }
+
+extension WidgetLocalized {
+    static var undoLabel: String { isItalian ? "Annulla ultimo punto" : "Undo last point" }
+    static func addPointLabel(name: String) -> String {
+        isItalian ? "Punto per \(name)" : "Point for \(name)"
+    }
+    static var lastMatchLabel: String { isItalian ? "Ultima partita" : "Last match" }
+    static var noMatchesLabel: String { isItalian ? "Nessuna partita" : "No matches yet" }
+    static var liveLabel: String { isItalian ? "IN CORSO" : "LIVE" }
+    static var widgetDisplayName: String { isItalian ? "Punteggio" : "Score" }
+    static var widgetDescription: String {
+        isItalian ? "Il punteggio in corso o l'ultimo risultato." : "The match in progress, or your last result."
+    }
+}

@@ -5,5 +5,6 @@ import SwiftUI
 struct PingPongWidgetBundle: WidgetBundle {
     var body: some Widget {
         PingPongWidgetLiveActivity()
+        PingPongHomeWidget()
     }
 }

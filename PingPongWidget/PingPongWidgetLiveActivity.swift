@@ -1,6 +1,7 @@
 import ActivityKit
-import WidgetKit
+import AppIntents
 import SwiftUI
+import WidgetKit
 
 // Helper Theme Mapper to match main app aesthetics dynamically
 struct WidgetTheme {
@@ -228,6 +229,57 @@ private struct DynamicIslandMinimalScore: View {
     }
 }
 
+/// Scoring controls for the Lock Screen card.
+///
+/// The buttons run a `LiveActivityIntent`, which the system performs in the APP's process — so a
+/// tap here goes through exactly the same scoring path as a tap on the scoreboard, including the
+/// serve rotation, the rally log and the watch sync. Nothing is duplicated in the extension.
+private struct LiveActivityScoringRow: View {
+    let p1Name: String
+    let p2Name: String
+    let p1Tint: Color
+    let p2Tint: Color
+
+    var body: some View {
+        HStack(spacing: 8) {
+            scoreButton(action: .pointPlayer1, name: p1Name, tint: p1Tint)
+
+            Button(intent: ScoreActionIntent(action: .undo)) {
+                Image(systemName: "arrow.uturn.backward")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .frame(width: 40, height: 32)
+                    .background(Capsule().fill(Color.white.opacity(0.1)))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(WidgetLocalized.undoLabel)
+
+            scoreButton(action: .pointPlayer2, name: p2Name, tint: p2Tint)
+        }
+        .padding(.horizontal, 20)
+    }
+
+    private func scoreButton(action: ScoreAction, name: String, tint: Color) -> some View {
+        Button(intent: ScoreActionIntent(action: action)) {
+            HStack(spacing: 4) {
+                Image(systemName: "plus")
+                    .font(.system(size: 11, weight: .black))
+                Text(name)
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: 32)
+            .background(Capsule().fill(tint.opacity(0.32)))
+            .overlay(Capsule().stroke(tint.opacity(0.55), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(WidgetLocalized.addPointLabel(name: name))
+    }
+}
+
 public struct PingPongWidgetLiveActivity: Widget {
     public init() {}
     
@@ -328,6 +380,15 @@ public struct PingPongWidgetLiveActivity: Widget {
                 }
                 .padding(.horizontal, 20)
                 
+                if context.state.winner == nil {
+                    LiveActivityScoringRow(
+                        p1Name: context.attributes.p1Name,
+                        p2Name: context.attributes.p2Name,
+                        p1Tint: theme.p1Color,
+                        p2Tint: theme.p2Color
+                    )
+                }
+
                 // In doubles the serving side is not enough — name the player at the table.
                 if let servingName = context.state.servingName, !servingName.isEmpty, context.state.winner == nil {
                     HStack(spacing: 5) {
