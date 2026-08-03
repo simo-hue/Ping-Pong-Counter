@@ -40,18 +40,24 @@ struct SettingsView: View {
                 
                 Form {
                     Section(header: Text(Localized.playersHeader).foregroundColor(.gray)) {
-                        HStack {
-                            Image(systemName: "person.fill")
-                                .foregroundColor(selectedTheme.p1Color)
-                            TextField(Localized.p1Placeholder, text: $viewModel.p1Name)
-                                .foregroundColor(.white)
-                        }
-                        .listRowBackground(Color(white: 0.15))
-                        
-                        HStack {
-                            Image(systemName: "person.fill")
-                                .foregroundColor(selectedTheme.p2Color)
-                            TextField(Localized.p2Placeholder, text: $viewModel.p2Name)
+                        playerRow(
+                            side: .player1,
+                            color: selectedTheme.p1Color,
+                            placeholder: Localized.p1Placeholder,
+                            name: $viewModel.p1Name
+                        )
+
+                        playerRow(
+                            side: .player2,
+                            color: selectedTheme.p2Color,
+                            placeholder: Localized.p2Placeholder,
+                            name: $viewModel.p2Name
+                        )
+
+                        NavigationLink {
+                            RosterView(viewModel: viewModel)
+                        } label: {
+                            Label(Localized.rosterLink, systemImage: "person.2.fill")
                                 .foregroundColor(.white)
                         }
                         .listRowBackground(Color(white: 0.15))
@@ -270,6 +276,40 @@ struct SettingsView: View {
             }
             .preferredColorScheme(.dark)
         }
+    }
+
+    /// Free-text name field with a shortcut for dropping in a saved player. Assigning from the
+    /// roster also links the identity, so the match lands in that player's record.
+    private func playerRow(side: Player, color: Color, placeholder: String, name: Binding<String>) -> some View {
+        HStack(spacing: 10) {
+            if let rosterPlayer = viewModel.rosterPlayer(on: side) {
+                Text(rosterPlayer.emoji)
+                    .font(.system(size: 17))
+                    .frame(width: 22)
+            } else {
+                Image(systemName: "person.fill")
+                    .foregroundColor(color)
+                    .frame(width: 22)
+            }
+
+            TextField(placeholder, text: name)
+                .foregroundColor(.white)
+
+            if !viewModel.roster.isEmpty {
+                Menu {
+                    ForEach(viewModel.roster) { player in
+                        Button("\(player.emoji)  \(player.name)") {
+                            viewModel.assignRosterPlayer(player, to: side)
+                        }
+                    }
+                } label: {
+                    Image(systemName: "person.crop.circle.badge.checkmark")
+                        .foregroundColor(color)
+                }
+                .accessibilityLabel(Localized.chooseFromRoster)
+            }
+        }
+        .listRowBackground(Color(white: 0.15))
     }
 
     private func quickTargetButton(_ value: Int, label: String) -> some View {

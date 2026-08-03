@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var editingPlayer: Player? = nil
     @State private var editingNameText: String = ""
     @State private var isShowingNameEditor = false
+    @State private var rosterPickerSide: Player?
     
     // Premium UI/UX Animation States
     @State private var serverPulseScale: CGFloat = 1.0
@@ -127,9 +128,20 @@ struct ContentView: View {
                         }
                     }
                 }
+                if !viewModel.roster.isEmpty {
+                    Button(Localized.chooseFromRoster) {
+                        rosterPickerSide = editingPlayer
+                    }
+                }
                 Button(Localized.isItalian ? "Annulla" : "Cancel", role: .cancel) {}
             } message: {
                 Text(Localized.isItalian ? "Inserisci il nome per il \(editingPlayer == .player1 ? "primo" : "secondo") giocatore." : "Enter the name for \(editingPlayer == .player1 ? "first" : "second") player.")
+            }
+            .sheet(item: $rosterPickerSide) { side in
+                NavigationStack {
+                    RosterView(viewModel: viewModel, assigningTo: side)
+                }
+                .preferredColorScheme(.dark)
             }
         }
         .ignoresSafeArea()

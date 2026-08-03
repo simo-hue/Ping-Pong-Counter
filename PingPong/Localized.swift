@@ -73,6 +73,59 @@ public struct Localized {
     /// Describes a *set* that never finished — kept separate from `interruptedMatch`, whose
     /// Italian form ("Interrotta") agrees with the feminine "partita" and reads wrong on "il set".
     public static var unfinishedSet: String { isItalian ? "Non concluso" : "Unfinished" }
+
+    // Roster & player statistics
+    public static var rosterTitle: String { isItalian ? "Giocatori" : "Players" }
+    public static var choosePlayerTitle: String { isItalian ? "Scegli Giocatore" : "Choose Player" }
+    public static var savedPlayersHeader: String { isItalian ? "Giocatori Salvati" : "Saved Players" }
+    public static var rosterLink: String { isItalian ? "Giocatori Salvati e Statistiche" : "Saved Players & Stats" }
+    public static var addPlayer: String { isItalian ? "Aggiungi Giocatore" : "Add Player" }
+    public static var editPlayer: String { isItalian ? "Modifica Giocatore" : "Edit Player" }
+    public static var newPlayerPlaceholder: String { isItalian ? "Nome giocatore" : "Player name" }
+    public static var avatarHeader: String { isItalian ? "Avatar" : "Avatar" }
+    public static var noSavedPlayers: String {
+        isItalian
+            ? "Nessun giocatore salvato. Aggiungine uno per tenere statistiche e scontri diretti."
+            : "No saved players yet. Add one to track stats and head-to-head records."
+    }
+    public static var rosterFooter: String {
+        isItalian
+            ? "I giocatori salvati mantengono statistiche fra le partite."
+            : "Saved players keep their statistics across matches."
+    }
+    public static var duplicatePlayerWarning: String {
+        isItalian ? "Esiste già un giocatore con questo nome." : "A player with that name already exists."
+    }
+    public static var chooseFromRoster: String { isItalian ? "Scegli dai salvati" : "Choose from saved" }
+
+    public static func playedWonSummary(played: Int, won: Int) -> String {
+        guard isItalian else { return "\(played) played · \(won) won" }
+        return "\(played) \(played == 1 ? "giocata" : "giocate") · \(won) \(won == 1 ? "vinta" : "vinte")"
+    }
+    public static var winRateLabel: String { isItalian ? "Vittorie" : "Win rate" }
+    public static var matchesPlayedLabel: String { isItalian ? "Partite giocate" : "Matches played" }
+    public static var matchesWonLabel: String { isItalian ? "Partite vinte" : "Matches won" }
+    public static var setsWonLostLabel: String { isItalian ? "Set vinti-persi" : "Sets won-lost" }
+    public static var pointsWonLostLabel: String { isItalian ? "Punti fatti-subiti" : "Points for-against" }
+    public static var currentStreakLabel: String { isItalian ? "Serie attuale" : "Current streak" }
+    public static var bestStreakLabel: String { isItalian ? "Miglior serie" : "Best streak" }
+    public static func winStreak(_ count: Int) -> String {
+        guard isItalian else { return "\(count) \(count == 1 ? "win" : "wins") in a row" }
+        return "\(count) \(count == 1 ? "vittoria" : "vittorie") di fila"
+    }
+    public static func lossStreak(_ count: Int) -> String {
+        guard isItalian else { return "\(count) \(count == 1 ? "loss" : "losses") in a row" }
+        return "\(count) \(count == 1 ? "sconfitta" : "sconfitte") di fila"
+    }
+    public static var headToHeadHeader: String { isItalian ? "SCONTRI DIRETTI" : "HEAD-TO-HEAD" }
+    public static var noHeadToHead: String {
+        isItalian
+            ? "Nessuno scontro diretto: entrambi i giocatori devono essere salvati nei giocatori."
+            : "No head-to-head yet — both players must be saved in the roster."
+    }
+    public static var noMatchesForPlayer: String {
+        isItalian ? "Nessuna partita registrata per questo giocatore." : "No matches recorded for this player yet."
+    }
     public static var styleHeader: String { isItalian ? "Stile & Temi" : "Style & Themes" }
     public static var graphicTheme: String { isItalian ? "Tema Grafico" : "Graphic Theme" }
     public static var themePreview: String { isItalian ? "Anteprima Tema:" : "Theme Preview:" }

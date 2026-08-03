@@ -2,15 +2,6 @@ import Foundation
 import Combine
 @preconcurrency import WatchConnectivity
 
-enum Player: String, Codable {
-    case player1
-    case player2
-
-    var opponent: Player {
-        self == .player1 ? .player2 : .player1
-    }
-}
-
 struct GameSnapshot: Equatable {
     let p1Score: Int
     let p2Score: Int
@@ -21,41 +12,6 @@ struct GameSnapshot: Equatable {
     let winner: Player?
     let completedSets: [SetRecord]
     let currentSetRallies: RallyLog
-}
-
-struct MatchRecord: Identifiable, Codable, Equatable {
-    let id: UUID
-    let date: Date
-    let p1Name: String
-    let p2Name: String
-    let p1Score: Int
-    let p2Score: Int
-    let p1Sets: Int
-    let p2Sets: Int
-    let winner: Player?
-    let targetScore: Int
-    let bestOfSets: Int
-    let winByTwo: Bool
-    /// Optional so records written by 1.0.1 — which had no clock — still decode.
-    let durationSeconds: Int?
-    /// Set-by-set breakdown with the rally log for each. Optional for the same migration reason:
-    /// records written before this field existed must keep decoding.
-    let sets: [SetRecord]?
-
-    var formattedDuration: String? {
-        guard let durationSeconds, durationSeconds > 0 else { return nil }
-        return MatchClock.formatted(TimeInterval(durationSeconds))
-    }
-
-    /// "11-9 · 8-11 · 11-6", or nil for records predating set tracking.
-    var setScoreLine: String? {
-        guard let sets, !sets.isEmpty else { return nil }
-        return sets.map(\.scoreLine).joined(separator: " · ")
-    }
-
-    var totalRallies: Int {
-        (sets ?? []).reduce(0) { $0 + $1.rallies.count }
-    }
 }
 
 @MainActor
@@ -85,6 +41,9 @@ final class ScoreViewModel: ObservableObject {
         static let showMatchTimer = "showMatchTimer"
         static let completedSets = "completedSets"
         static let currentSetRallies = "currentSetRallies"
+        static let roster = "roster"
+        static let p1RosterId = "p1RosterId"
+        static let p2RosterId = "p2RosterId"
     }
 
     /// 11 and 21 are the official formats; the wider range exists for casual house rules
@@ -147,6 +106,10 @@ final class ScoreViewModel: ObservableObject {
         didSet {
             guard hasFinishedInitialLoad else { return }
             UserDefaults.standard.set(p1Name, forKey: DefaultsKey.p1Name)
+            // didSet fires even when the value is unchanged, and the scoreboard's name alert
+            // commits whatever is in the field — so without this guard, opening the alert and
+            // tapping Save would silently drop the roster link.
+            if oldValue != p1Name { releaseRosterIdIfNameWasTyped(for: .player1) }
             stateDidChange()
         }
     }
@@ -154,6 +117,7 @@ final class ScoreViewModel: ObservableObject {
         didSet {
             guard hasFinishedInitialLoad else { return }
             UserDefaults.standard.set(p2Name, forKey: DefaultsKey.p2Name)
+            if oldValue != p2Name { releaseRosterIdIfNameWasTyped(for: .player2) }
             stateDidChange()
         }
     }
@@ -210,8 +174,19 @@ final class ScoreViewModel: ObservableObject {
     /// Set while `applyRules` writes several rule properties, so their individual didSet hooks
     /// persist the value but defer the single match reset to the caller.
     private var isApplyingRuleChange = false
+    /// Set while a name is written *because* a roster player was chosen or the sides were
+    /// swapped, so the name's didSet does not treat it as a freehand edit and drop the identity.
+    private var isAssigningRosterIdentity = false
 
     @Published private(set) var matchRecords: [MatchRecord] = []
+
+    /// Saved competitors, most recently created first.
+    @Published private(set) var roster: [RosterPlayer] = []
+
+    /// Roster identities currently assigned to each side, when the names came from saved players.
+    /// Cleared as soon as a name is typed freehand, so a record is never mis-attributed.
+    @Published private(set) var p1RosterId: UUID?
+    @Published private(set) var p2RosterId: UUID?
 
     /// Sets already finished in the match currently on the table.
     @Published private(set) var completedSets: [SetRecord] = []
@@ -297,6 +272,13 @@ final class ScoreViewModel: ObservableObject {
         self.startingServerOfSet = Player(rawValue: defaults.string(forKey: DefaultsKey.startingServerOfSet) ?? "") ?? startingServerOfMatch
         self.currentServer = Player(rawValue: defaults.string(forKey: DefaultsKey.currentServer) ?? "") ?? startingServerOfSet
         self.winner = Player(rawValue: defaults.string(forKey: DefaultsKey.winner) ?? "")
+
+        if let data = defaults.data(forKey: DefaultsKey.roster),
+           let savedRoster = try? JSONDecoder().decode([RosterPlayer].self, from: data) {
+            self.roster = savedRoster
+        }
+        self.p1RosterId = UUID(uuidString: defaults.string(forKey: DefaultsKey.p1RosterId) ?? "")
+        self.p2RosterId = UUID(uuidString: defaults.string(forKey: DefaultsKey.p2RosterId) ?? "")
 
         if let data = defaults.data(forKey: DefaultsKey.completedSets),
            let sets = try? JSONDecoder().decode([SetRecord].self, from: data) {
@@ -509,11 +491,21 @@ final class ScoreViewModel: ObservableObject {
         let swappedWinner = winner?.opponent
         let swappedCompletedSets = completedSets.map { $0.swapped() }
         let swappedCurrentSetRallies = currentSetRallies.swapped()
+        let swappedRosterIds = (p1: p2RosterId, p2: p1RosterId)
+
+        // The names move with their roster identities here, so this is not a freehand edit.
+        isAssigningRosterIdentity = true
+        defer {
+            isAssigningRosterIdentity = false
+            persistRosterAssignments()
+        }
 
         performStateMutation {
             // Swap player names and their active set counts and scores so players can change sides on the physical table
             p1Name = swappedNames.p1
             p2Name = swappedNames.p2
+            p1RosterId = swappedRosterIds.p1
+            p2RosterId = swappedRosterIds.p2
 
             p1Score = swappedScores.p1
             p2Score = swappedScores.p2
@@ -777,7 +769,9 @@ final class ScoreViewModel: ObservableObject {
             bestOfSets: recordedBestOfSets ?? bestOfSets,
             winByTwo: recordedWinByTwo ?? winByTwo,
             durationSeconds: matchClock.hasStarted ? Int(matchClock.elapsed().rounded()) : nil,
-            sets: archivedSets
+            sets: archivedSets,
+            p1Id: p1RosterId,
+            p2Id: p2RosterId
         )
 
         matchRecords.insert(record, at: 0)
@@ -840,6 +834,127 @@ final class ScoreViewModel: ObservableObject {
     func resyncExternalState() {
         guard hasFinishedInitialLoad else { return }
         syncWithWatch()
+    }
+
+    // MARK: - Roster
+
+    /// Saves a new competitor. Returns nil for a blank name or one already in the roster, so the
+    /// caller can surface that instead of silently creating a duplicate identity.
+    @discardableResult
+    func addRosterPlayer(name: String, emoji: String = RosterPlayer.defaultEmoji) -> RosterPlayer? {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        let key = RosterPlayer.matchKey(for: trimmed)
+        guard !roster.contains(where: { $0.matchKey == key }) else { return nil }
+
+        let player = RosterPlayer(name: trimmed, emoji: emoji)
+        roster.insert(player, at: 0)
+        persistRoster()
+        return player
+    }
+
+    /// Renames or re-avatars an existing entry. Returns false when the edit is rejected, so the
+    /// editor can keep its sheet open and explain why.
+    ///
+    /// The uniqueness check matters more here than on creation: attribution falls back to matching
+    /// names for records that carry no roster ID, so allowing a rename onto an existing name would
+    /// make a zero-history entry inherit somebody else's entire record.
+    @discardableResult
+    func updateRosterPlayer(_ player: RosterPlayer) -> Bool {
+        guard let index = roster.firstIndex(where: { $0.id == player.id }) else { return false }
+
+        let trimmed = player.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return false }
+
+        let key = RosterPlayer.matchKey(for: trimmed)
+        guard !roster.contains(where: { $0.id != player.id && $0.matchKey == key }) else { return false }
+
+        var updated = player
+        updated.name = trimmed
+        roster[index] = updated
+        persistRoster()
+
+        // Keep the scoreboard in step when the player being renamed is on the table.
+        if p1RosterId == updated.id { assignRosterPlayer(updated, to: .player1) }
+        if p2RosterId == updated.id { assignRosterPlayer(updated, to: .player2) }
+
+        return true
+    }
+
+    func deleteRosterPlayer(id: UUID) {
+        let originalCount = roster.count
+        roster.removeAll { $0.id == id }
+        guard roster.count != originalCount else { return }
+
+        // Past match records keep the ID so their history survives; only the live sides let go.
+        if p1RosterId == id { p1RosterId = nil }
+        if p2RosterId == id { p2RosterId = nil }
+
+        persistRoster()
+        persistRosterAssignments()
+        HapticManager.shared.play(.scoreDecrement)
+    }
+
+    func assignRosterPlayer(_ player: RosterPlayer, to side: Player) {
+        isAssigningRosterIdentity = true
+        if side == .player1 {
+            p1Name = player.name
+            p1RosterId = player.id
+        } else {
+            p2Name = player.name
+            p2RosterId = player.id
+        }
+        isAssigningRosterIdentity = false
+
+        persistRosterAssignments()
+    }
+
+    func rosterPlayer(on side: Player) -> RosterPlayer? {
+        let id = side == .player1 ? p1RosterId : p2RosterId
+        guard let id else { return nil }
+        return roster.first { $0.id == id }
+    }
+
+    func stats(for player: RosterPlayer) -> PlayerStats {
+        MatchStatistics.stats(for: player, in: matchRecords)
+    }
+
+    func headToHead(for player: RosterPlayer) -> [HeadToHeadRecord] {
+        MatchStatistics.headToHead(for: player, in: matchRecords, roster: roster)
+    }
+
+    private func releaseRosterIdIfNameWasTyped(for side: Player) {
+        guard !isAssigningRosterIdentity else { return }
+
+        if side == .player1, p1RosterId != nil {
+            p1RosterId = nil
+            persistRosterAssignments()
+        } else if side == .player2, p2RosterId != nil {
+            p2RosterId = nil
+            persistRosterAssignments()
+        }
+    }
+
+    private func persistRoster() {
+        guard let data = try? JSONEncoder().encode(roster) else { return }
+        UserDefaults.standard.set(data, forKey: DefaultsKey.roster)
+    }
+
+    private func persistRosterAssignments() {
+        let defaults = UserDefaults.standard
+
+        if let p1RosterId {
+            defaults.set(p1RosterId.uuidString, forKey: DefaultsKey.p1RosterId)
+        } else {
+            defaults.removeObject(forKey: DefaultsKey.p1RosterId)
+        }
+
+        if let p2RosterId {
+            defaults.set(p2RosterId.uuidString, forKey: DefaultsKey.p2RosterId)
+        } else {
+            defaults.removeObject(forKey: DefaultsKey.p2RosterId)
+        }
     }
 
     // MARK: - Match Clock

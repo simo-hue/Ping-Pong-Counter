@@ -28,6 +28,10 @@
 		9C5A3341F0B37221B319405E /* SetRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44C46D09540DD626E05DD650 /* SetRecord.swift */; };
 		F86B693A269AA76FF2B9CF15 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1081208582FFBCDA00AC39 /* AppTheme.swift */; };
 		D665F0BA7C628BE7DF94F17C /* MatchDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5F7EB981D21C46457EC1C2 /* MatchDetailView.swift */; };
+		77957DE389CE4E2A79308786 /* RosterPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 467D054CFF0A5A328AD9747E /* RosterPlayer.swift */; };
+		FB793DE97246324A40064C9C /* RosterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A94DB38CEEC7AD94DD9605 /* RosterView.swift */; };
+		0C868D0691DBC8E51CDE47F1 /* PlayerStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DAF13FC4DEED98FAB0D95E6 /* PlayerStatsView.swift */; };
+		5ED9BA0DA6A377FBBCE36474 /* MatchRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312920883E35F7E396B20EAB /* MatchRecord.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,6 +99,10 @@
 		44C46D09540DD626E05DD650 /* SetRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetRecord.swift; sourceTree = "<group>"; };
 		0A1081208582FFBCDA00AC39 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		9D5F7EB981D21C46457EC1C2 /* MatchDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchDetailView.swift; sourceTree = "<group>"; };
+		467D054CFF0A5A328AD9747E /* RosterPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterPlayer.swift; sourceTree = "<group>"; };
+		96A94DB38CEEC7AD94DD9605 /* RosterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterView.swift; sourceTree = "<group>"; };
+		0DAF13FC4DEED98FAB0D95E6 /* PlayerStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatsView.swift; sourceTree = "<group>"; };
+		312920883E35F7E396B20EAB /* MatchRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchRecord.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -172,6 +180,10 @@
 		D60000132C1E000200000001 /* PingPong */ = {
 			isa = PBXGroup;
 			children = (
+				312920883E35F7E396B20EAB /* MatchRecord.swift */,
+				0DAF13FC4DEED98FAB0D95E6 /* PlayerStatsView.swift */,
+				96A94DB38CEEC7AD94DD9605 /* RosterView.swift */,
+				467D054CFF0A5A328AD9747E /* RosterPlayer.swift */,
 				9D5F7EB981D21C46457EC1C2 /* MatchDetailView.swift */,
 				0A1081208582FFBCDA00AC39 /* AppTheme.swift */,
 				44C46D09540DD626E05DD650 /* SetRecord.swift */,
@@ -349,6 +361,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5ED9BA0DA6A377FBBCE36474 /* MatchRecord.swift in Sources */,
+				0C868D0691DBC8E51CDE47F1 /* PlayerStatsView.swift in Sources */,
+				FB793DE97246324A40064C9C /* RosterView.swift in Sources */,
+				77957DE389CE4E2A79308786 /* RosterPlayer.swift in Sources */,
 				D665F0BA7C628BE7DF94F17C /* MatchDetailView.swift in Sources */,
 				F86B693A269AA76FF2B9CF15 /* AppTheme.swift in Sources */,
 				9C5A3341F0B37221B319405E /* SetRecord.swift in Sources */,

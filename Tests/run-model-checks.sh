@@ -15,6 +15,9 @@ trap 'rm -rf "$BUILD_DIR"' EXIT
 
 swiftc -module-name PingPongTest -o "$BUILD_DIR/model-checks" \
     "$ROOT/Tests/ModelChecks/main.swift" \
-    "$ROOT/PingPong/SetRecord.swift"
+    "$ROOT/PingPong/MatchRecord.swift" \
+    "$ROOT/PingPong/SetRecord.swift" \
+    "$ROOT/PingPong/RosterPlayer.swift" \
+    "$ROOT/PingPong/MatchClock.swift"
 
 "$BUILD_DIR/model-checks"
