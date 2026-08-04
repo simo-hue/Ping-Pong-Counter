@@ -6,7 +6,12 @@ final class LiveActivityManager {
     static let shared = LiveActivityManager()
     
     private var currentActivity: Activity<PingPongAttributes>? = nil
-    
+
+    /// Coalesces the restarts a rename would otherwise trigger per keystroke.
+    private var pendingRenameRestart: Task<Void, Never>?
+    private static let renameSettleDelay = Duration.milliseconds(1200)
+
+
     private init() {
         // Automatically reconnect to any ongoing Live Activity session on app launch
         reconnectToExistingActivity()
@@ -28,9 +33,24 @@ final class LiveActivityManager {
         // only ContentState can. So a change of ends or a rename can only be reflected by starting
         // a new activity. Without this the Lock Screen keeps the old names against the new scores,
         // and the "+ <name>" buttons are captioned for one player while scoring for the other.
+        //
+        // Debounced, because the settings name field writes through on every keystroke: typing
+        // "Simone" would otherwise request six Live Activities. The score keeps updating live
+        // meanwhile; only the restart waits for the typing to stop.
         if let activity = currentActivity,
            activity.attributes.p1Name != p1Name || activity.attributes.p2Name != p2Name {
-            startLiveActivity(
+            updateLiveActivity(
+                p1Score: p1Score,
+                p2Score: p2Score,
+                p1Sets: p1Sets,
+                p2Sets: p2Sets,
+                currentServer: currentServer,
+                winner: winner,
+                themeIndex: themeIndex,
+                servingName: servingName
+            )
+
+            scheduleRestartForRenamedPlayers(
                 p1Name: p1Name,
                 p2Name: p2Name,
                 p1Score: p1Score,
@@ -44,6 +64,10 @@ final class LiveActivityManager {
             )
             return
         }
+
+        // Names agree again, so any restart still queued is moot.
+        pendingRenameRestart?.cancel()
+        pendingRenameRestart = nil
 
         if currentActivity == nil {
             startLiveActivity(
@@ -72,6 +96,37 @@ final class LiveActivityManager {
         }
     }
     
+    /// Restarts the activity once the names have stopped changing, so the card and its scoring
+    /// buttons end up captioned for the right players without churning on every keystroke.
+    private func scheduleRestartForRenamedPlayers(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String?, themeIndex: Int, servingName: String?) {
+        pendingRenameRestart?.cancel()
+
+        pendingRenameRestart = Task { [weak self] in
+            try? await Task.sleep(for: Self.renameSettleDelay)
+            guard !Task.isCancelled, let self else { return }
+
+            // Re-check: the names may have been edited back, or the activity may have ended.
+            guard let activity = self.currentActivity,
+                  activity.attributes.p1Name != p1Name || activity.attributes.p2Name != p2Name else {
+                return
+            }
+
+            self.startLiveActivity(
+                p1Name: p1Name,
+                p2Name: p2Name,
+                p1Score: p1Score,
+                p2Score: p2Score,
+                p1Sets: p1Sets,
+                p2Sets: p2Sets,
+                currentServer: currentServer,
+                winner: winner,
+                themeIndex: themeIndex,
+                servingName: servingName
+            )
+            self.pendingRenameRestart = nil
+        }
+    }
+
     func startLiveActivity(p1Name: String, p2Name: String, p1Score: Int, p2Score: Int, p1Sets: Int, p2Sets: Int, currentServer: String, winner: String? = nil, themeIndex: Int, servingName: String? = nil) {
         // Kept, but NOT ended yet: Activity.request can fail (it needs the foreground), and tearing
         // the old one down first would leave the user with no Live Activity at all.
@@ -140,6 +195,9 @@ final class LiveActivityManager {
     }
     
     func endLiveActivity() {
+        pendingRenameRestart?.cancel()
+        pendingRenameRestart = nil
+
         guard let activity = currentActivity else { return }
         currentActivity = nil
         
