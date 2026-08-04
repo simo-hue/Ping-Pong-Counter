@@ -7,11 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C868D0691DBC8E51CDE47F1 /* PlayerStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DAF13FC4DEED98FAB0D95E6 /* PlayerStatsView.swift */; };
+		0D6DF8FB4609AB65DA6DF398 /* ScoreActionIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DC178A58BCB850BCC7656C7 /* ScoreActionIntent.swift */; };
+		24291A59BD72DA032667A808 /* PersistenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915F62DCF34D221D12B1EFD0 /* PersistenceKeys.swift */; };
 		2437AADC2FBC6DBC0067E1F9 /* PingPongWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 2437AAD22FBC6DBA0067E1F9 /* PingPongWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2437AAEE2FBC6F9D0067E1F9 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2437AAED2FBC6F9D0067E1F9 /* WidgetKit.framework */; };
 		2437AAF02FBC6F9D0067E1F9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2437AAEF2FBC6F9D0067E1F9 /* SwiftUI.framework */; };
 		2437AAFD2FBC6F9F0067E1F9 /* PingPongWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2437AAEB2FBC6F9D0067E1F9 /* PingPongWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2437AAFF2FBC6F9D0067E999 /* PingPongAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FE2C1E000100000001 /* PingPongAttributes.swift */; };
+		24462125F686CAC017E571B5 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0058B47AD6316BF398F29EA /* SoundManager.swift */; };
+		410E3ADEFD8645802D28760A /* MatchClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F841BF32AD3B5EE66FBDF28 /* MatchClock.swift */; };
+		412798FFAF8187068C24BBF9 /* ShareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F112F9944DDCEE082357BD5 /* ShareCardView.swift */; };
+		5ED9BA0DA6A377FBBCE36474 /* MatchRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312920883E35F7E396B20EAB /* MatchRecord.swift */; };
+		6ED93C59FEA449DBD2852724 /* StatsAggregates.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5AA09F01976064B09B9010A /* StatsAggregates.swift */; };
+		77957DE389CE4E2A79308786 /* RosterPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 467D054CFF0A5A328AD9747E /* RosterPlayer.swift */; };
+		99506D653737170AC6C5CB3D /* CloudSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = B285050DC036A0536A669D26 /* CloudSync.swift */; };
+		9C5A3341F0B37221B319405E /* SetRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44C46D09540DD626E05DD650 /* SetRecord.swift */; };
+		A2A279621F767263880BA937 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A044F00CE9DD88850DF7D7 /* SharedStore.swift */; };
+		AA6457626CF077CE4319CB69 /* DoublesSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0547B03605021680A9441055 /* DoublesSetupView.swift */; };
+		C9A18AA34B54985562421F19 /* MatchExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD010311A82B56E4260082A0 /* MatchExport.swift */; };
+		CA3A79B8DA6C3917A475AF2F /* DoublesRosterStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDAB47C7AA23C5E7FE4FF43 /* DoublesRosterStrip.swift */; };
+		D0F34EE11A2C4BFB1E5109D1 /* DoublesLineup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6323836537294B73BD08F7F9 /* DoublesLineup.swift */; };
 		D60000012C1E000100000001 /* PingPongApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000022C1E000100000001 /* PingPongApp.swift */; };
 		D60000032C1E000100000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000042C1E000100000001 /* ContentView.swift */; };
 		D60000052C1E000100000001 /* ScoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000062C1E000100000001 /* ScoreViewModel.swift */; };
@@ -23,27 +39,11 @@
 		D60000FD2C1E000100000001 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FC2C1E000100000001 /* LiveActivityManager.swift */; };
 		D60000FF2C1E000100000001 /* PingPongAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000FE2C1E000100000001 /* PingPongAttributes.swift */; };
 		D60001002C20000100000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D60001012C20000100000001 /* PrivacyInfo.xcprivacy */; };
-		410E3ADEFD8645802D28760A /* MatchClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F841BF32AD3B5EE66FBDF28 /* MatchClock.swift */; };
-		24462125F686CAC017E571B5 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0058B47AD6316BF398F29EA /* SoundManager.swift */; };
-		9C5A3341F0B37221B319405E /* SetRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44C46D09540DD626E05DD650 /* SetRecord.swift */; };
-		F86B693A269AA76FF2B9CF15 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1081208582FFBCDA00AC39 /* AppTheme.swift */; };
 		D665F0BA7C628BE7DF94F17C /* MatchDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5F7EB981D21C46457EC1C2 /* MatchDetailView.swift */; };
-		77957DE389CE4E2A79308786 /* RosterPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 467D054CFF0A5A328AD9747E /* RosterPlayer.swift */; };
-		FB793DE97246324A40064C9C /* RosterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A94DB38CEEC7AD94DD9605 /* RosterView.swift */; };
-		0C868D0691DBC8E51CDE47F1 /* PlayerStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DAF13FC4DEED98FAB0D95E6 /* PlayerStatsView.swift */; };
-		5ED9BA0DA6A377FBBCE36474 /* MatchRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312920883E35F7E396B20EAB /* MatchRecord.swift */; };
-		6ED93C59FEA449DBD2852724 /* StatsAggregates.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5AA09F01976064B09B9010A /* StatsAggregates.swift */; };
-		FD35F9CD2171078F3395964C /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D77C6C89BAE11AF0E6E0ED /* StatsView.swift */; };
-		D0F34EE11A2C4BFB1E5109D1 /* DoublesLineup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6323836537294B73BD08F7F9 /* DoublesLineup.swift */; };
-		AA6457626CF077CE4319CB69 /* DoublesSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0547B03605021680A9441055 /* DoublesSetupView.swift */; };
-		CA3A79B8DA6C3917A475AF2F /* DoublesRosterStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FDAB47C7AA23C5E7FE4FF43 /* DoublesRosterStrip.swift */; };
-		A2A279621F767263880BA937 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A044F00CE9DD88850DF7D7 /* SharedStore.swift */; };
 		E2F3697BE64D09266F96446A /* ScoreActionIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DC178A58BCB850BCC7656C7 /* ScoreActionIntent.swift */; };
-		0D6DF8FB4609AB65DA6DF398 /* ScoreActionIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DC178A58BCB850BCC7656C7 /* ScoreActionIntent.swift */; };
-		412798FFAF8187068C24BBF9 /* ShareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F112F9944DDCEE082357BD5 /* ShareCardView.swift */; };
-		24291A59BD72DA032667A808 /* PersistenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915F62DCF34D221D12B1EFD0 /* PersistenceKeys.swift */; };
-		C9A18AA34B54985562421F19 /* MatchExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD010311A82B56E4260082A0 /* MatchExport.swift */; };
-		99506D653737170AC6C5CB3D /* CloudSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = B285050DC036A0536A669D26 /* CloudSync.swift */; };
+		F86B693A269AA76FF2B9CF15 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1081208582FFBCDA00AC39 /* AppTheme.swift */; };
+		FB793DE97246324A40064C9C /* RosterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A94DB38CEEC7AD94DD9605 /* RosterView.swift */; };
+		FD35F9CD2171078F3395964C /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D77C6C89BAE11AF0E6E0ED /* StatsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,10 +89,31 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0547B03605021680A9441055 /* DoublesSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublesSetupView.swift; sourceTree = "<group>"; };
+		0A1081208582FFBCDA00AC39 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		0DAF13FC4DEED98FAB0D95E6 /* PlayerStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatsView.swift; sourceTree = "<group>"; };
 		2437AAD22FBC6DBA0067E1F9 /* PingPongWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PingPongWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2437AAEB2FBC6F9D0067E1F9 /* PingPongWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PingPongWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		2437AAED2FBC6F9D0067E1F9 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		2437AAEF2FBC6F9D0067E1F9 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		24EDE0483021C46D007770CB /* PingPong.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PingPong.entitlements; sourceTree = "<group>"; };
+		24EDE0493021C4AA007770CB /* PingPongWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PingPongWidgetExtension.entitlements; sourceTree = "<group>"; };
+		312920883E35F7E396B20EAB /* MatchRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchRecord.swift; sourceTree = "<group>"; };
+		31D77C6C89BAE11AF0E6E0ED /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		35A044F00CE9DD88850DF7D7 /* SharedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStore.swift; sourceTree = "<group>"; };
+		44C46D09540DD626E05DD650 /* SetRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetRecord.swift; sourceTree = "<group>"; };
+		467D054CFF0A5A328AD9747E /* RosterPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterPlayer.swift; sourceTree = "<group>"; };
+		4FDAB47C7AA23C5E7FE4FF43 /* DoublesRosterStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublesRosterStrip.swift; sourceTree = "<group>"; };
+		6323836537294B73BD08F7F9 /* DoublesLineup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublesLineup.swift; sourceTree = "<group>"; };
+		7DC178A58BCB850BCC7656C7 /* ScoreActionIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreActionIntent.swift; sourceTree = "<group>"; };
+		8F112F9944DDCEE082357BD5 /* ShareCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardView.swift; sourceTree = "<group>"; };
+		8F841BF32AD3B5EE66FBDF28 /* MatchClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchClock.swift; sourceTree = "<group>"; };
+		915F62DCF34D221D12B1EFD0 /* PersistenceKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceKeys.swift; sourceTree = "<group>"; };
+		96A94DB38CEEC7AD94DD9605 /* RosterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterView.swift; sourceTree = "<group>"; };
+		9D5F7EB981D21C46457EC1C2 /* MatchDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchDetailView.swift; sourceTree = "<group>"; };
+		A5AA09F01976064B09B9010A /* StatsAggregates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsAggregates.swift; sourceTree = "<group>"; };
+		B285050DC036A0536A669D26 /* CloudSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSync.swift; sourceTree = "<group>"; };
+		C0058B47AD6316BF398F29EA /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
 		D60000022C1E000100000001 /* PingPongApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingPongApp.swift; sourceTree = "<group>"; };
 		D60000042C1E000100000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D60000062C1E000100000001 /* ScoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreViewModel.swift; sourceTree = "<group>"; };
@@ -106,26 +127,7 @@
 		D60000FE2C1E000100000001 /* PingPongAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingPongAttributes.swift; sourceTree = "<group>"; };
 		D60001012C20000100000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D60001022C20000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8F841BF32AD3B5EE66FBDF28 /* MatchClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchClock.swift; sourceTree = "<group>"; };
-		C0058B47AD6316BF398F29EA /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
-		44C46D09540DD626E05DD650 /* SetRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetRecord.swift; sourceTree = "<group>"; };
-		0A1081208582FFBCDA00AC39 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
-		9D5F7EB981D21C46457EC1C2 /* MatchDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchDetailView.swift; sourceTree = "<group>"; };
-		467D054CFF0A5A328AD9747E /* RosterPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterPlayer.swift; sourceTree = "<group>"; };
-		96A94DB38CEEC7AD94DD9605 /* RosterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosterView.swift; sourceTree = "<group>"; };
-		0DAF13FC4DEED98FAB0D95E6 /* PlayerStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatsView.swift; sourceTree = "<group>"; };
-		312920883E35F7E396B20EAB /* MatchRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchRecord.swift; sourceTree = "<group>"; };
-		A5AA09F01976064B09B9010A /* StatsAggregates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsAggregates.swift; sourceTree = "<group>"; };
-		31D77C6C89BAE11AF0E6E0ED /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
-		6323836537294B73BD08F7F9 /* DoublesLineup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublesLineup.swift; sourceTree = "<group>"; };
-		0547B03605021680A9441055 /* DoublesSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublesSetupView.swift; sourceTree = "<group>"; };
-		4FDAB47C7AA23C5E7FE4FF43 /* DoublesRosterStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublesRosterStrip.swift; sourceTree = "<group>"; };
-		35A044F00CE9DD88850DF7D7 /* SharedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStore.swift; sourceTree = "<group>"; };
-		7DC178A58BCB850BCC7656C7 /* ScoreActionIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreActionIntent.swift; sourceTree = "<group>"; };
-		8F112F9944DDCEE082357BD5 /* ShareCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardView.swift; sourceTree = "<group>"; };
-		915F62DCF34D221D12B1EFD0 /* PersistenceKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceKeys.swift; sourceTree = "<group>"; };
 		DD010311A82B56E4260082A0 /* MatchExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchExport.swift; sourceTree = "<group>"; };
-		B285050DC036A0536A669D26 /* CloudSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSync.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -182,6 +184,7 @@
 		D60000112C1E000200000001 = {
 			isa = PBXGroup;
 			children = (
+				24EDE0493021C4AA007770CB /* PingPongWidgetExtension.entitlements */,
 				D60000132C1E000200000001 /* PingPong */,
 				2437AAD32FBC6DBA0067E1F9 /* PingPongWatch Watch App */,
 				2437AAF12FBC6F9D0067E1F9 /* PingPongWidget */,
@@ -203,6 +206,7 @@
 		D60000132C1E000200000001 /* PingPong */ = {
 			isa = PBXGroup;
 			children = (
+				24EDE0483021C46D007770CB /* PingPong.entitlements */,
 				B285050DC036A0536A669D26 /* CloudSync.swift */,
 				DD010311A82B56E4260082A0 /* MatchExport.swift */,
 				915F62DCF34D221D12B1EFD0 /* PersistenceKeys.swift */,
@@ -315,7 +319,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2650;
-				LastUpgradeCheck = 2650;
+				LastUpgradeCheck = 2660;
 				TargetAttributes = {
 					2437AAD12FBC6DBA0067E1F9 = {
 						CreatedOnToolsVersion = 26.5;
@@ -452,7 +456,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -464,7 +468,7 @@
 					"@executable_path/Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.simo.pingpong.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -489,7 +493,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -501,7 +505,7 @@
 					"@executable_path/Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.simo.pingpong.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -525,8 +529,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CODE_SIGN_ENTITLEMENTS = PingPongWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PingPongWidget/Info.plist;
@@ -539,7 +544,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.simo.pingpong.PingPongWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -560,8 +565,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CODE_SIGN_ENTITLEMENTS = PingPongWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PingPongWidget/Info.plist;
@@ -574,7 +580,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.simo.pingpong.PingPongWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -592,6 +598,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -656,6 +663,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -714,8 +722,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PingPong/PingPong.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PingPong/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Ping Pong Counter";
@@ -728,7 +737,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.simo.pingpong;
 				PRODUCT_NAME = "Ping Pong Counter";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -743,8 +752,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PingPong/PingPong.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PingPong/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Ping Pong Counter";
@@ -757,7 +767,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.simo.pingpong;
 				PRODUCT_NAME = "Ping Pong Counter";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

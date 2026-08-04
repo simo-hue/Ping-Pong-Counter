@@ -1,0 +1,1 @@
+ping,pong,table,tennis,score,board,counter,watch,referee,tracker,keeper,umpire,live,activity,points

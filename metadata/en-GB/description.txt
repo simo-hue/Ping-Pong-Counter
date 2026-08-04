@@ -1,0 +1,48 @@
+Argued about who was serving? Forgot if the score was 8-7 or 9-6? Had the rhythm of a perfect Table Tennis match ruined by simple scorekeeping errors? 
+
+We have all been there. Ping Pong Scoreboard is the premium, ultimate companion app for iPhone and Apple Watch designed to solve this exact problem forever. Crafted with high-end, cyberpunk-inspired dark aesthetics, glowing neon scoring fields, and modern Apple APIs, it turns scorekeeping into a fluid, responsive, and gorgeous part of the sport.
+
+Leave your iPhone on a tripod at the net or on the table, and keep score directly from your wrist. With instant synchronization, Live Activities, and a high-quality voice synthesizer announcing scores like a real referee, you can focus 100% on your game.
+
+CORE FEATURES
+
+1. Full-Screen Neon Scoreboard (OLED Optimized)
+• Adaptive Layouts: Supports both horizontal (split-screen left/right for tabletop use at the net) and vertical layouts (split-screen top/bottom for quick one-handed use).
+• Zero-Interference Gestures: Tap anywhere on a player's field to register a point (+1) with a dynamic floating neon animation.
+• Swipe Down to Undo (-1): Made a mistake? Swipe down on the player's side to reverse the last action. Holds up to 30 steps of rollback history.
+• Active Serve Pulse: A continuous glowing pulse indicates the serving side, so you always know who has the ball.
+• Custom Player Names: Click the edit icon to personalize player names directly on the scoreboard.
+
+2. Native Apple Watch Companion App
+• True Hands-Free Scoring: Leave your phone at the side of the table and control the entire match directly from your wrist.
+• Instant Sync: Built on high-performance connectivity. Tapping your watch updates your iPhone in real-time, and vice-versa.
+• Wrist Gestures & Tactile Haptics: Tap to score, long-press to undo. Custom vibration signatures let you score without even looking at the screen.
+
+ 3. Live Activities & Dynamic Island Integration
+• Lock Screen Scoreboard: Lock your phone to save battery. The live score, set count, and active server are projected onto your Lock Screen in real-time.
+• Dynamic Island Support: Minimizes into a beautiful, compact status pill while you use other apps. Long-press to open a rich, glassmorphic scoreboard overlay.
+
+4. Premium Vocal Referee & Smart Audio Ducking
+• Your Personal Umpire: High-quality vocal referee announces scores and critical highlights ("Match Point!", "Set Point!", "Deuce!").
+• Smart Audio Ducking: Automatically lowers background music volume (e.g., Spotify, Apple Music) during announcements and restores it instantly afterward.
+• Silent Mode Override: Configured to play announcements even when the phone is on silent, so you never miss a score.
+
+5. Official ITTF Rules Compliance
+• Match Customization: Play standard modern 11-point games or classic 21-point formats.
+• Set Tracking: Supports Best-of-3 or Best-of-5 sets with glowing visual scoreboard indicators.
+• Automatic Serve Rotation: Switches every 2 serves (for 11-point games) or every 5 serves (for 21-point games).
+• Smart Deuce Handling: Switches to 1 serve per player at deuce (10-10 or 20-20) until a player leads by 2.
+• Manual Override: Tap the "SERVE" indicator at any time to reassign serving rights manually.
+
+6. Exquisite Glowing Cyberpunk Themes
+Choose between three professionally curated high-contrast neon palettes:
+1. Classic Neon: Hot Pink & Cyan Blue
+2. Mint & Royal: Mint Green & Deep Purple
+3. Solar Flare: Solar Orange & Teal Green
+
+7. Absolute Privacy & Offline-First
+• Zero User Tracking: No registration, no ads, no trackers, and no third-party SDKs.
+• 100% Offline: The app requires zero internet access. All data, custom rules, player names, and histories stay entirely on your device.
+
+Elevate your table tennis matches today. Download Ping Pong Scoreboard!
+
