@@ -604,6 +604,50 @@ check("and it merges against a newer edit without winning", {
     return SyncMerge.mergeRoster(local: [old], remote: [newer], deleted: []).map(\.name).joined()
 }(), "Simone")
 
+// The trim must find the same answer as the naive loop, in O(log n) encodes rather than O(n).
+// The naive version cost ~1000 full encodes of a 1000-record array — seconds on the main actor.
+final class CountingEncoder: JSONEncoder, @unchecked Sendable {
+    var encodeCount = 0
+    override func encode<T: Encodable>(_ value: T) throws -> Data {
+        encodeCount += 1
+        return try super.encode(value)
+    }
+}
+
+func naiveRecordsFitting(_ records: [MatchRecord], byteLimit: Int) -> [MatchRecord] {
+    var candidate = records.sorted { $0.date > $1.date }
+    while !candidate.isEmpty {
+        guard let data = try? JSONEncoder().encode(candidate) else { return [] }
+        if data.count <= byteLimit { return candidate }
+        candidate.removeLast()
+    }
+    return []
+}
+
+let bulk = (0..<1200).map { syncRecord("m\($0)", at: TimeInterval($0)) }
+let counter = CountingEncoder()
+let fitted = SyncMerge.recordsFitting(bulk, byteLimit: 120_000, encoder: counter)
+check("the trim agrees with the naive loop",
+      "\(fitted.map(\.id) == naiveRecordsFitting(bulk, byteLimit: 120_000).map(\.id))", "true")
+check("and gets there in a logarithmic number of encodes",
+      "\(counter.encodeCount <= 16)", "true")
+
+// Two devices holding identical data must produce byte-identical output, or they push at each
+// other forever. Dictionary and Set iteration order is randomised per process.
+let tied = (0..<40).map { _ in syncRecord("tie", at: 500) }
+check("merge output is deterministic even when every date ties", {
+    let a = SyncMerge.mergeMatches(local: tied, remote: tied.reversed(), deleted: [])
+    let b = SyncMerge.mergeMatches(local: tied.reversed(), remote: tied, deleted: [])
+    return "\(a.map(\.id) == b.map(\.id))"
+}(), "true")
+check("roster merge is deterministic when createdAt ties", {
+    let sameDate = Date(timeIntervalSince1970: 900)
+    let players = (0..<20).map { _ in RosterPlayer(id: UUID(), name: "P", createdAt: sameDate) }
+    let a = SyncMerge.mergeRoster(local: players, remote: players.reversed(), deleted: [])
+    let b = SyncMerge.mergeRoster(local: players.reversed(), remote: players, deleted: [])
+    return "\(a.map(\.id) == b.map(\.id))"
+}(), "true")
+
 check("tombstones are capped",
       "\(SyncMerge.cappedTombstones(Set((0..<2500).map { _ in UUID() }), limit: 100).count)", "100")
 check("a small tombstone set is left alone",

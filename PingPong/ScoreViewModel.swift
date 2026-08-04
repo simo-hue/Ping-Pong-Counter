@@ -284,9 +284,14 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
         let defaults = SharedStore.defaults
         matchRecords = Self.loadMatchRecords(from: defaults)
 
+        // Symmetric with matchRecords on purpose. Leaving the roster untouched when the key is
+        // absent would keep the previous iCloud account's players in memory — and the next local
+        // edit would upload them into the new Apple ID.
         if let data = defaults.data(forKey: DefaultsKey.roster),
            let savedRoster = try? JSONDecoder().decode([RosterPlayer].self, from: data) {
             roster = savedRoster
+        } else {
+            roster = []
         }
     }
 

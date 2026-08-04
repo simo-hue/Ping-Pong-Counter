@@ -161,20 +161,23 @@ final class CloudSync {
         writeIDs(deletedRoster, to: defaults, key: Key.deletedRosterIds)
     }
 
-    /// Replaces local state with the remote copy. Only for an iCloud account change.
+    /// Adopts the remote copy when the iCloud account itself changes.
+    ///
+    /// An ABSENT remote copy is never treated as "delete everything". The system posts
+    /// AccountChange for a sign-OUT as well as a switch, and in both cases the local mirror reads
+    /// as empty — so removing the local keys here would erase every archived match and saved player
+    /// the moment the user signed out of iCloud, with no gesture, no confirmation and no undo.
+    /// Anything past the upload budget was never in the cloud either, so it would be unrecoverable.
+    /// A genuine switch to a populated account still adopts that account's data.
     private func adoptRemoteWholesale() {
         let defaults = SharedStore.defaults
 
         if let data = store.data(forKey: Key.matchRecords) {
             defaults.set(data, forKey: Key.matchRecords)
-        } else {
-            defaults.removeObject(forKey: Key.matchRecords)
         }
 
         if let data = store.data(forKey: Key.roster) {
             defaults.set(data, forKey: Key.roster)
-        } else {
-            defaults.removeObject(forKey: Key.roster)
         }
 
         writeIDs(remoteIDs(Key.deletedMatchIds), to: defaults, key: Key.deletedMatchIds)
@@ -190,11 +193,11 @@ final class CloudSync {
 
         let records = decode([MatchRecord].self, from: defaults.data(forKey: Key.matchRecords)) ?? []
         let fitting = SyncMerge.recordsFitting(records, byteLimit: Self.recordsByteBudget)
-        if let data = try? JSONEncoder().encode(fitting) {
+        if let data = try? JSONEncoder().encode(fitting), store.data(forKey: Key.matchRecords) != data {
             store.set(data, forKey: Key.matchRecords)
         }
 
-        if let data = defaults.data(forKey: Key.roster) {
+        if let data = defaults.data(forKey: Key.roster), store.data(forKey: Key.roster) != data {
             store.set(data, forKey: Key.roster)
         }
 
@@ -241,11 +244,21 @@ final class CloudSync {
         Set((store.array(forKey: key) as? [String] ?? []).compactMap(UUID.init(uuidString:)))
     }
 
+    /// Sorted, not just mapped: `Set` iteration order is randomised per process, so an unsorted
+    /// array would differ byte-for-byte between devices holding identical tombstones — and each
+    /// would see the other's write as a change and push back, forever.
+    private func sortedStrings(_ ids: Set<UUID>) -> [String] {
+        ids.map(\.uuidString).sorted()
+    }
+
     private func writeIDs(_ ids: Set<UUID>, to defaults: UserDefaults, key: String) {
-        defaults.set(ids.map(\.uuidString), forKey: key)
+        defaults.set(sortedStrings(ids), forKey: key)
     }
 
     private func storeIDs(_ ids: Set<UUID>, key: String) {
-        store.set(ids.map(\.uuidString), forKey: key)
+        let value = sortedStrings(ids)
+        // Writing an identical value would still notify the other device.
+        guard store.array(forKey: key) as? [String] != value else { return }
+        store.set(value, forKey: key)
     }
 }
