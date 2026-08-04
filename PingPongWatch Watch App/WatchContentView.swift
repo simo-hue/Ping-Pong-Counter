@@ -13,6 +13,8 @@ struct WatchContentView: View {
     /// itself would let a stray nudge rewrite a whole set.
     @State private var crownPosition: Double = 0
     @State private var lastCrownDetent: Int = 0
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     // Check if the current locale is Italian
     private var isItalian: Bool { WatchLocalized.isItalian }
@@ -78,13 +80,26 @@ struct WatchContentView: View {
             applyCrownDetent(newValue)
         }
         .onAppear {
-            // Trigger loop animation for breathing pulse glows
+            // Trigger loop animation for breathing pulse glows — unless the wearer has asked the
+            // system to stop exactly this kind of endless movement.
+            guard !reduceMotion else { return }
             withAnimation(Animation.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
                 animatePulse = true
             }
         }
     }
     
+    private func accessibilitySummary(player: String, name: String, score: Int, isServing: Bool) -> String {
+        var parts = [name, "\(score)"]
+        if connector.bestOfSets > 1 {
+            parts.append("\(setsWon(for: player)) \(isItalian ? "set" : "sets")")
+        }
+        if isServing {
+            parts.append(isItalian ? "serve" : "serving")
+        }
+        return parts.joined(separator: ", ")
+    }
+
     private func setsWon(for player: String) -> Int {
         player == "player1" ? connector.p1Sets : connector.p2Sets
     }
@@ -181,6 +196,15 @@ struct WatchContentView: View {
             )
         )
         .contentShape(Rectangle())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilitySummary(player: player, name: name, score: score, isServing: isServing))
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAction(named: Text(isItalian ? "Aggiungi un punto" : "Add a point")) {
+            connector.sendIncrement(player: player)
+        }
+        .accessibilityAction(named: Text(isItalian ? "Togli un punto" : "Remove a point")) {
+            connector.sendDecrement(player: player)
+        }
         // Unified high-performance gesture controller: Tap for +1, Swipe Down for -1
         .gesture(
             DragGesture(minimumDistance: 0, coordinateSpace: .local)

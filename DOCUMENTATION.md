@@ -517,3 +517,29 @@ Questo documento tiene traccia dello stato dell'applicazione, delle scelte archi
   - **Siri**: `ReadScoreIntent` e `NewMatchIntent` con `AppShortcutsProvider`. Il riassunto parlato passa da una closure su `ScoreActionRouter`, così il target widget — che compila lo stesso file — non deve saperne nulla.
   - **`SettingsView` spezzata in dieci sezioni**: il `Form` era cresciuto oltre ciò che il type-checker regge in tempo ragionevole, e il gate delle viste l'ha segnalato come **errore vero** — sarebbe fallita anche la build in Xcode.
   - **Verifica**: 80/80 check del modello, type-check di 9 schermate, type-check del view model, `swiftc -parse` su tutti e tre i target.
+
+### [2026-08-04]: Iterazione 10 — Accessibilità e Rifinitura
+* **Dettagli**: Ultima iterazione. Il tabellone era completamente inaccessibile a VoiceOver: segnare un punto significa toccare metà schermo e toglierlo significa scorrere in giù, due gesti che uno screen reader non espone in alcun modo. Review adversariale: 27 agenti, 25 finding grezzi, **25 confutati — nessun difetto sopravvissuto**.
+* **Tech Notes**:
+  - **Metà campo come elemento accessibile**: ciascuna metà è ora un singolo elemento con un riepilogo parlato (nome, punti, set vinti, chi serve, set/match point, con singolare e plurale corretti) e quattro azioni nominate — aggiungi punto, togli punto, assegna servizio, modifica nome. `children: .contain` mantiene raggiungibili i pulsanti reali già presenti all'interno.
+  - **`accessibilitySummary(for:)`** vive nel view model e non nella vista, così Watch e tabellone descrivono lo stesso stato.
+  - **Reduce Motion**: la pulsazione infinita del servizio non parte più, e il percorso animato del tocco (il "+1" fluttuante, il rimbalzo del punteggio e la catena di `asyncAfter`) viene saltato a favore dell'incremento diretto — il punto, l'haptic e il suono restano invariati. Esteso anche al Watch.
+  - **Contrasto**: due etichette a opacità 0.2 e 0.22 su fondo quasi nero — sotto qualunque soglia utile — portate a 0.45 e 0.5.
+  - **Etichette mancanti**: annulla, cambio campo e reset nella barra flottante non ne avevano (impostazioni e storico sì): un utente VoiceOver sentiva solo il nome dell'icona.
+  - **Watch**: stesso trattamento sul pannello del giocatore, con riepilogo e azioni nominate.
+  - **Verifica**: 80/80 check del modello, type-check di 9 schermate contro SwiftUI + Charts reali, type-check del view model, `swiftc -parse` su tutti e tre i target.
+
+---
+
+## Stato Finale del Ciclo di 10 Iterazioni
+
+Dieci iterazioni, ognuna con revisione adversariale a più lenti e verifica confutatoria prima del commit. **283 finding grezzi, 262 confutati, 21 difetti reali corretti** — fra cui sei blocker, tre dei quali avrebbero impedito la compilazione sul Mac mini e due dei quali avrebbero perso dati degli utenti.
+
+Il progetto è passato da zero verifiche a tre gate eseguibili **senza Xcode**:
+| Gate | Copre | Cosa ha già intercettato |
+|---|---|---|
+| `run-model-checks.sh` | 80 asserzioni sul motore reale | il set fantasma duplicato, la rotazione del doppio ai vantaggi |
+| `run-view-typecheck.sh` | 9 schermate contro SwiftUI + Charts reali | il `Form` di SettingsView oltre il limite del type-checker |
+| `run-viewmodel-typecheck.sh` | `ScoreViewModel` contro stub di piattaforma | due errori di risoluzione dei nomi che `-parse` accettava |
+
+Resta da fare a mano solo ciò che richiede firma e provisioning (App Group per il widget Home), documentato in `TO_SIMO_DO.md`.

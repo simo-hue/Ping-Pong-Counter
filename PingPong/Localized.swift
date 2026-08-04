@@ -163,6 +163,24 @@ public struct Localized {
         isItalian ? "Esporta \(name)" : "Export \(name)"
     }
 
+    // Accessibility
+    public static func pointsAccessibility(_ count: Int) -> String {
+        guard isItalian else { return "\(count) \(count == 1 ? "point" : "points")" }
+        return "\(count) \(count == 1 ? "punto" : "punti")"
+    }
+    public static func setsAccessibility(_ count: Int) -> String {
+        guard isItalian else { return "\(count) \(count == 1 ? "set won" : "sets won")" }
+        return "\(count) \(count == 1 ? "set vinto" : "set vinti")"
+    }
+    public static var addPointAction: String { isItalian ? "Aggiungi un punto" : "Add a point" }
+    public static var removePointAction: String { isItalian ? "Togli un punto" : "Remove a point" }
+    public static var setServeAction: String { isItalian ? "Assegna il servizio" : "Give the serve" }
+    public static var editNameAction: String { isItalian ? "Modifica il nome" : "Edit the name" }
+    public static var undoAction: String { isItalian ? "Annulla l'ultimo punto" : "Undo the last point" }
+    public static var swapSidesAction: String { isItalian ? "Cambia campo" : "Change ends" }
+    public static var setPointLabel: String { isItalian ? "Set point" : "Set point" }
+    public static var matchPointLabel: String { isItalian ? "Match point" : "Match point" }
+
     // Statistics dashboard
     public static var statsTitle: String { isItalian ? "Statistiche" : "Statistics" }
     public static var totalRalliesLabel: String { isItalian ? "Scambi totali" : "Total rallies" }

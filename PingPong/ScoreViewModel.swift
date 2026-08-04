@@ -860,6 +860,25 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
     
     // MARK: - State Callouts
     
+    /// One sentence describing a side for VoiceOver: name, score, sets, and whether they serve.
+    func accessibilitySummary(for player: Player) -> String {
+        let name = player == .player1 ? p1Name : p2Name
+        let score = player == .player1 ? p1Score : p2Score
+        let sets = player == .player1 ? p1Sets : p2Sets
+
+        var parts = [name, Localized.pointsAccessibility(score)]
+        if bestOfSets > 1 {
+            parts.append(Localized.setsAccessibility(sets))
+        }
+        if currentServer == player {
+            parts.append(isDoubles ? "\(Localized.servingLabel) \(servingDisplayName)" : Localized.servingLabel)
+        }
+        if isSetPoint(for: player) {
+            parts.append(isMatchPoint(for: player) ? Localized.matchPointLabel : Localized.setPointLabel)
+        }
+        return parts.joined(separator: ", ")
+    }
+
     /// Who the umpire should name as serving. In doubles that is the individual at the table, not
     /// the team — naming the team would leave the pair guessing which of them is up.
     var servingDisplayName: String {

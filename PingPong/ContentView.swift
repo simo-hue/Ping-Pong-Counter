@@ -6,6 +6,7 @@ struct ContentView: View {
     // instance, in the app's process.
     @ObservedObject private var viewModel = ScoreViewModel.shared
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isShowingSettings = false
     @State private var isShowingMatchHistory = false
     @State private var animateP1 = false
@@ -89,8 +90,13 @@ struct ContentView: View {
             .frame(width: geometry.size.width, height: geometry.size.height)
             .ignoresSafeArea()
             .onAppear {
-                withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
-                    serverPulseScale = 1.3
+                // A forever-repeating pulse is exactly what Reduce Motion is meant to suppress.
+                if reduceMotion {
+                    serverPulseScale = 1.0
+                } else {
+                    withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+                        serverPulseScale = 1.3
+                    }
                 }
                 viewModel.syncLiveActivity()
                 updateIdleTimer()
@@ -323,7 +329,7 @@ struct ContentView: View {
                     Text(Localized.isItalian ? "Tocca per +1 • Scorri giù per -1" : "Tap for +1 • Swipe down for -1")
                         .font(.system(.caption2, design: .rounded))
                         .fontWeight(.bold)
-                        .foregroundColor(.white.opacity(0.2))
+                        .foregroundColor(.white.opacity(0.45))
                         .transition(.opacity)
                 }
                 
@@ -379,7 +385,7 @@ struct ContentView: View {
                             Text(Localized.isItalian ? "IMPOSTA SERVIZIO" : "SET SERVE")
                                 .font(.system(.caption2, design: .rounded))
                                 .fontWeight(.bold)
-                                .foregroundColor(.white.opacity(0.22))
+                                .foregroundColor(.white.opacity(0.5))
                                 .tracking(1)
                         }
                     }
@@ -399,8 +405,32 @@ struct ContentView: View {
         }
         .frame(width: size.width, height: size.height)
         .contentShape(Rectangle())
+        // Tapping a bare half and swiping down on it are invisible to VoiceOver, so the whole
+        // half becomes one element carrying the same operations as named actions.
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(viewModel.accessibilitySummary(for: player))
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAction(named: Text(Localized.addPointAction)) {
+            viewModel.incrementScore(for: player)
+        }
+        .accessibilityAction(named: Text(Localized.removePointAction)) {
+            viewModel.decrementScore(for: player)
+        }
+        .accessibilityAction(named: Text(Localized.setServeAction)) {
+            viewModel.setServer(to: player)
+        }
+        .accessibilityAction(named: Text(Localized.editNameAction)) {
+            editingPlayer = player
+            editingNameText = name
+            isShowingNameEditor = true
+        }
         .onTapGesture {
             // Tap registered -> scale up & increment score
+            guard !reduceMotion else {
+                viewModel.incrementScore(for: player)
+                return
+            }
+
             if isP1 {
                 p1PlusOffset = 0
                 p1PlusOpacity = 1.0
@@ -517,6 +547,7 @@ struct ContentView: View {
                 .foregroundColor(viewModel.canUndo() ? .white : .white.opacity(0.25))
         }
         .disabled(!viewModel.canUndo())
+        .accessibilityLabel(Localized.undoAction)
 
         Button {
             viewModel.swapSides()
@@ -525,6 +556,7 @@ struct ContentView: View {
                 .font(.system(size: 26))
                 .foregroundColor(.white)
         }
+        .accessibilityLabel(Localized.swapSidesAction)
 
         Button {
             isShowingSettings = true
@@ -552,6 +584,7 @@ struct ContentView: View {
                 .font(.system(size: 26))
                 .foregroundColor(.white)
         }
+        .accessibilityLabel(Localized.resetMatch)
         .confirmationDialog(Localized.isItalian ? "Sei sicuro di voler azzerare l'incontro?" : "Are you sure you want to reset the match?", isPresented: $isShowingResetConfirm, titleVisibility: .visible) {
             Button(Localized.isItalian ? "Sì, azzera tutto" : "Yes, reset all", role: .destructive) {
                 viewModel.resetMatch()
