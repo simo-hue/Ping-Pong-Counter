@@ -30,3 +30,5 @@ Cosa devi fare tu:
 - [ ] Effetti sonori (Impostazioni → Audio): gli ID di sistema sono scelti alla cieca.
 - [ ] Doppio con quattro persone vere, verificando la rotazione ai vantaggi.
 - [ ] Widget Home subito dopo aver vinto una partita ma **prima** di azzerarla: deve mostrare "FINALE" con i set, non la partita precedente.
+- [ ] **Con la sincronizzazione attiva, esci da iCloud** (Impostazioni iOS → Apple ID → Esci): lo storico locale deve restare intatto. Era il bug più grave del rifacimento: la disconnessione cancellava tutto.
+- [ ] Rinominare un giocatore in Impostazioni con la Live Activity attiva: deve riavviarsi **una volta sola** a fine digitazione, non a ogni lettera.
