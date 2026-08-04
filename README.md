@@ -2,7 +2,7 @@
 
 [![Platform](https://img.shields.io/badge/Platform-iOS%2017.0%2B%20%7C%20watchOS%2010.0%2B-blue?style=for-the-badge&logo=apple)](https://developer.apple.com/ios/)
 [![Swift](https://img.badge.dog/v1/language/swift/6.0.svg?style=for-the-badge)](https://developer.apple.com/swift/)
-[![App Store](https://img.shields.io/badge/App_Store-Coming_Soon-black?style=for-the-badge&logo=app-store)](https://www.apple.com/app-store/)
+[![App Store](https://img.shields.io/badge/App_Store-Download-black?style=for-the-badge&logo=app-store)](https://apps.apple.com/app/ping-pong-counter/id6771022440)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 **Ever played a fierce, sweat-inducing match of Table Tennis, only to pause midway because neither you nor your opponent could remember the score?** 
@@ -15,11 +15,12 @@ We've all been there. Argued about who was serving, whether it was `8-7` or `9-6
 
 ## 🔗 Try It Out!
 
-* 🌐 **Official Website:** [pingpongcounter.com](https://pingpongcounter.com) *(Coming Soon)*
-* 🎬 **Live Web Demo & Walkthrough:** [demo.pingpongcounter.com](https://demo.pingpongcounter.com)
-* 📲 **Download on the App Store:** 
-  
-  [![Download on the App Store](https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg)](https://apps.apple.com/app/ping-pong-counter)
+* 🌐 **Official website:** [simo-hue.github.io/Ping-Pong-Counter](https://simo-hue.github.io/Ping-Pong-Counter/)
+* 🏓 **Play a match in your browser:** the [landing page scoreboard](https://simo-hue.github.io/Ping-Pong-Counter/#scoreboard) runs the same serve-rotation and deuce logic as the app.
+* ❓ **FAQ, support and privacy policy:** [FAQ](https://simo-hue.github.io/Ping-Pong-Counter/#faq) · [Support](https://simo-hue.github.io/Ping-Pong-Counter/#support) · [Privacy](https://simo-hue.github.io/Ping-Pong-Counter/#privacy)
+* 📲 **Download on the App Store:**
+
+  [![Download on the App Store](https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg)](https://apps.apple.com/app/ping-pong-counter/id6771022440)
 
 ---
 

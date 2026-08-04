@@ -1,0 +1,31 @@
+# Ping Pong Counter
+
+> Ping Pong Counter is a free table tennis scoreboard app for iPhone, iPad and Apple Watch. It keeps the score, tracks whose serve it is under ITTF 11-point and 21-point rules, handles singles and doubles, announces the score out loud, and shows the live score on the Lock Screen. It works fully offline, has no ads, no subscription and no account, and collects no data.
+
+Developer: Simone Mattioli. Price: free, with no in-app purchases. Requires iOS 17.0, iPadOS 17.0 or watchOS 10.0 or later. App interface language: English.
+
+## Links
+
+- [Landing page](https://simo-hue.github.io/Ping-Pong-Counter/): what the app does, the rules it implements, and a working scoreboard you can play a match on in the browser.
+- [App Store listing](https://apps.apple.com/app/ping-pong-counter/id6771022440): the only place to download the app.
+- [Frequently asked questions](https://simo-hue.github.io/Ping-Pong-Counter/#faq): twelve questions with direct answers, covering price, offline use, Apple Watch, doubles, serve rotation, export and accessibility.
+- [Privacy policy](https://simo-hue.github.io/Ping-Pong-Counter/#privacy): what is stored, what optional iCloud sync copies, and what is never collected.
+- [Support](https://simo-hue.github.io/Ping-Pong-Counter/#support): how to report a problem or request a feature.
+- [Source repository](https://github.com/simo-hue/Ping-Pong-Counter): the Swift source for the iOS, watchOS and widget targets.
+- [Full text for retrieval](https://simo-hue.github.io/Ping-Pong-Counter/llms-full.txt): every claim on the site as plain markdown, including the complete FAQ.
+
+## What it does
+
+- Full-screen split scoreboard: tap a player's half to add a point, swipe down to take one back, undo up to 30 steps.
+- ITTF rules: 11 or 21 points (or any target from 1 to 99), a single set or first to 3 or 5 sets, win-by-two deuce, serve every 2 or 5 points collapsing to single serves at deuce, and an alternating first server each set.
+- Doubles with the full four-seat serving rotation, naming the individual serving.
+- Native Apple Watch app with two-way sync and Digital Crown scoring; it is a remote for the iPhone, not standalone.
+- Lock Screen Live Activity and Dynamic Island with working +1 and undo buttons; a Home Screen widget in small and medium sizes.
+- A spoken umpire announcing score, deuce, set point, match point and the winner.
+- Match history with set-by-set and rally-by-rally detail, a player roster, career records, streaks and head-to-head statistics.
+- CSV and JSON export, a shareable result card, and optional iCloud sync of history and roster.
+- Full VoiceOver support and Reduce Motion support.
+
+## What it does not do
+
+No tournaments or brackets. No automatic scoring from a camera or sensors. No live score sharing with spectators or a second device. No AirPlay to a TV. No shot, spin or placement tracking. No accounts, friends or online leaderboards. No Lock Screen or StandBy widgets and no watch complications. No editing of a past match. Nothing below iOS 17 or watchOS 10. No cost and no data collection.
