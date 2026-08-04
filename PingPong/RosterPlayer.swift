@@ -10,12 +10,25 @@ struct RosterPlayer: Identifiable, Codable, Equatable, Hashable {
     var name: String
     var emoji: String
     var createdAt: Date
+    /// When this entry was last edited. Optional so entries saved before syncing existed still
+    /// decode; `lastEdited` falls back to `createdAt`. Used to resolve a rename that happened on
+    /// one device against a stale copy on another.
+    var updatedAt: Date?
 
-    init(id: UUID = UUID(), name: String, emoji: String = RosterPlayer.defaultEmoji, createdAt: Date = Date()) {
+    var lastEdited: Date { updatedAt ?? createdAt }
+
+    init(
+        id: UUID = UUID(),
+        name: String,
+        emoji: String = RosterPlayer.defaultEmoji,
+        createdAt: Date = Date(),
+        updatedAt: Date? = nil
+    ) {
         self.id = id
         self.name = name
         self.emoji = emoji
         self.createdAt = createdAt
+        self.updatedAt = updatedAt
     }
 
     static let defaultEmoji = "🏓"

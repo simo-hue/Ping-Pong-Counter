@@ -1,6 +1,6 @@
 Argued about who was serving? Forgot if the score was 8-7 or 9-6? Had the rhythm of a perfect Table Tennis match ruined by simple scorekeeping errors? 
 
-We have all been there. Ping Pong Scoreboard is the premium, ultimate companion app for iPhone and Apple Watch designed to solve this exact problem forever. Crafted with high-end, cyberpunk-inspired dark aesthetics, glowing neon scoring fields, and modern Apple APIs, it turns scorekeeping into a fluid, responsive, and gorgeous part of the sport.
+We have all been there. Ping Pong Counter is the premium, ultimate companion app for iPhone and Apple Watch designed to solve this exact problem forever. Crafted with high-end, cyberpunk-inspired dark aesthetics, glowing neon scoring fields, and modern Apple APIs, it turns scorekeeping into a fluid, responsive, and gorgeous part of the sport.
 
 Leave your iPhone on a tripod at the net or on the table, and keep score directly from your wrist. With instant synchronization, Live Activities, and a high-quality voice synthesizer announcing scores like a real referee, you can focus 100% on your game.
 
@@ -44,5 +44,5 @@ Choose between three professionally curated high-contrast neon palettes:
 • Zero User Tracking: No registration, no ads, no trackers, and no third-party SDKs.
 • 100% Offline: The app requires zero internet access. All data, custom rules, player names, and histories stay entirely on your device.
 
-Elevate your table tennis matches today. Download Ping Pong Scoreboard!
+Elevate your table tennis matches today. Download Ping Pong Counter!
 

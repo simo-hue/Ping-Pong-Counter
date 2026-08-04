@@ -343,10 +343,33 @@ public struct PingPongWidgetLiveActivity: Widget {
                         .padding(.horizontal, 8)
                         .padding(.vertical, 2)
                         .background(Capsule().fill(Color.white.opacity(0.06)))
+
+                        // In doubles the serving side is not enough — name the player at the table.
+                        // It lives in the centre column rather than on a row of its own: the column
+                        // has spare height, whereas a third row pushed the card past the 160pt Lock
+                        // Screen budget (measured 173pt) and the badge was clipped off.
+                        if let servingName = context.state.servingName,
+                           !servingName.isEmpty,
+                           context.state.winner == nil {
+                            HStack(spacing: 5) {
+                                Circle()
+                                    .fill(Color.yellow)
+                                    .frame(width: 6, height: 6)
+                                Text(servingName)
+                                    .font(.system(.caption2, design: .rounded))
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.yellow)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.7)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 3)
+                            .background(Capsule().fill(Color.yellow.opacity(0.12)))
+                        }
                     }
-                    
+
                     Spacer()
-                    
+
                     // Player 2 Scoring Column
                     VStack(alignment: .trailing, spacing: 4) {
                         HStack(spacing: 6) {
@@ -387,23 +410,6 @@ public struct PingPongWidgetLiveActivity: Widget {
                         p1Tint: theme.p1Color,
                         p2Tint: theme.p2Color
                     )
-                }
-
-                // In doubles the serving side is not enough — name the player at the table.
-                if let servingName = context.state.servingName, !servingName.isEmpty, context.state.winner == nil {
-                    HStack(spacing: 5) {
-                        Circle()
-                            .fill(Color.yellow)
-                            .frame(width: 6, height: 6)
-                        Text(servingName)
-                            .font(.system(.caption2, design: .rounded))
-                            .fontWeight(.bold)
-                            .foregroundColor(.yellow)
-                            .lineLimit(1)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 3)
-                    .background(Capsule().fill(Color.yellow.opacity(0.12)))
                 }
 
                 // Championship Winner Overlay Banner

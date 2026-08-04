@@ -107,8 +107,11 @@ struct ContentView: View {
             .onChange(of: viewModel.keepScreenAwake) { _, _ in
                 updateIdleTimer()
             }
-            .onChange(of: scenePhase) { _, _ in
+            .onChange(of: scenePhase) { _, phase in
                 updateIdleTimer()
+                if phase == .active {
+                    viewModel.handleReturnToForeground()
+                }
             }
             .sheet(isPresented: $isShowingSettings) {
                 SettingsView(viewModel: viewModel)

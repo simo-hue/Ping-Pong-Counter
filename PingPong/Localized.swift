@@ -150,13 +150,23 @@ public struct Localized {
     // iCloud & export
     public static var cloudSyncHeader: String { isItalian ? "iCloud" : "iCloud" }
     public static var cloudSyncLabel: String { isItalian ? "Sincronizza Storico" : "Sync History" }
+    public static var cloudSyncMerging: String {
+        isItalian
+            ? "Le partite vengono unite fra i dispositivi: nessuna viene persa se giocate offline su due telefoni. Le eliminazioni vengono propagate."
+            : "Matches are merged across devices, so none is lost if you play offline on two phones. Deletions propagate."
+    }
     public static var cloudSyncFooter: String {
         isItalian
             ? "Storico e giocatori salvati vengono condivisi fra i tuoi dispositivi. Il punteggio della partita in corso resta sul dispositivo."
             : "History and saved players are shared across your devices. The match in progress stays on this device."
     }
     public static var cloudSyncUnavailable: String {
-        isItalian ? "iCloud non disponibile su questo dispositivo" : "iCloud is not available on this device"
+        isItalian ? "iCloud non disponibile" : "iCloud unavailable"
+    }
+    public static var cloudSyncUnavailableHelp: String {
+        isItalian
+            ? "Verifica di aver effettuato l'accesso a iCloud in Impostazioni e che iCloud Drive sia attivo. La sincronizzazione si riattiva da sola appena iCloud risponde."
+            : "Check that you are signed in to iCloud in Settings and that iCloud Drive is on. Syncing re-enables itself as soon as iCloud responds."
     }
     public static var exportLabel: String { isItalian ? "Esporta" : "Export" }
     public static func exportFormatLabel(_ name: String) -> String {

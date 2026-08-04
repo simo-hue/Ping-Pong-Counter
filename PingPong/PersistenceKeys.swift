@@ -36,6 +36,10 @@ enum PersistenceKeys {
     static let p1RosterId = "p1RosterId"
     static let p2RosterId = "p2RosterId"
     static let isCloudSyncEnabled = "isCloudSyncEnabled"
+    /// Ids the user deliberately removed. Synced alongside the records so a deletion propagates
+    /// instead of being undone by a device that still holds the record.
+    static let deletedMatchIds = "deletedMatchIds"
+    static let deletedRosterIds = "deletedRosterIds"
 
     /// Keep in step with the declarations above — the migration copies exactly this set.
     static let all: [String] = [
@@ -49,6 +53,7 @@ enum PersistenceKeys {
         completedSets, currentSetRallies,
         isDoubles, doublesLineup,
         roster, p1RosterId, p2RosterId,
-        isCloudSyncEnabled
+        isCloudSyncEnabled,
+        deletedMatchIds, deletedRosterIds
     ]
 }

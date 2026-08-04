@@ -527,6 +527,88 @@ let lineupData = try! JSONEncoder().encode(set2)
 check("lineup survives a Codable round-trip",
       cycleNames(try! JSONDecoder().decode(DoublesLineup.self, from: lineupData)), cycleNames(set2))
 
+// MARK: - Sync merge
+
+print("\n── iCloud merge ──")
+
+func syncRecord(_ label: String, at offset: TimeInterval) -> MatchRecord {
+    MatchRecord(
+        id: UUID(), date: Date(timeIntervalSince1970: 1_700_000_000 + offset),
+        p1Name: label, p2Name: "X",
+        p1Score: 11, p2Score: 5, p1Sets: 2, p2Sets: 0, winner: .player1,
+        targetScore: 11, bestOfSets: 2, winByTwo: true,
+        durationSeconds: nil, sets: nil, p1Id: nil, p2Id: nil
+    )
+}
+
+let shared = syncRecord("shared", at: 0)
+let onlyA = syncRecord("onlyA", at: 100)
+let onlyB = syncRecord("onlyB", at: 200)
+
+// The whole point: two devices each play a match offline, neither loses one.
+let unioned = SyncMerge.mergeMatches(local: [onlyA, shared], remote: [onlyB, shared], deleted: [])
+check("a union keeps both devices' matches",
+      unioned.map(\.p1Name).joined(separator: ","), "onlyB,onlyA,shared")
+check("the shared record is not duplicated",
+      "\(unioned.filter { $0.id == shared.id }.count)", "1")
+
+// Without tombstones a delete would be undone by the device that still has the record.
+let afterDelete = SyncMerge.mergeMatches(local: [shared], remote: [onlyA, shared], deleted: [onlyA.id])
+check("a tombstoned match stays deleted",
+      afterDelete.map(\.p1Name).joined(separator: ","), "shared")
+check("deleting everything leaves nothing",
+      "\(SyncMerge.mergeMatches(local: [onlyA], remote: [onlyA], deleted: [onlyA.id]).count)", "0")
+
+// Roster: a rename on one device must not be reverted by a stale copy on another.
+let base = Date(timeIntervalSince1970: 1_700_000_000)
+let stale = RosterPlayer(id: UUID(), name: "Ale", emoji: "⚡️", createdAt: base, updatedAt: base)
+var renamed = stale
+renamed.name = "Alessandro"
+renamed.updatedAt = base.addingTimeInterval(60)
+
+check("the more recent roster edit wins",
+      SyncMerge.mergeRoster(local: [stale], remote: [renamed], deleted: []).map(\.name).joined(),
+      "Alessandro")
+check("and wins from either side",
+      SyncMerge.mergeRoster(local: [renamed], remote: [stale], deleted: []).map(\.name).joined(),
+      "Alessandro")
+check("a roster entry with no updatedAt falls back to createdAt",
+      "\(RosterPlayer(id: UUID(), name: "Old", createdAt: base).lastEdited == base)", "true")
+check("a tombstoned player stays deleted",
+      "\(SyncMerge.mergeRoster(local: [stale], remote: [stale], deleted: [stale.id]).count)", "0")
+
+// Oversized history is trimmed oldest-first rather than rejected wholesale by the store.
+let many = (0..<400).map { syncRecord("m\($0)", at: TimeInterval($0)) }
+let trimmed = SyncMerge.recordsFitting(many, byteLimit: 20_000)
+check("history is trimmed to fit the key-value budget",
+      "\(trimmed.count < many.count && !trimmed.isEmpty)", "true")
+check("trimming keeps the newest matches",
+      "\(trimmed.first?.date == many.map(\.date).max())", "true")
+check("a history that already fits is untouched",
+      "\(SyncMerge.recordsFitting([onlyA, onlyB], byteLimit: 1_000_000).count)", "2")
+
+// RosterPlayer gained updatedAt; entries saved before it must still decode.
+let legacyRosterJSON = """
+[{"id":"\(UUID().uuidString)","name":"Simo","emoji":"🔥","createdAt":0}]
+"""
+let legacyRoster = try? JSONDecoder().decode([RosterPlayer].self, from: legacyRosterJSON.data(using: .utf8)!)
+check("a roster entry saved before updatedAt still decodes", "\(legacyRoster?.count ?? -1)", "1")
+check("its updatedAt reads as absent", "\(legacyRoster?[0].updatedAt == nil)", "true")
+check("and it merges against a newer edit without winning", {
+    guard let old = legacyRoster?[0] else { return "no legacy entry" }
+    var newer = old
+    newer.name = "Simone"
+    // Comfortably after the decoded createdAt — a bare 0 in JSON is the 2001 reference date,
+    // not the Unix epoch.
+    newer.updatedAt = old.createdAt.addingTimeInterval(3600)
+    return SyncMerge.mergeRoster(local: [old], remote: [newer], deleted: []).map(\.name).joined()
+}(), "Simone")
+
+check("tombstones are capped",
+      "\(SyncMerge.cappedTombstones(Set((0..<2500).map { _ in UUID() }), limit: 100).count)", "100")
+check("a small tombstone set is left alone",
+      "\(SyncMerge.cappedTombstones([onlyA.id, onlyB.id], limit: 100).count)", "2")
+
 // MARK: - Result
 
 print("")

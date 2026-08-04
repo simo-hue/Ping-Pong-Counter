@@ -270,6 +270,15 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
         isCloudSyncAvailable = CloudSync.shared.refreshAvailability()
     }
 
+    /// Re-checks iCloud when the app returns to the foreground — the user may have signed in or out
+    /// meanwhile — and folds in anything that arrived while it was away.
+    func handleReturnToForeground() {
+        isCloudSyncAvailable = CloudSync.shared.refreshAfterForeground()
+        if isCloudSyncEnabled && !CloudSync.shared.isRunning {
+            isCloudSyncEnabled = false
+        }
+    }
+
     /// Re-reads the values iCloud may have changed underneath us.
     private func reloadFromStore() {
         let defaults = SharedStore.defaults
@@ -700,9 +709,10 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
 
     func deleteMatchRecords() {
         guard !matchRecords.isEmpty else { return }
+        let removedIDs = matchRecords.map(\.id)
         matchRecords.removeAll()
         persistMatchRecords()
-        CloudSync.shared.push()
+        CloudSync.shared.recordDeletion(matchIDs: removedIDs)
         HapticManager.shared.play(.reset)
     }
 
@@ -711,7 +721,7 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
         matchRecords.removeAll { $0.id == id }
         guard matchRecords.count != originalCount else { return }
         persistMatchRecords()
-        CloudSync.shared.push()
+        CloudSync.shared.recordDeletion(matchIDs: [id])
         HapticManager.shared.play(.scoreDecrement)
     }
     
@@ -1087,7 +1097,7 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
         let key = RosterPlayer.matchKey(for: trimmed)
         guard !roster.contains(where: { $0.matchKey == key }) else { return nil }
 
-        let player = RosterPlayer(name: trimmed, emoji: emoji)
+        let player = RosterPlayer(name: trimmed, emoji: emoji, updatedAt: Date())
         roster.insert(player, at: 0)
         persistRoster()
         return player
@@ -1111,6 +1121,7 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
 
         var updated = player
         updated.name = trimmed
+        updated.updatedAt = Date()
         roster[index] = updated
         persistRoster()
 
@@ -1132,6 +1143,7 @@ final class ScoreViewModel: ObservableObject, ScoreActionHandling {
 
         persistRoster()
         persistRosterAssignments()
+        CloudSync.shared.recordDeletion(rosterIDs: [id])
         HapticManager.shared.play(.scoreDecrement)
     }
 

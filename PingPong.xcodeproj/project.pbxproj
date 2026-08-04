@@ -44,6 +44,7 @@
 		F86B693A269AA76FF2B9CF15 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1081208582FFBCDA00AC39 /* AppTheme.swift */; };
 		FB793DE97246324A40064C9C /* RosterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A94DB38CEEC7AD94DD9605 /* RosterView.swift */; };
 		FD35F9CD2171078F3395964C /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D77C6C89BAE11AF0E6E0ED /* StatsView.swift */; };
+		E24C9D6788E1F791FA8EF4B6 /* SyncMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F640A7DD319F36735DE09702 /* SyncMerge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -128,6 +129,7 @@
 		D60001012C20000100000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D60001022C20000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD010311A82B56E4260082A0 /* MatchExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchExport.swift; sourceTree = "<group>"; };
+		F640A7DD319F36735DE09702 /* SyncMerge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncMerge.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -206,6 +208,7 @@
 		D60000132C1E000200000001 /* PingPong */ = {
 			isa = PBXGroup;
 			children = (
+				F640A7DD319F36735DE09702 /* SyncMerge.swift */,
 				24EDE0483021C46D007770CB /* PingPong.entitlements */,
 				B285050DC036A0536A669D26 /* CloudSync.swift */,
 				DD010311A82B56E4260082A0 /* MatchExport.swift */,
@@ -400,6 +403,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E24C9D6788E1F791FA8EF4B6 /* SyncMerge.swift in Sources */,
 				99506D653737170AC6C5CB3D /* CloudSync.swift in Sources */,
 				C9A18AA34B54985562421F19 /* MatchExport.swift in Sources */,
 				24291A59BD72DA032667A808 /* PersistenceKeys.swift in Sources */,

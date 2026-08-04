@@ -14,19 +14,22 @@ struct ScoreSnapshotEntry: TimelineEntry {
     let isLive: Bool
     let hasData: Bool
     let themeIndex: Int
+    /// A decided multi-set match is reported by its set score; a match in progress, or one
+    /// abandoned mid-set, by its points.
+    let showsSetsAsHeadline: Bool
 
     static let placeholder = ScoreSnapshotEntry(
         date: Date(),
         p1Name: "Simo", p2Name: "Ale",
         p1Score: 8, p2Score: 6, p1Sets: 1, p2Sets: 1,
-        isLive: true, hasData: true, themeIndex: 0
+        isLive: true, hasData: true, themeIndex: 0, showsSetsAsHeadline: false
     )
 
     static let empty = ScoreSnapshotEntry(
         date: Date(),
         p1Name: "—", p2Name: "—",
         p1Score: 0, p2Score: 0, p1Sets: 0, p2Sets: 0,
-        isLive: false, hasData: false, themeIndex: 0
+        isLive: false, hasData: false, themeIndex: 0, showsSetsAsHeadline: false
     )
 }
 
@@ -52,15 +55,22 @@ struct ScoreSnapshotProvider: TimelineProvider {
         let p2Score = defaults.integer(forKey: "p2Score")
         let p1Sets = defaults.integer(forKey: "p1Sets")
         let p2Sets = defaults.integer(forKey: "p2Sets")
-        let isLive = (p1Score + p2Score + p1Sets + p2Sets) > 0 && defaults.string(forKey: "winner") == nil
+        // A finished match is archived to `matchRecords` only when the user resets, which can be
+        // a long time after the winning point. Until then it is still the most recent result and
+        // must be read from the live keys — falling through to the archive would headline the match
+        // BEFORE this one, or the empty state after a first-ever match.
+        let bestOfSets = defaults.object(forKey: "bestOfSets") as? Int ?? 3
+        let isFinished = defaults.string(forKey: "winner") != nil
+        let hasMatchOnTable = isFinished || (p1Score + p2Score + p1Sets + p2Sets) > 0
 
-        if isLive {
+        if hasMatchOnTable {
             return ScoreSnapshotEntry(
                 date: Date(),
                 p1Name: defaults.string(forKey: "p1Name") ?? "P1",
                 p2Name: defaults.string(forKey: "p2Name") ?? "P2",
                 p1Score: p1Score, p2Score: p2Score, p1Sets: p1Sets, p2Sets: p2Sets,
-                isLive: true, hasData: true, themeIndex: themeIndex
+                isLive: !isFinished, hasData: true, themeIndex: themeIndex,
+                showsSetsAsHeadline: isFinished && bestOfSets > 1
             )
         }
 
@@ -68,7 +78,8 @@ struct ScoreSnapshotProvider: TimelineProvider {
             return ScoreSnapshotEntry(
                 date: Date(), p1Name: "—", p2Name: "—",
                 p1Score: 0, p2Score: 0, p1Sets: 0, p2Sets: 0,
-                isLive: false, hasData: false, themeIndex: themeIndex
+                isLive: false, hasData: false, themeIndex: themeIndex,
+                showsSetsAsHeadline: false
             )
         }
 
@@ -77,7 +88,8 @@ struct ScoreSnapshotProvider: TimelineProvider {
             p1Name: last.p1Name, p2Name: last.p2Name,
             p1Score: last.p1Score, p2Score: last.p2Score,
             p1Sets: last.p1Sets, p2Sets: last.p2Sets,
-            isLive: false, hasData: true, themeIndex: themeIndex
+            isLive: false, hasData: true, themeIndex: themeIndex,
+            showsSetsAsHeadline: last.winner != nil && (last.bestOfSets ?? 1) > 1
         )
     }
 }
@@ -108,6 +120,9 @@ enum WidgetSharedStore {
         let p2Score: Int
         let p1Sets: Int
         let p2Sets: Int
+        // Optional so records written before these fields existed still decode.
+        let winner: String?
+        let bestOfSets: Int?
     }
 
     static func lastArchivedMatch() -> ArchivedMatch? {
@@ -135,7 +150,9 @@ struct PingPongHomeWidgetEntryView: View {
                         .frame(width: 5, height: 5)
                 }
 
-                Text(entry.isLive ? WidgetLocalized.liveLabel : WidgetLocalized.lastMatchLabel)
+                Text(entry.isLive
+                     ? WidgetLocalized.liveLabel
+                     : (entry.showsSetsAsHeadline ? WidgetLocalized.finalLabel : WidgetLocalized.lastMatchLabel))
                     .font(.system(size: 9, weight: .black, design: .rounded))
                     .foregroundStyle(entry.isLive ? .yellow : .white.opacity(0.45))
                     .tracking(1)
@@ -161,23 +178,31 @@ struct PingPongHomeWidgetEntryView: View {
     }
 
     private var scoreBlock: some View {
-        VStack(spacing: family == .systemSmall ? 4 : 8) {
+        // A finished match is remembered by its set score, not by the points of its last set.
+        let p1Headline = entry.showsSetsAsHeadline ? entry.p1Sets : entry.p1Score
+        let p2Headline = entry.showsSetsAsHeadline ? entry.p2Sets : entry.p2Score
+        let subLabel = entry.showsSetsAsHeadline ? WidgetLocalized.pointsLabel : WidgetLocalized.setsLabel
+        let subValue = entry.showsSetsAsHeadline
+            ? "\(entry.p1Score)–\(entry.p2Score)"
+            : "\(entry.p1Sets)–\(entry.p2Sets)"
+
+        return VStack(spacing: family == .systemSmall ? 4 : 8) {
             HStack(spacing: 10) {
-                sideColumn(name: entry.p1Name, score: entry.p1Score, tint: theme.p1Color)
+                sideColumn(name: entry.p1Name, score: p1Headline, tint: theme.p1Color)
 
                 Text("–")
                     .font(.system(size: 15, weight: .black, design: .rounded))
                     .foregroundStyle(.white.opacity(0.3))
 
-                sideColumn(name: entry.p2Name, score: entry.p2Score, tint: theme.p2Color)
+                sideColumn(name: entry.p2Name, score: p2Headline, tint: theme.p2Color)
             }
 
             HStack(spacing: 5) {
-                Text(WidgetLocalized.setsLabel)
+                Text(subLabel)
                     .font(.system(size: 8, weight: .black, design: .rounded))
                     .foregroundStyle(.white.opacity(0.4))
 
-                Text("\(entry.p1Sets)–\(entry.p2Sets)")
+                Text(subValue)
                     .font(.system(size: 11, weight: .bold, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(.white.opacity(0.75))
@@ -187,9 +212,7 @@ struct PingPongHomeWidgetEntryView: View {
             .background(Capsule().fill(Color.white.opacity(0.08)))
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(
-            "\(entry.p1Name) \(entry.p1Score), \(entry.p2Name) \(entry.p2Score)"
-        )
+        .accessibilityLabel("\(entry.p1Name) \(p1Headline), \(entry.p2Name) \(p2Headline)")
     }
 
     private func sideColumn(name: String, score: Int, tint: Color) -> some View {

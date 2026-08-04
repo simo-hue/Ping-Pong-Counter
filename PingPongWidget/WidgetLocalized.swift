@@ -36,3 +36,8 @@ extension WidgetLocalized {
         isItalian ? "Il punteggio in corso o l'ultimo risultato." : "The match in progress, or your last result."
     }
 }
+
+extension WidgetLocalized {
+    static var pointsLabel: String { isItalian ? "PUNTI" : "PTS" }
+    static var finalLabel: String { isItalian ? "FINALE" : "FINAL" }
+}
