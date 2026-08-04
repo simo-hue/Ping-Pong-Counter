@@ -582,3 +582,15 @@ Resta da fare a mano solo ciò che richiede firma e provisioning (App Group per 
   - **Note per la review**: `metadata/review_information/notes.txt` era vuoto (segnalato in `TO_SIMO_DO.md`). Ora contiene il percorso di test delle 7 aree nuove — dove si attiva il doppio, come far comparire la Live Activity, come aggiungere il widget, dove stanno storico/statistiche/export, come attivare iCloud — più la dichiarazione che non serve alcun account e che l'app non raccoglie dati. `demo_user` e `demo_password` restano vuoti: non esiste login.
   - **Layout non toccato**: `metadata/` resta nella root del repo, senza cartella `fastlane/`. Senza una directory `fastlane/`, `deliver` usa `./metadata` come default; creare quella cartella avrebbe fatto cercare `fastlane/metadata` e rotto il setup esistente.
   - **Verifica**: script di generazione con assert sui limiti Apple per ogni campo di ogni locale (`name` 30, `subtitle` 30, `promotional_text` 170, `keywords` 100, `description` 4.000, `release_notes` 4.000), contando **caratteri** e non byte — `wc -c` avrebbe mentito su `ja`, `ko` e `zh-Hans`, che sono multibyte. Tutti gli 66 campi vincolati rientrano; il margine più stretto è 5 caratteri (`subtitle` spagnolo). Verificati inoltre: 11 cartelle da 10 file, `name.txt` identico ovunque, riga di avviso lingua presente in esattamente 8 locale.
+
+- [Tue Aug  4 11:48:08 CEST 2026] Fastlane Metadata Upload Fix
+  - *Details*: Fixed a bug with Apple App Store Connect API where Fastlane was unable to create new localizations due to 'app name taken' error. This was resolved by manually creating the languages in ASC, and ensuring the local  matched perfectly. Discovered  was missing on ASC, which caused crashes until it was moved out.
+  - *Tech Notes*: Apple rejects  from Fastlane if the localization doesn't already exist in ASC, specifically failing with a deceptive App Name error.
+
+- [2026-08-04]: Fastlane Metadata Upload Fix
+  - *Details*: Fixed a bug with Apple App Store Connect API where Fastlane was unable to create new localizations due to 'app name taken' error. This was resolved by manually creating the languages in ASC, and ensuring the local name.txt matched perfectly. Discovered en-US was missing on ASC, which caused crashes until it was moved out.
+  - *Tech Notes*: Apple rejects create_app_store_version_localization from Fastlane if the localization doesn't already exist in ASC, specifically failing with a deceptive App Name error.
+
+- [2026-08-04]: Fastlane Screenshots Upload
+  - *Details*: Mapped and uploaded translated screenshots for Italian (`it`), Japanese (`ja`), and Chinese Simplified (`zh-Hans`) via Fastlane. Other languages (like English) were skipped to retain the App Store Connect defaults.
+  - *Status*: The upload completed for all images, but Fastlane got stuck in an infinite loop at the very end receiving "500 Server Error" from App Store Connect while verifying the uploads. The task was manually terminated.
