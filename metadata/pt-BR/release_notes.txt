@@ -1,0 +1,11 @@
+A versão 2.0 é a maior atualização até agora.
+
+• Partidas de duplas, com rodízio automático de parceiros e de saque
+• Uma lista de jogadores salva: recupere os nomes com um toque
+• Histórico de partidas: cada jogo salvo com detalhamento set a set e duração
+• Estatísticas e confrontos diretos de cada adversário
+• Sincronização opcional com o iCloud: seu histórico em todos os dispositivos
+• Um widget de tela de início com o placar ao vivo ou o resultado final
+• A Live Activity e a Dynamic Island agora têm botões de mais e desfazer funcionais
+• Exporte seu histórico em CSV ou JSON
+• Cronômetro da partida e suporte completo a VoiceOver

@@ -1,0 +1,11 @@
+Version 2.0 ist das bisher größte Update.
+
+• Doppel-Spiele, mit automatischem Partner- und Aufschlagwechsel
+• Eine gespeicherte Spielerliste — Namen mit einem Tipp übernehmen
+• Spielverlauf: jedes Spiel mit Satzverlauf und Spieldauer gespeichert
+• Statistiken und direkte Duelle für jeden Gegner
+• Optionale iCloud-Synchronisierung für den Verlauf auf allen Geräten
+• Ein Home-Bildschirm-Widget für Live-Spielstand oder Endergebnis
+• Live Activity und Dynamic Island haben jetzt funktionierende Plus- und Rückgängig-Tasten
+• Export des Spielverlaufs als CSV oder JSON
+• Eine Spieluhr und durchgehende VoiceOver-Unterstützung

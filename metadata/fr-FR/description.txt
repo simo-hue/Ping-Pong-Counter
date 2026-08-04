@@ -1,0 +1,39 @@
+Fini les disputes sur le score.
+
+Ping Pong Counter compte les points, les manches et le service sur iPhone, iPad et Apple Watch. Touchez le côté d'un joueur pour ajouter un point. Balayez vers le bas pour annuler. Voilà toute l'interface : un tableau d'affichage néon en plein écran, lisible de l'autre bout de la table.
+
+COMPTER LES POINTS
+• Touchez pour marquer, balayez vers le bas pour annuler, avec 30 niveaux d'historique
+• Une pulsation lumineuse indique en permanence qui sert
+• Format paysage pour un téléphone posé contre le filet, portrait pour jouer d'une seule main
+• Chronomètre de match, noms de joueurs personnalisés et trois thèmes néon très contrastés
+
+DOUBLE ET JOUEURS
+• Prise en charge complète du double, avec rotation automatique des partenaires et du service
+• Une liste de joueurs enregistrée : rappelez un nom d'un seul geste
+• Confrontations directes et pourcentages de victoire pour chaque adversaire
+
+HISTORIQUE ET STATISTIQUES
+• Chaque match enregistré automatiquement, avec le détail manche par manche et la durée
+• Pourcentages de victoire, matchs les plus longs et durée moyenne
+• Synchronisation iCloud facultative : votre historique sur tous vos appareils
+• Exportation complète en CSV ou JSON
+
+AU POIGNET ET SUR L'ÉCRAN VERROUILLÉ
+• Application Apple Watch native, synchronisation instantanée dans les deux sens et retour haptique
+• Widget d'écran d'accueil affichant le score en direct ou le résultat final
+• Live Activity sur l'écran verrouillé et la Dynamic Island, avec boutons plus et annuler fonctionnels
+
+ARBITRE VOCAL
+• Annonce à voix haute le score, l'égalité, la balle de manche et la balle de match
+• Baisse la musique de fond pendant l'annonce, puis la rétablit
+
+RÈGLES OFFICIELLES
+• Manches en 11 ou 21 points conformes à l'ITTF, au meilleur des 3 ou des 5 manches
+• Rotation du service tous les 2 ou 5 services, puis à chaque point à égalité
+• Ou définissez n'importe quel score cible de 1 à 99 pour vos propres règles
+• Touchez l'indicateur de service pour le réattribuer à tout moment
+
+Gratuit, sans publicité, sans abonnement, sans compte et sans suivi. Tout reste sur votre appareil et fonctionne entièrement hors ligne. Prise en charge complète de VoiceOver.
+
+Remarque : l'interface de l'application est en anglais.

@@ -1,0 +1,1 @@
+Nouveau en 2.0 : double, liste de joueurs, historique complet des matchs, statistiques, synchronisation iCloud et widget. Toujours gratuit, hors ligne, sans suivi.

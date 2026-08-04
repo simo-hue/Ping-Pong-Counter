@@ -1,0 +1,1 @@
+pontos,arbitro,partida,set,saque,contador,estatisticas,duplas,relogio,cronometro,pingue,ittf

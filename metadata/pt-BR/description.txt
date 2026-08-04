@@ -1,0 +1,39 @@
+Chega de discutir por causa do placar.
+
+O Ping Pong Counter conta pontos, sets e saque no iPhone, no iPad e no Apple Watch. Toque no lado de um jogador para somar um ponto. Deslize para baixo para desfazer. A interface é só isso: um placar de neon em tela cheia, legível do outro lado da mesa.
+
+PONTUAÇÃO
+• Toque para pontuar, deslize para baixo para desfazer, com 30 passos de histórico
+• Um pulso luminoso mostra sempre quem está sacando
+• Formato horizontal para o celular apoiado na rede, vertical para jogar com uma mão
+• Cronômetro da partida, nomes personalizados e três temas de neon de alto contraste
+
+DUPLAS E JOGADORES
+• Suporte completo a duplas, com rodízio automático de parceiros e de saque
+• Uma lista de jogadores salva: recupere os nomes com um toque
+• Confrontos diretos e percentuais de vitória de cada adversário
+
+HISTÓRICO E ESTATÍSTICAS
+• Cada partida salva automaticamente, com detalhamento set a set e duração
+• Percentuais de vitória, partidas mais longas e duração média
+• Sincronização opcional com o iCloud: seu histórico em todos os dispositivos
+• Exporte tudo em CSV ou JSON
+
+NO PULSO E NA TELA BLOQUEADA
+• App nativo para Apple Watch com sincronização instantânea nos dois sentidos e resposta háptica
+• Widget de tela de início com o placar ao vivo ou o resultado final
+• Live Activity na tela bloqueada e na Dynamic Island, com botões de mais e desfazer funcionais
+
+ÁRBITRO COM VOZ
+• Anuncia em voz alta o placar, o empate, o set point e o match point
+• Abaixa a música de fundo enquanto fala e a restaura em seguida
+
+REGRAS OFICIAIS
+• Jogos de 11 ou 21 pontos conforme a ITTF, melhor de 3 ou de 5 sets
+• Rodízio de saque a cada 2 ou 5 saques, passando para 1 no empate
+• Ou defina qualquer pontuação-alvo de 1 a 99 para suas próprias regras
+• Toque no indicador de saque para reatribuí-lo a qualquer momento
+
+Grátis, sem anúncios, sem assinaturas, sem contas e sem rastreamento. Tudo fica no seu dispositivo e funciona totalmente offline. Suporte completo a VoiceOver.
+
+Observação: a interface do app está em inglês.

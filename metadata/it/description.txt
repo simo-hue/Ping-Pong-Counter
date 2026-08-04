@@ -1,0 +1,37 @@
+Basta litigare sul punteggio.
+
+Ping Pong Counter tiene il conto di punti, set e servizio su iPhone, iPad e Apple Watch. Tocca il lato di un giocatore per assegnare un punto. Scorri verso il basso per annullare. L'interfaccia è tutta qui: un tabellone neon a schermo intero, leggibile dall'altro lato del tavolo.
+
+PUNTEGGIO
+• Tocca per segnare, scorri in basso per annullare, con 30 passi di cronologia
+• Un impulso luminoso indica sempre chi è al servizio
+• Layout orizzontale per il telefono appoggiato alla rete, verticale per giocare con una mano
+• Cronometro della partita, nomi personalizzati e tre temi neon ad alto contrasto
+
+DOPPIO E GIOCATORI
+• Supporto completo per il doppio, con rotazione automatica di coppie e servizio
+• Una rosa di giocatori salvata, per richiamare i nomi con un tocco
+• Scontri diretti e percentuali di vittoria per ogni avversario
+
+STORICO E STATISTICHE
+• Ogni partita salvata in automatico, con dettaglio set per set e durata
+• Percentuali di vittoria, partite più lunghe e durata media
+• Sincronizzazione iCloud opzionale: lo storico ti segue su tutti i dispositivi
+• Esportazione di tutto in CSV o JSON
+
+AL POLSO E SULLA SCHERMATA DI BLOCCO
+• App nativa per Apple Watch, con sincronizzazione istantanea in entrambe le direzioni e feedback aptico
+• Widget per la schermata Home con il punteggio in tempo reale o il risultato finale
+• Live Activity su schermata di blocco e Dynamic Island, con pulsanti più e annulla funzionanti
+
+ARBITRO VOCALE
+• Annuncia ad alta voce punteggio, vantaggi, set point e match point
+• Abbassa la musica di sottofondo mentre parla e la ripristina subito dopo
+
+REGOLE UFFICIALI
+• Partite a 11 o 21 punti conformi ITTF, al meglio di 3 o di 5 set
+• Rotazione del servizio ogni 2 o 5 servizi, che passa a 1 ai vantaggi
+• Oppure imposta qualsiasi punteggio da 1 a 99 per le tue regole della casa
+• Tocca l'indicatore del servizio per riassegnarlo in qualsiasi momento
+
+Gratis, senza pubblicità, senza abbonamenti, senza account e senza tracciamento. Tutto resta sul tuo dispositivo e funziona completamente offline. Supporto completo per VoiceOver.

@@ -1,0 +1,1 @@
+zähler,punkte,schiedsrichter,spielstand,satz,aufschlag,anzeigetafel,statistik,doppel,uhr,ittf

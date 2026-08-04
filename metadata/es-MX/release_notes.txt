@@ -1,0 +1,11 @@
+La versión 2.0 es la actualización más grande hasta ahora.
+
+• Partidos de dobles, con rotación automática de parejas y de saque
+• Una lista de jugadores guardada: recupera los nombres con un toque
+• Historial de partidos: cada partido guardado con desglose set por set y duración
+• Estadísticas y enfrentamientos directos de cada rival
+• Sincronización opcional con iCloud: tu historial en todos tus dispositivos
+• Un widget de pantalla de inicio con el marcador en vivo o el resultado final
+• La Live Activity y la Dynamic Island ya tienen botones de más y deshacer funcionales
+• Exporta tu historial en CSV o JSON
+• Cronómetro de partido y compatibilidad total con VoiceOver

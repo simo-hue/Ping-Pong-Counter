@@ -1,0 +1,39 @@
+Schluss mit Diskussionen über den Spielstand.
+
+Ping Pong Counter zählt Punkte, Sätze und den Aufschlag auf iPhone, iPad und Apple Watch. Tippe auf die Seite eines Spielers, um einen Punkt zu vergeben. Wische nach unten, um ihn zurückzunehmen. Mehr Bedienung gibt es nicht: eine bildschirmfüllende Neon-Anzeigetafel, die man quer über die Platte lesen kann.
+
+PUNKTE ZÄHLEN
+• Tippen zum Zählen, nach unten wischen zum Rückgängigmachen, mit 30 Schritten Verlauf
+• Ein leuchtender Puls zeigt immer, wer Aufschlag hat
+• Querformat für das Handy an der Netzkante, Hochformat für die einhändige Bedienung
+• Spieluhr, eigene Spielernamen und drei kontrastreiche Neon-Designs
+
+DOPPEL UND SPIELER
+• Vollständige Doppel-Unterstützung, mit automatischem Partner- und Aufschlagwechsel
+• Eine gespeicherte Spielerliste — Namen mit einem Tipp übernehmen
+• Direkte Duelle und Siegquoten für jeden Gegner
+
+VERLAUF UND STATISTIK
+• Jedes Spiel wird automatisch gespeichert, mit Satzverlauf und Spieldauer
+• Siegquoten, längste Spiele und durchschnittliche Spieldauer
+• Optionale iCloud-Synchronisierung für den Verlauf auf allen Geräten
+• Export als CSV oder JSON
+
+AM HANDGELENK UND AUF DEM SPERRBILDSCHIRM
+• Native Apple-Watch-App mit sofortiger Synchronisierung in beide Richtungen und haptischem Feedback
+• Home-Bildschirm-Widget mit Live-Spielstand oder Endergebnis
+• Live Activity auf Sperrbildschirm und Dynamic Island, mit funktionierenden Plus- und Rückgängig-Tasten
+
+SPRECHENDER SCHIEDSRICHTER
+• Sagt Spielstand, Einstand, Satzball und Matchball laut an
+• Senkt die Hintergrundmusik während der Ansage und stellt sie danach wieder her
+
+OFFIZIELLE REGELN
+• ITTF-konforme Spiele auf 11 oder 21 Punkte, Best of 3 oder Best of 5
+• Aufschlagwechsel alle 2 oder 5 Aufschläge, bei Einstand nach jedem Punkt
+• Oder ein beliebiges Ziel von 1 bis 99 Punkten für eigene Hausregeln
+• Tippe auf die Aufschlaganzeige, um den Aufschlag jederzeit neu zu vergeben
+
+Kostenlos, ohne Werbung, ohne Abo, ohne Konto und ohne Tracking. Alles bleibt auf deinem Gerät und funktioniert vollständig offline. Vollständige VoiceOver-Unterstützung.
+
+Hinweis: Die Benutzeroberfläche der App ist auf Englisch.

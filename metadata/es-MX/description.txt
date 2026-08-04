@@ -1,0 +1,39 @@
+Se acabaron los pleitos por el marcador.
+
+Ping Pong Counter lleva la cuenta de puntos, sets y saque en iPhone, iPad y Apple Watch. Toca el lado de un jugador para sumar un punto. Desliza hacia abajo para deshacer. Esa es toda la interfaz: un marcador de neón a pantalla completa que se lee desde el otro lado de la mesa.
+
+PUNTUACIÓN
+• Toca para anotar, desliza hacia abajo para deshacer, con 30 pasos de historial
+• Un pulso luminoso señala siempre a quien tiene el saque
+• Formato horizontal para el celular apoyado en la red, vertical para jugar con una mano
+• Cronómetro de partido, nombres personalizados y tres temas de neón de alto contraste
+
+DOBLES Y JUGADORES
+• Compatibilidad total con dobles, con rotación automática de parejas y de saque
+• Una lista de jugadores guardada: recupera los nombres con un solo toque
+• Enfrentamientos directos y porcentajes de victoria de cada rival
+
+HISTORIAL Y ESTADÍSTICAS
+• Cada partido se guarda automáticamente, con el desglose set por set y la duración
+• Porcentajes de victoria, partidos más largos y duración promedio
+• Sincronización opcional con iCloud: tu historial en todos tus dispositivos
+• Exporta todo en CSV o JSON
+
+EN LA MUÑECA Y EN LA PANTALLA BLOQUEADA
+• App nativa para Apple Watch con sincronización instantánea en ambos sentidos y respuesta háptica
+• Widget de pantalla de inicio con el marcador en vivo o el resultado final
+• Live Activity en la pantalla bloqueada y en la Dynamic Island, con botones de más y deshacer funcionales
+
+ÁRBITRO CON VOZ
+• Anuncia en voz alta el marcador, el empate, el punto de set y el punto de partido
+• Baja la música de fondo mientras habla y la restaura al terminar
+
+REGLAS OFICIALES
+• Juegos a 11 o 21 puntos conformes a la ITTF, al mejor de 3 o de 5 sets
+• Rotación de saque cada 2 o 5 saques, que pasa a 1 en el empate
+• O fija cualquier puntuación objetivo de 1 a 99 para tus propias reglas
+• Toca el indicador de saque para reasignarlo en cualquier momento
+
+Gratis, sin anuncios, sin suscripciones, sin cuentas y sin rastreo. Todo se queda en tu dispositivo y funciona completamente sin conexión. Compatibilidad total con VoiceOver.
+
+Nota: la interfaz de la aplicación está en inglés.

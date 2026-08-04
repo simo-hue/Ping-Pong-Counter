@@ -1,1 +1,29 @@
+No account, login or in-app purchase is required. The app is free and works entirely offline.
 
+HOW TO TEST THE 2.0 FEATURES
+
+1. SCORING
+Tap either half of the scoreboard to add a point. Swipe down on a half to undo (up to 30 steps). Tap the SERVE indicator to reassign the serve manually.
+
+2. DOUBLES
+Open Settings (gear icon) and enable Doubles. You will be asked to choose four players and the starting serve order. Tap Roster to save reusable names. Partner and serve rotation are then handled automatically, including the switch to one serve each at deuce.
+
+3. LIVE ACTIVITY AND DYNAMIC ISLAND
+Start a match, score at least one point, then lock the device or return to the Home Screen. The Live Activity shows the live score, set count and current server. Its plus and undo buttons are interactive and update the app in real time.
+
+4. HOME SCREEN WIDGET
+Long-press the Home Screen, add the "Ping Pong Counter" widget (small or medium). It mirrors the running match, and shows the final set score once a match has been won.
+
+5. HISTORY AND STATISTICS
+Settings > History lists saved matches with a set-by-set breakdown and duration. Settings > Statistics shows win rates, average match length and head-to-head records. Export as CSV or JSON from the History screen.
+
+6. ICLOUD SYNC
+Settings > iCloud > Sync History. The device must be signed in to iCloud. This uses iCloud key-value storage in the user's own iCloud account only. No data is sent to any server operated by the developer.
+
+7. APPLE WATCH
+The companion watchOS app syncs bidirectionally in real time over WatchConnectivity. Tap a player column to score, long-press to undo.
+
+PRIVACY
+The app collects no data, contains no ads, no analytics and no third-party SDKs, and requires no network access. See the privacy policy at the Privacy URL above.
+
+Contact: mattioli.simone.10@gmail.com

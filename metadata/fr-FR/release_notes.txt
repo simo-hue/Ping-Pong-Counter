@@ -1,0 +1,11 @@
+La version 2.0 est la plus grosse mise à jour à ce jour.
+
+• Matchs en double, avec rotation automatique des partenaires et du service
+• Une liste de joueurs enregistrée : rappelez un nom d'un seul geste
+• Historique des matchs : chaque partie conservée, avec détail par manche et durée
+• Statistiques et confrontations directes pour chaque adversaire
+• Synchronisation iCloud facultative : votre historique sur tous vos appareils
+• Un widget d'écran d'accueil pour le score en direct ou le résultat final
+• La Live Activity et la Dynamic Island ont désormais des boutons plus et annuler fonctionnels
+• Exportation de l'historique en CSV ou JSON
+• Un chronomètre de match et une prise en charge complète de VoiceOver

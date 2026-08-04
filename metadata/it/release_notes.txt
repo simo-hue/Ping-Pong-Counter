@@ -1,0 +1,11 @@
+La 2.0 è l'aggiornamento più grande di sempre.
+
+• Partite di doppio, con rotazione automatica di coppie e servizio
+• Una rosa di giocatori salvata: richiama i nomi con un solo tocco
+• Storico partite: ogni match salvato con dettaglio set per set e durata
+• Statistiche e scontri diretti per ogni avversario
+• Sincronizzazione iCloud opzionale: lo storico su tutti i tuoi dispositivi
+• Un widget per la schermata Home con punteggio in tempo reale o risultato finale
+• Live Activity e Dynamic Island ora hanno i pulsanti più e annulla funzionanti
+• Esportazione dello storico in CSV o JSON
+• Cronometro della partita e supporto completo per VoiceOver
