@@ -686,7 +686,10 @@
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": ["SoftwareApplication", "MobileApplication"],
+      "@type": [
+        "SoftwareApplication",
+        "MobileApplication"
+      ],
       "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#app",
       "name": "Ping Pong Counter",
       "alternateName": "Ping Pong Counter — Table Tennis Scoreboard",
@@ -699,8 +702,15 @@
       "operatingSystem": "iOS 17.0 or later, iPadOS 17.0 or later, watchOS 10.0 or later",
       "inLanguage": "en",
       "isAccessibleForFree": true,
-      "accessibilityFeature": ["highContrastDisplay", "largePrint", "structuralNavigation", "audioDescription"],
-      "accessibilityControl": ["fullTouchControl"],
+      "accessibilityFeature": [
+        "highContrastDisplay",
+        "largePrint",
+        "structuralNavigation",
+        "audioDescription"
+      ],
+      "accessibilityControl": [
+        "fullTouchControl"
+      ],
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -732,21 +742,37 @@
         "https://simo-hue.github.io/Ping-Pong-Counter/assets/shot-history.webp"
       ],
       "image": "https://simo-hue.github.io/Ping-Pong-Counter/assets/icon-512.png",
-      "author": { "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#author" },
-      "publisher": { "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#author" },
-      "isPartOf": { "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#website" },
-      "mainEntityOfPage": { "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#webpage" },
+      "author": {
+        "@id": "https://simo-hue.github.io/#person"
+      },
+      "publisher": {
+        "@id": "https://simo-hue.github.io/#person"
+      },
+      "isPartOf": {
+        "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#website"
+      },
+      "mainEntityOfPage": {
+        "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#webpage"
+      },
       "potentialAction": {
         "@type": "InstallAction",
         "target": "https://apps.apple.com/app/ping-pong-counter/id6771022440"
-      }
+      },
+      "identifier": {
+        "@type": "PropertyValue",
+        "propertyID": "App Store ID",
+        "value": "6771022440"
+      },
+      "sameAs": "https://apps.apple.com/app/ping-pong-counter/id6771022440"
     },
     {
       "@type": "Person",
-      "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#author",
+      "@id": "https://simo-hue.github.io/#person",
       "name": "Simone Mattioli",
       "url": "https://github.com/simo-hue",
-      "sameAs": ["https://github.com/simo-hue"]
+      "sameAs": [
+        "https://github.com/simo-hue"
+      ]
     },
     {
       "@type": "WebSite",
@@ -754,15 +780,21 @@
       "url": "https://simo-hue.github.io/Ping-Pong-Counter/",
       "name": "Ping Pong Counter",
       "inLanguage": "en",
-      "publisher": { "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#author" }
+      "publisher": {
+        "@id": "https://simo-hue.github.io/#person"
+      }
     },
     {
       "@type": "WebPage",
       "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#webpage",
       "url": "https://simo-hue.github.io/Ping-Pong-Counter/",
       "name": "Ping Pong Counter — Free Table Tennis Scoreboard App",
-      "isPartOf": { "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#website" },
-      "about": { "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#app" },
+      "isPartOf": {
+        "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#website"
+      },
+      "about": {
+        "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#app"
+      },
       "primaryImageOfPage": "https://simo-hue.github.io/Ping-Pong-Counter/assets/og-image.png",
       "dateModified": "2026-08-04",
       "inLanguage": "en"
@@ -770,68 +802,108 @@
     {
       "@type": "FAQPage",
       "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#faq",
-      "isPartOf": { "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#webpage" },
-      "about": { "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#app" },
+      "isPartOf": {
+        "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#webpage"
+      },
+      "about": {
+        "@id": "https://simo-hue.github.io/Ping-Pong-Counter/#app"
+      },
       "mainEntity": [
         {
           "@type": "Question",
           "name": "Is Ping Pong Counter free?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Ping Pong Counter is completely free, with no ads, no subscription and no in-app purchases. There is no account to create and no trial period. Every feature — Apple Watch scoring, Live Activities, the spoken umpire, match history and iCloud sync — is included from the moment you install it." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Ping Pong Counter is completely free, with no ads, no subscription and no in-app purchases. There is no account to create and no trial period. Every feature — Apple Watch scoring, Live Activities, the spoken umpire, match history and iCloud sync — is included from the moment you install it."
+          }
         },
         {
           "@type": "Question",
           "name": "Can an Apple Watch keep the table tennis score?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Ping Pong Counter includes a native Apple Watch app that syncs with your iPhone in both directions. Tap your wrist or roll the Digital Crown to score a point and the iPhone scoreboard updates immediately, so you can leave your phone propped at the end of the table during play." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Ping Pong Counter includes a native Apple Watch app that syncs with your iPhone in both directions. Tap your wrist or roll the Digital Crown to score a point and the iPhone scoreboard updates immediately, so you can leave your phone propped at the end of the table during play."
+          }
         },
         {
           "@type": "Question",
           "name": "Does Ping Pong Counter work offline?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Scoring, serve rotation, match history, statistics and the spoken umpire all run on the device with no internet connection required. Optional iCloud sync is the only feature that uses a network at all, and you can leave it switched off entirely." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Scoring, serve rotation, match history, statistics and the spoken umpire all run on the device with no internet connection required. Optional iCloud sync is the only feature that uses a network at all, and you can leave it switched off entirely."
+          }
         },
         {
           "@type": "Question",
           "name": "How does serve rotation work in an 11-point ping pong game?",
-          "acceptedAnswer": { "@type": "Answer", "text": "In an ITTF 11-point game the serve changes every two points, and the first player to reach 11 with a two-point lead wins the set. At 10–10 the game goes to deuce and the serve alternates every single point. Ping Pong Counter applies both rules automatically and shows who serves next." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In an ITTF 11-point game the serve changes every two points, and the first player to reach 11 with a two-point lead wins the set. At 10–10 the game goes to deuce and the serve alternates every single point. Ping Pong Counter applies both rules automatically and shows who serves next."
+          }
         },
         {
           "@type": "Question",
           "name": "Does the app support doubles?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. You can name all four players and choose who opens the service, and the app then tracks the doubles rotation — server, receiver, server's partner, receiver's partner — so nobody has to stop and work out whose turn it is. The individual serving is named on screen, on the Lock Screen and on the Watch." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. You can name all four players and choose who opens the service, and the app then tracks the doubles rotation — server, receiver, server's partner, receiver's partner — so nobody has to stop and work out whose turn it is. The individual serving is named on screen, on the Lock Screen and on the Watch."
+          }
         },
         {
           "@type": "Question",
           "name": "Can I play to 21 points instead of 11?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Ping Pong Counter supports the modern 11-point format and the classic 21-point format with one tap, or any target from 1 to 99 for house rules. Matches can be a single set, first to 3 sets or first to 5 sets, and the serve can change every 2 or every 5 serves." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Ping Pong Counter supports the modern 11-point format and the classic 21-point format with one tap, or any target from 1 to 99 for house rules. Matches can be a single set, first to 3 sets or first to 5 sets, and the serve can change every 2 or every 5 serves."
+          }
         },
         {
           "@type": "Question",
           "name": "Does Ping Pong Counter collect any personal data?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The app collects no data at all. There is no account, no analytics, no advertising and no third-party SDK of any kind, and its App Store privacy label reads “Data Not Collected”. Your match history stays in the app's own storage on your device, or in your private iCloud if you switch sync on." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The app collects no data at all. There is no account, no analytics, no advertising and no third-party SDK of any kind, and its App Store privacy label reads “Data Not Collected”. Your match history stays in the app's own storage on your device, or in your private iCloud if you switch sync on."
+          }
         },
         {
           "@type": "Question",
           "name": "Can I save my match history and export the results?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every finished match is saved with its set-by-set score, duration and rally log, and the statistics screen summarises win rates, streaks and head-to-head records. You can export the whole history as CSV or JSON, or share a single match as a square result card." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Every finished match is saved with its set-by-set score, duration and rally log, and the statistics screen summarises win rates, streaks and head-to-head records. You can export the whole history as CSV or JSON, or share a single match as a square result card."
+          }
         },
         {
           "@type": "Question",
           "name": "Does the app announce the score out loud?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. An optional spoken umpire calls the score after every point, names the server, and announces deuce, set point, match point and the winner. It lowers background music while it speaks and is audible even with the ring switch off. You can turn it off in Settings." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. An optional spoken umpire calls the score after every point, names the server, and announces deuce, set point, match point and the winner. It lowers background music while it speaks and is audible even with the ring switch off. You can turn it off in Settings."
+          }
         },
         {
           "@type": "Question",
           "name": "Can I see the score on my iPhone Lock Screen?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. A Live Activity shows the current score, the sets won and who is serving on the Lock Screen and in the Dynamic Island. Its +1 and undo buttons work from the Lock Screen itself, so you can score a rally without unlocking the phone or reopening the app." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. A Live Activity shows the current score, the sets won and who is serving on the Lock Screen and in the Dynamic Island. Its +1 and undo buttons work from the Lock Screen itself, so you can score a rally without unlocking the phone or reopening the app."
+          }
         },
         {
           "@type": "Question",
           "name": "What devices does Ping Pong Counter work on?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Ping Pong Counter runs on iPhone and iPad with iOS or iPadOS 17 or later, and on Apple Watch with watchOS 10 or later. The iPad makes a good shared scoreboard at the end of the table; the Apple Watch app acts as a remote for the iPhone, so the phone needs to be nearby." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Ping Pong Counter runs on iPhone and iPad with iOS or iPadOS 17 or later, and on Apple Watch with watchOS 10 or later. The iPad makes a good shared scoreboard at the end of the table; the Apple Watch app acts as a remote for the iPhone, so the phone needs to be nearby."
+          }
         },
         {
           "@type": "Question",
           "name": "Is Ping Pong Counter accessible with VoiceOver?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Each half of the scoreboard is a single VoiceOver element that reads the player's name, points, sets won, whether they are serving and whether it is set or match point, and it carries named actions to add a point, remove one, give the serve and edit the name. Reduce Motion is respected throughout." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Each half of the scoreboard is a single VoiceOver element that reads the player's name, points, sets won, whether they are serving and whether it is set or match point, and it carries named actions to add a point, remove one, give the serve and edit the name. Reduce Motion is respected throughout."
+          }
         }
       ]
     }
